@@ -1,0 +1,12 @@
+# Flutter
+.dart_tool/
+.packages
+.pub/
+build/
+
+# IDE
+.idea/
+.vscode/
+
+# Generated
+**/generated_plugin_registrant.dart

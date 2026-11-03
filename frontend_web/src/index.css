@@ -1,0 +1,11 @@
+@import 'leaflet/dist/leaflet.css';
+
+html, body, #root { min-height: 100%; }
+body { margin: 0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+.leaflet-container { width: 100%; height: 100%; font: inherit; z-index: 0; }
+.leaflet-div-icon { background: transparent; border: 0; }
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }

@@ -1,0 +1,102 @@
+# ════════════════════════════════════════════════
+#  Dalilak monorepo: backend · frontend_web · frontend_mobile
+# ════════════════════════════════════════════════
+
+# ─── Local backups / old versions (not part of the repo) ───
+_old_v1/
+_tmp_flutter_template/
+*.tgz
+*.zip
+/package-lock.json
+
+# ─── Secrets & environment ───
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.keystore
+*.jks
+key.properties
+google-services.json
+GoogleService-Info.plist
+
+# ─── OS / editors ───
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.iml
+*.swp
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ─── Node (backend + frontend_web) ───
+node_modules/
+dist/
+build/
+coverage/
+.cache/
+*.tsbuildinfo
+.eslintcache
+.vite/
+
+# Backend runtime data
+backend/uploads/
+backend/logs/
+
+# ─── Flutter / Dart (frontend_mobile) ───
+frontend_mobile/.dart_tool/
+frontend_mobile/.flutter-plugins
+frontend_mobile/.flutter-plugins-dependencies
+frontend_mobile/.packages
+frontend_mobile/.pub-cache/
+frontend_mobile/.pub/
+frontend_mobile/build/
+frontend_mobile/flutter_path_hint.txt
+**/doc/api/
+*.class
+*.lock.bak
+
+# Flutter generated
+**/generated_plugin_registrant.*
+**/GeneratedPluginRegistrant.*
+**/Flutter/ephemeral/
+**/flutter_export_environment.sh
+
+# Android
+**/android/.gradle/
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
+**/android/**/gradle-wrapper.jar
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+.cxx/
+.externalNativeBuild/
+
+# iOS / macOS
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Runner/GeneratedPluginRegistrant.*
+**/macos/Pods/
+**/macos/Flutter/ephemeral/
+xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+
+# Windows / Linux desktop builds
+**/windows/flutter/ephemeral/
+**/linux/flutter/ephemeral/
