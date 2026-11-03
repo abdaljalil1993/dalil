@@ -1,4 +1,4 @@
-# تسليم مطوّر الموبايل (Flutter) — دليلك v2
+# تسليم مطوّر الموبايل (Flutter) — دليلك v2.1
 
 الباك إند جاهز ومُختبر. كل الـ endpoints موثّقة بـ `docs/API.md` و Swagger على `/api/v1/docs` (OpenAPI JSON: `/api/v1/docs.json` — ممكن توليد موديلات Dart منه).
 التطبيق لازم يطابق الويب بالسلوك والتصميم (ألوان: Primary `#5B3DF5`، Secondary `#FF6A3D`، تدرّج `#5B3DF5 → #8B5CF6 → #EC4899`، خط IBM Plex Sans Arabic، عربي RTL افتراضي).
@@ -16,6 +16,11 @@
 9. رفع الصور `multipart/form-data`: حقل `image` (مفرد) أو `images` (متعدد ≤10)، ≤5MB، jpg/png/webp. اضغط الصورة قبل الرفع.
 10. واتساب: حوّل `09xxxxxxxx` إلى `9639xxxxxxxx` ← `https://wa.me/...`. الاتجاهات: `https://www.google.com/maps/dir/?api=1&destination=lat,lng`.
 11. `Accept-Language: ar|en` بالهيدر، والأسماء: استخدم `nameEn` إذا اللغة إنجليزي وموجود وإلا `name`.
+12. **الباقات (402)**: إذا رجع الخطأ `status 402` مع `code: PLAN_LIMIT` أو `PLAN_FEATURE` ← اعرض BottomSheet «هذه الميزة تحتاج ترقية باقتك» وزر يفتح شاشة الباقات. حالياً الاشتراكات مطفية فما رح يطلع، بس لازم يكون جاهز.
+13. **OTP**: `POST /auth/otp/request {phone}` ← `isNewUser` (إذا true اطلب الاسم الأول والأخير) ← `POST /auth/otp/verify {phone, code, firstName?, lastName?}` يرجع نفس رد الدخول. بوضع التطوير بيرجع `devCode`.
+14. **Push**: بعد الدخول سجّل توكن FCM: `POST /devices {token, platform: android|ios}` وعند الخروج `DELETE /devices/{token}`. الإشعار فيه `data.type` (نوع الإشعار) مع المعرّفات (مثل `businessId`, `requestId`, `appointmentId`) ← افتح الشاشة المناسبة حسب النوع.
+15. **الإعلانات المبوّبة** (عقارات/سيارات/وظائف): الحقول الخاصة بكل نوع من `GET /listings/fields` (لا تكتبها يدوياً) — الفلاتر `attr[key]=` و `attrMin[key]=` و `attrMax[key]=`. البحث النصي `q` للمسجّلين فقط.
+16. التواريخ `YYYY-MM-DD` والأوقات `HH:MM` بتوقيت سوريا. المبالغ أرقام بالليرة السورية `SYP`.
 
 ## الشاشات ← الـ API
 | الشاشة | Endpoints |
@@ -36,6 +41,18 @@
 | تقييمات نشاطاتي | `GET /reviews/owner?unanswered=true` · `POST /reviews/{id}/reply` |
 | الترويج | `POST /featured/request` · `POST /advertisements/request` · `GET /featured/my` · `GET /advertisements/my` |
 | تواصل معنا | `POST /contact` |
+| **— v2.1 —** | |
+| الدخول برقم الموبايل | `POST /auth/otp/request` · `POST /auth/otp/verify` · `POST /auth/otp/verify-phone` · `POST /devices` |
+| الرئيسية (إضافات) | `GET /home` صار فيه `offers[]` و `onDutyPharmacies` (عدد) ← صف "خدمات سريعة": عروض، صيدليات مناوبة، طوارئ، اطلب خدمة، عقارات، سيارات، وظائف، تنظيف، مناسبات |
+| العروض | `GET /offers?cityId=&categoryId=` · `GET /businesses/{id}/offers` |
+| الصيدليات المناوبة | `GET /pharmacies/on-duty?cityId=&date=` |
+| أرقام الطوارئ | `GET /emergency?cityId=` |
+| المنيو / المنتجات | `GET /businesses/{id}/items` (مقسّم `sections[]`) |
+| الحجز | `GET /businesses/{id}/availability?date=` ← `POST /businesses/{id}/appointments {date, time?, itemId?, partySize, phone?, note?}` · حجوزاتي `GET /appointments/my` · إلغاء `PATCH /appointments/{id}/status {status:"cancelled"}` |
+| اطلب خدمة | `POST /service-requests` (multipart مع `images[]` اختياري) · `GET /service-requests/my` · `GET /service-requests/{id}` (فيه `quotes[]`) · قبول/رفض `PATCH /service-requests/quotes/{id}` · إغلاق `PATCH /service-requests/{id}/status` |
+| عقارات / سيارات / وظائف | `GET /listings/fields` · `GET /listings?type=real_estate|car|job&purpose=&cityId=&minPrice=&maxPrice=&attr[..]=` · `GET /listings/{slug}` · نشر `POST /listings` + `POST /listings/{id}/images` · إعلاناتي `GET /listings/my` · `PATCH /listings/{id}/status` · تقديم `POST /listings/{id}/apply` · طلباتي `GET /listings/applications/my` · المتقدمون `GET /listings/{id}/applications` |
+| صاحب النشاط (إضافات) | منيو `POST/PUT/DELETE /businesses/{id}/items[/{itemId}]` · عروض `POST/PUT/DELETE /businesses/{id}/offers[/{offerId}]` · إعدادات الحجز `PUT /businesses/{id}/booking-settings` (القيم الحالية بـ `GET /businesses/manage/{id}` ← `bookingSettings`) · حجوزات `GET /appointments/owner` + `PATCH /appointments/{id}/status` · مناوبات `GET/PUT /businesses/{id}/duties` · طلبات العملاء `GET /service-requests/inbox` + `POST /service-requests/{id}/quotes` |
+| الباقات | `GET /billing/settings/public` (`billingEnabled`, تعليمات الدفع) · `GET /billing/plans` · `GET /businesses/{id}/entitlements` (الباقة + الاستخدام) · `POST /billing/subscriptions/request` · `GET /billing/subscriptions/my` |
 
 > لوحة الإدارة تبقى على الويب فقط.
 
@@ -60,7 +77,8 @@ Architecture (feature-first, clean): lib/core (env, dio client, api envelope {su
 theme, router, l10n, widgets) and lib/features/<feature>/{data (dto, remote source, repository), domain (models),
 presentation (providers, screens, widgets)}. Features: auth, home, categories, businesses (browse, search, details, map),
 reviews, favorites, notifications, account, owner (my businesses, editor, hours, media, stats, review replies, promote),
-contact.
+contact, offers, pharmacies_on_duty, emergency, listings (real estate / cars / jobs), service_requests (request a quote),
+bookings, menu (business items), subscription (plans & entitlements), otp_auth, push (firebase_messaging).
 
 Design: Material 3, primary #5B3DF5, secondary #FF6A3D, gradient #5B3DF5→#8B5CF6→#EC4899, radius 14–18, soft shadows,
 font "IBM Plex Sans Arabic" (Inter for English), light + dark themes, RTL first. Bottom navigation: Home, Categories,
@@ -76,6 +94,13 @@ Business rules:
 - Call POST /businesses/{id}/track {type: phone|whatsapp|directions|website} before launching those intents.
 - Track ad impressions/clicks. Internal targetUrl (/b/..., /c/...) opens in-app.
 - Images: multipart field "image" (single) or "images" (≤10), compress to ≤1600px / ≤5MB.
+- HTTP 402 with code PLAN_LIMIT / PLAN_FEATURE → show an "Upgrade your plan" bottom sheet linking to the plans screen.
+  Billing is currently disabled server-side (everything free) but the flow must exist.
+- Phone login: POST /auth/otp/request → if isNewUser ask first/last name → POST /auth/otp/verify. Register the FCM
+  token with POST /devices after login; route notification taps by data.type and the ids it carries.
+- Listings attribute fields come from GET /listings/fields (render inputs/filters dynamically by kind num|enum|bool|text).
+  Text search (q) on listings and businesses requires login.
+- Booking: GET availability for a date → show slot chips (slot mode) or a single "book the day" button (day mode).
 
 Screens: splash, onboarding (pick language + city), login, register, forgot/reset password, home (hero search,
 category grid, ad slider, featured, top rated, newest, cities), categories, category (sub-category chips, filters sheet,
@@ -83,6 +108,10 @@ list/grid/map toggle, infinite scroll), search (suggestions, filters: category, 
 min rating, price, open now, verified, has photos, near me + radius, sort), business details (gallery + full-screen
 viewer, actions call/WhatsApp/directions/website/share/save/report, info, hours with today highlighted, map, attributes,
 amenities, rating summary with star bars, reviews with sort/like/owner reply, write/edit review, claim, related),
+offers feed, on-duty pharmacies (7-day date chips), emergency numbers (tap to call), real estate / cars / jobs lists with
+dynamic filter sheets + details + post/edit listing + apply to job, request a service form + my requests with quotes
+(accept/reject), booking sheet + my bookings, business menu tab and offers on details, owner: menu manager, offers manager,
+booking settings, owner bookings, service-request inbox with send-quote, plans & usage screen,
 favorites, notifications (badge from unread-count), account (profile, avatar, settings: language, theme, default city,
 change password, logout, logout all), owner area (my businesses, multi-step editor with map location picker and
 weekly hours editor, media manager with cover/logo/gallery/primary, stats, reviews inbox with reply, promote requests),

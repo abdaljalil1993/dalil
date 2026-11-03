@@ -1,6 +1,7 @@
-# دليلك — Dalilak v2
+# دليلك — Dalilak v2.1
 
-دليل محلي شامل: أطباء، مطاعم، فنادق، محامون، ترفيه، صيانة وحرفيون، نقل وتحميل، مواد غذائية… بحث + دوام + تواصل + خريطة + تقييمات.
+دليل محلي شامل: أطباء، مطاعم، فنادق، محامون، ترفيه، صيانة وحرفيون، نقل وتحميل، تنظيف… بحث + دوام + تواصل + خريطة + تقييمات
++ منيو ومنتجات، عروض، صيدليات مناوبة، طوارئ، حجز مواعيد، اطلب خدمة (عروض أسعار)، عقارات، سيارات، وظائف، واشتراكات (مطفية حالياً = كله مجاني).
 
 ```
 dalilak/
@@ -9,7 +10,7 @@ dalilak/
 ├── frontend_mobile/  Flutter (يُنفّذ من مطوّر الموبايل — راجع docs/MOBILE_HANDOFF_AR.md)
 └── docs/
     ├── REVIEW_AR.md          تقرير الفحص: المنجز + الأخطاء المصلحة + التحسينات المقترحة
-    ├── API.md                مرجع كل الـ API (مولّد تلقائياً — 105 endpoint)
+    ├── API.md                مرجع كل الـ API (مولّد تلقائياً — 175 endpoint)
     └── MOBILE_HANDOFF_AR.md  دليل وبرومبت مطوّر Flutter
 ```
 
@@ -25,8 +26,8 @@ CREATE DATABASE dalilak_v2 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```bash
 cd backend
 npm install
-cp .env.example .env        # عدّل DB_* و JWT_* (إذا عندك .env قديم: غيّر DB_DATABASE=dalilak_v2 وأضف DB_SYNCHRONIZE=true)
-npm run db:sync             # إنشاء الجداول (بدون migrations)
+cp .env.example .env        # عدّل DB_* و JWT_*  — وخلّي DB_SYNCHRONIZE=false دائماً
+npm run db:sync             # إنشاء/تحديث الجداول (بدون migrations) — شغّله بعد كل git pull
 npm run seed -- --demo      # مدن + تصنيفات + أدمن + بيانات تجريبية  (بدون --demo للإنتاج)
 npm run dev                 # http://localhost:5003  — التوثيق: /api/v1/docs
 ```
@@ -39,6 +40,16 @@ npm install
 cp .env.example .env        # VITE_API_URL=http://localhost:5003/api/v1
 npm run dev                 # http://localhost:4173
 ```
+
+## بعد كل تحديث (git pull)
+```bash
+cd backend && npm install && npm run db:sync && npm run seed   # seed آمن يتكرر: يضيف الناقص فقط (باقات، تصنيفات جديدة، أرقام طوارئ)
+cd ../frontend_web && npm install
+```
+> ⚠️ `DB_SYNCHRONIZE=true` مع MariaDB بيمسح أعمدة JSON عند كل إقلاع — لهيك خليه `false` واستعمل `npm run db:sync`.
+
+## الاشتراكات
+كلها مجانية حالياً. للتفعيل: لوحة الإدارة ← الاشتراكات والمدفوعات ← تفعيل الاشتراكات المدفوعة.
 
 ## الإنتاج
 - `NODE_ENV=production` و `DB_SYNCHRONIZE=false`، الجداول من `backend/database/schema.sql` أو `npm run db:sync` مرة واحدة.

@@ -1,0 +1,68 @@
+const x = {
+  services: 'الخدمات', quick: 'خدمات سريعة', more: 'كل الخدمات',
+  offers: 'العروض والخصومات', offersSub: 'أحدث العروض من محلات ومطاعم مدينتك', noOffers: 'لا توجد عروض حالياً', validUntil: 'ساري حتى {date}', coupon: 'كود الخصم', off: 'خصم {n}%',
+  pharmacies: 'الصيدليات المناوبة', pharmaciesSub: 'الصيدليات المناوبة اليوم في مدينتك', noDuty: 'لا توجد صيدليات مناوبة مسجّلة لهذا اليوم', dutyHours: 'المناوبة', today: 'اليوم', tomorrow: 'غداً', onDutyNow: 'مناوبة الآن',
+  emergency: 'أرقام الطوارئ', emergencySub: 'أرقام الطوارئ والخدمات العامة — اضغط للاتصال مباشرة', nationwide: 'على مستوى البلد', inCity: 'في {city}',
+  emergencyTypes: { ambulance: 'إسعاف', fire: 'إطفاء', police: 'شرطة', traffic: 'مرور', electricity: 'كهرباء', water: 'مياه', gas: 'غاز', hospital: 'مشفى', other: 'أخرى' },
+  realEstate: 'عقارات', cars: 'سيارات', jobs: 'وظائف', other: 'أخرى', requestService: 'اطلب خدمة',
+  realEstateSub: 'شقق، بيوت، أراضي ومحلات للبيع والإيجار', carsSub: 'سيارات جديدة ومستعملة للبيع والإيجار', jobsSub: 'فرص عمل وباحثون عن عمل في مدينتك', requestServiceSub: 'اكتب ما تحتاجه وسيرسل لك أصحاب الخبرة عروض أسعار',
+  purposes: { sale: 'للبيع', rent: 'للإيجار', hire: 'وظيفة شاغرة', wanted: 'مطلوب' },
+  postListing: 'أضف إعلاناً', editListing: 'تعديل الإعلان', myListings: 'إعلاناتي', noListings: 'لا توجد إعلانات', price: 'السعر', negotiable: 'قابل للتفاوض', priceOnRequest: 'السعر عند الطلب',
+  periods: { daily: 'يومياً', monthly: 'شهرياً', yearly: 'سنوياً', hourly: 'بالساعة' }, minPrice: 'السعر من', maxPrice: 'إلى', postedBy: 'المعلن', contactSeller: 'تواصل مع المعلن',
+  listingStatus: { pending: 'قيد المراجعة', active: 'منشور', rejected: 'مرفوض', closed: 'منتهي (تم البيع/التأجير)', expired: 'منتهي الصلاحية' },
+  closeListing: 'تم البيع / التأجير / الإغلاق', reopen: 'إعادة نشر', images: 'الصور', addImages: 'إضافة صور', details: 'التفاصيل', postOnBehalf: 'النشر باسم نشاطي (اختياري)', personal: 'إعلان شخصي',
+  listingSubmitted: 'تم إرسال الإعلان، سيظهر بعد المراجعة', listingPublished: 'تم نشر الإعلان',
+  fields: {
+    propertyType: 'نوع العقار', rooms: 'عدد الغرف', bathrooms: 'الحمامات', area: 'المساحة (م²)', floor: 'الطابق', furnished: 'مفروش', ownership: 'نوع الملكية', direction: 'الاتجاه', hasSolar: 'طاقة شمسية', hasElevator: 'مصعد', hasParking: 'موقف',
+    make: 'الشركة المصنعة', model: 'الموديل', year: 'سنة الصنع', mileageKm: 'المسافة المقطوعة (كم)', fuel: 'الوقود', transmission: 'ناقل الحركة', condition: 'الحالة', bodyType: 'نوع الهيكل', color: 'اللون', customsCleared: 'مجمركة',
+    jobType: 'نوع الدوام', field: 'المجال', experienceYears: 'سنوات الخبرة', education: 'المؤهل', gender: 'الجنس', salaryMax: 'الراتب حتى', workHours: 'ساعات العمل', companyName: 'اسم الشركة',
+  },
+  options: {
+    apartment: 'شقة', house: 'بيت', villa: 'فيلا', land: 'أرض', shop: 'محل', office: 'مكتب', warehouse: 'مستودع', farm: 'مزرعة', chalet: 'شاليه', building: 'بناء',
+    green_deed: 'طابو أخضر', court_ruling: 'حكم محكمة', notary: 'كاتب عدل', cooperative: 'جمعية سكنية', north: 'شمالي', south: 'جنوبي', east: 'شرقي', west: 'غربي', corner: 'زاوية',
+    petrol: 'بنزين', diesel: 'مازوت', hybrid: 'هايبرد', electric: 'كهرباء', gas: 'غاز', manual: 'عادي', automatic: 'أوتوماتيك', new: 'جديد', used: 'مستعمل',
+    sedan: 'سيدان', suv: 'SUV', hatchback: 'هاتشباك', pickup: 'بيك أب', van: 'فان', truck: 'شاحنة', bus: 'باص', motorcycle: 'دراجة نارية', coupe: 'كوبيه',
+    full_time: 'دوام كامل', part_time: 'دوام جزئي', remote: 'عن بعد', freelance: 'عمل حر', internship: 'تدريب', daily: 'مياومة',
+    none: 'بدون', secondary: 'ثانوية', institute: 'معهد', bachelor: 'إجازة جامعية', master: 'ماجستير', phd: 'دكتوراه', any: 'غير محدد', male: 'ذكر', female: 'أنثى', other: 'أخرى', yes: 'نعم', no: 'لا',
+  },
+  apply: 'تقدّم للوظيفة', applied: 'تم التقديم', applyMessage: 'رسالة قصيرة عن خبرتك', cvImage: 'صورة السيرة الذاتية (اختياري)', applicants: 'المتقدمون', myApplications: 'طلبات التوظيف', applicationSent: 'تم إرسال طلبك لصاحب الوظيفة',
+  appStatus: { new: 'جديد', viewed: 'تمت المشاهدة', shortlisted: 'مرشح', rejected: 'مرفوض', hired: 'تم التوظيف' },
+  // service requests
+  requestTitle: 'عنوان الطلب', requestTitlePh: 'مثال: تركيب منظومة طاقة شمسية', requestDesc: 'اشرح ما تحتاجه بالتفصيل', budget: 'الميزانية التقريبية', preferredDate: 'التاريخ المفضل', sharePhone: 'اسمح لمقدمي العروض برؤية رقمي',
+  requestSent: 'تم نشر طلبك وأُرسل إلى {n} من أصحاب الخبرة', myRequests: 'طلبات الخدمة', quotes: 'عروض الأسعار', noQuotes: 'لم تصل عروض بعد — سنعلمك فور وصول عرض', accept: 'قبول العرض', reject: 'رفض',
+  reqStatus: { open: 'مفتوح', assigned: 'تم الاختيار', closed: 'مغلق', cancelled: 'ملغى' }, quoteStatus: { pending: 'بانتظار ردك', accepted: 'مقبول', rejected: 'مرفوض', withdrawn: 'مسحوب' },
+  inbox: 'طلبات العملاء', inboxSub: 'طلبات خدمة تطابق نشاطاتك — أرسل عرض سعرك', sendQuote: 'إرسال عرض سعر', quoteMessage: 'تفاصيل العرض', etaDays: 'مدة التنفيذ (أيام)', yourQuote: 'عرضك', enableQuotesHint: 'فعّل "استقبال طلبات الخدمة" من إعدادات نشاطك لتصلك الطلبات',
+  closeRequest: 'إغلاق الطلب', cancelRequest: 'إلغاء الطلب', days: '{n} يوم',
+  // bookings
+  booking: 'احجز موعداً', bookDay: 'احجز اليوم', pickDate: 'اختر التاريخ', pickTime: 'اختر الوقت', noSlots: 'لا توجد مواعيد متاحة في هذا اليوم', partySize: 'عدد الأشخاص', bookNow: 'تأكيد الحجز', bookingSent: 'تم إرسال الحجز — ستصلك رسالة عند التأكيد', bookingConfirmed: 'تم تأكيد حجزك',
+  myBookings: 'حجوزاتي', noBookings: 'لا توجد حجوزات', ownerBookings: 'حجوزات نشاطاتي', service: 'الخدمة', anyService: 'بدون تحديد',
+  apptStatus: { pending: 'بانتظار التأكيد', confirmed: 'مؤكد', rejected: 'مرفوض', cancelled: 'ملغى', completed: 'تم', no_show: 'لم يحضر' }, confirm: 'تأكيد', complete: 'تم الموعد', noShow: 'لم يحضر', cancelBooking: 'إلغاء الحجز',
+  bookingHoursHint: 'المواعيد المتاحة تُحسب تلقائياً من أوقات الدوام (تبويب الدوام) ومن الحجوزات الموجودة.',
+  cleaning: 'تنظيف ومنزل', events: 'مناسبات وأفراح', servicesSub: 'كل ما تحتاجه في مكان واحد', onDutyCount: '{n} مناوبة اليوم', offersCount: '{n} عرض',
+  // business page extras
+  menu: 'المنيو / المنتجات والخدمات', bizOffers: 'عروض النشاط',
+  // owner editor
+  tabItems: 'المنيو والمنتجات', tabOffers: 'العروض', tabBooking: 'الحجوزات والطلبات', tabDuty: 'المناوبات', tabPlan: 'الباقة',
+  section: 'القسم', sectionPh: 'مثال: مشاوي، مشروبات، خدمات', itemName: 'الاسم', oldPrice: 'السعر قبل الخصم', unit: 'الوحدة', unitPh: 'للكيلو، للشخص، للساعة...', duration: 'المدة (دقيقة)', available: 'متوفر', popular: 'الأكثر طلباً', addItem: 'إضافة منتج / خدمة', noItems: 'لم تضف منتجات أو خدمات بعد',
+  offerTitle: 'عنوان العرض', discount: 'نسبة الخصم %', terms: 'الشروط', addOffer: 'إضافة عرض', expired: 'منتهي',
+  enableBooking: 'تفعيل الحجز الإلكتروني', bookingMode: 'نوع الحجز', modeSlot: 'مواعيد بالوقت (طبيب، صالون، محامي...)', modeDay: 'حجز يوم كامل (صالة، شاليه...)', slotMinutes: 'مدة الموعد (دقيقة)', slotCapacity: 'عدد الحجوزات لكل موعد', daysAhead: 'الحجز مسبقاً حتى (يوم)', autoConfirm: 'تأكيد الحجوزات تلقائياً', bookingNote: 'ملاحظة للزبائن', acceptsQuotes: 'استقبال طلبات الخدمة وإرسال عروض أسعار',
+  dutyTitle: 'جدول المناوبات', dutyHint: 'أضف أيام مناوبة صيدليتك لتظهر في صفحة "الصيدليات المناوبة"', addDuty: 'إضافة يوم', from: 'من', to: 'إلى',
+  // plans
+  plans: 'الباقات', currentPlan: 'باقتك الحالية', allFree: 'كل الميزات مجانية حالياً 🎉', allFreeText: 'خلال فترة الإطلاق كل الميزات متاحة لك بدون حدود وبدون أي رسوم.', usage: 'الاستخدام',
+  monthly: 'شهري', yearly: 'سنوي', perMonth: '/ شهر', perYear: '/ سنة', free: 'مجاناً', subscribe: 'اشترك', choose: 'اختيار', recommended: 'الأكثر اختياراً', unlimited: 'بلا حدود',
+  method: 'طريقة الدفع', methods: { sham_cash: 'شام كاش', syriatel_cash: 'سيريتل كاش', mtn_cash: 'MTN كاش', bank: 'تحويل بنكي', cash: 'نقداً', other: 'أخرى' }, reference: 'رقم العملية', subRequested: 'تم إرسال طلب الاشتراك، سيتم التفعيل بعد تأكيد الدفع',
+  subStatus: { pending: 'بانتظار الدفع', active: 'فعّال', expired: 'منتهي', cancelled: 'ملغى' }, until: 'حتى {date}',
+  feat: { maxImages: 'صور النشاط', maxItems: 'منتجات / خدمات', maxActiveOffers: 'عروض فعّالة', maxActiveListings: 'إعلانات (عقارات/سيارات/وظائف)', bookings: 'الحجز الإلكتروني', quotes: 'طلبات الخدمة وعروض الأسعار', advancedStats: 'إحصائيات متقدمة', verifiedBadge: 'شارة موثّق', priorityBoost: 'أولوية بالظهور', featuredDaysPerMonth: 'أيام تمييز شهرياً', socialLinks: 'روابط التواصل', whatsappButton: 'زر واتساب' },
+  upgradeTitle: 'هذه الميزة تحتاج ترقية باقتك', upgradeText: 'وصلت للحد المسموح في باقتك الحالية. اختر باقة أعلى لتتابع.', upgrade: 'ترقية الباقة',
+  // phone login
+  phoneLogin: 'الدخول برقم الموبايل', emailLogin: 'الدخول بالبريد', phone: 'رقم الموبايل', sendCode: 'إرسال رمز التحقق', code: 'رمز التحقق', verify: 'تحقق ودخول', codeSentTo: 'أرسلنا رمزاً إلى {phone}', newAccountName: 'حساب جديد — أدخل اسمك', devCode: 'وضع التطوير — الرمز: {code}', resend: 'إعادة الإرسال',
+  // admin
+  billing: 'الاشتراكات والمدفوعات', settings: 'إعدادات المنصة', billingEnabled: 'تفعيل الاشتراكات المدفوعة', billingEnabledHint: 'عند التفعيل تُطبّق حدود الباقات ويظهر لأصحاب الأنشطة "رقّي باقتك". عند الإيقاف كل شيء مجاني بلا حدود.',
+  paymentInstructions: 'تعليمات الدفع (تظهر لأصحاب الأنشطة)', listingsApproval: 'الإعلانات تحتاج موافقة قبل النشر', listingDays: 'مدة الإعلان (يوم)', requestDays: 'مدة طلب الخدمة (يوم)', supportPhone: 'هاتف الدعم', supportWhatsapp: 'واتساب الدعم',
+  newPlan: 'باقة جديدة', code_: 'الرمز', priceMonthly: 'السعر الشهري', priceYearly: 'السعر السنوي', isDefault: 'الباقة الافتراضية (المجانية)', isRecommended: 'موصى بها', limitsHint: '-1 = بلا حدود، 0 = غير متاح',
+  subscriptions: 'الاشتراكات', payments: 'المدفوعات', grant: 'منح اشتراك', confirmPayment: 'تأكيد الدفع', rejectPayment: 'رفض', amount: 'المبلغ', purpose: 'الغرض',
+  purposes2: { subscription: 'اشتراك', featured: 'تمييز', advertisement: 'إعلان', listing: 'إعلان مبوّب', other: 'أخرى' },
+  listingsMod: 'الإعلانات المبوّبة', requestsAdmin: 'طلبات الخدمة', emergencyAdmin: 'أرقام الطوارئ', feature: 'تمييز', approve: 'موافقة', rejectL: 'رفض',
+};
+export default x;
+export type XDict = typeof x;

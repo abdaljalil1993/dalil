@@ -1,4 +1,6 @@
-import { AppBar, Box, Button, Container, Divider, Drawer, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Stack, Toolbar } from '@mui/material';
+import { AppBar, Box, Button, Container, Divider, Drawer, IconButton, List, ListItemButton, ListItemIcon, ListItemText, ListSubheader, Menu, MenuItem, Stack, Toolbar } from '@mui/material';
+import KeyboardArrowDownRounded from '@mui/icons-material/KeyboardArrowDownRounded';
+import { useServiceTiles } from '@/components/business/QuickServices';
 import MenuRounded from '@mui/icons-material/MenuRounded';
 import AddBusinessRounded from '@mui/icons-material/AddBusinessRounded';
 import HomeRounded from '@mui/icons-material/HomeRounded';
@@ -23,6 +25,8 @@ export const Navbar = ({ transparent = false }: { transparent?: boolean }) => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [svcEl, setSvcEl] = useState<HTMLElement | null>(null);
+  const tiles = useServiceTiles();
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 24);
     on();
@@ -60,7 +64,18 @@ export const Navbar = ({ transparent = false }: { transparent?: boolean }) => {
                 {l.label}
               </Button>
             ))}
+            <Button onClick={(e) => setSvcEl(e.currentTarget)} endIcon={<KeyboardArrowDownRounded />} sx={{ color: fg || 'text.secondary', fontWeight: 600 }}>{t('x.services')}</Button>
           </Stack>
+          <Menu anchorEl={svcEl} open={Boolean(svcEl)} onClose={() => setSvcEl(null)} PaperProps={{ sx: { borderRadius: 3, mt: 1, p: 1, width: 440 } }}>
+            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0.5 }}>
+              {tiles.map((s) => (
+                <MenuItem key={s.to} component={Link} to={s.to} onClick={() => setSvcEl(null)} sx={{ borderRadius: 2, gap: 1.25, py: 1.25 }}>
+                  <Box sx={{ width: 34, height: 34, borderRadius: 2, display: 'grid', placeItems: 'center', color: '#fff', background: `linear-gradient(135deg, ${s.from}, ${s.to2})`, '& svg': { fontSize: 20 } }}>{s.icon}</Box>
+                  <Box component="span" sx={{ fontWeight: 600, fontSize: 14 }}>{s.label}</Box>
+                </MenuItem>
+              ))}
+            </Box>
+          </Menu>
           <Box sx={{ flex: 1 }} />
           <IconButton sx={{ color: fg }} onClick={() => requireAuth(() => navigate('/search'), '/search')} aria-label="search"><SearchRounded /></IconButton>
           <Box sx={{ display: { xs: 'none', sm: 'flex' } }}><PrefsToggles color={fg} /></Box>
@@ -84,6 +99,14 @@ export const Navbar = ({ transparent = false }: { transparent?: boolean }) => {
             <ListItemButton key={l.to} component={NavLink} to={l.to} end={l.to === '/'} sx={{ '&.active': { bgcolor: 'action.selected', color: 'primary.main' } }}>
               <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}>{l.icon}</ListItemIcon>
               <ListItemText primary={l.label} />
+            </ListItemButton>
+          ))}
+        </List>
+        <List dense subheader={<ListSubheader disableSticky sx={{ bgcolor: 'transparent', fontWeight: 800 }}>{t('x.services')}</ListSubheader>}>
+          {tiles.map((s) => (
+            <ListItemButton key={s.to} component={NavLink} to={s.to} sx={{ borderRadius: 2 }}>
+              <ListItemIcon sx={{ minWidth: 40, color: s.from }}>{s.icon}</ListItemIcon>
+              <ListItemText primary={s.label} />
             </ListItemButton>
           ))}
         </List>

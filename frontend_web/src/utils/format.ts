@@ -34,3 +34,15 @@ export const compact = (n: number, locale: string) => new Intl.NumberFormat(loca
 export const fmtDate = (d?: string | null, fmt = 'D MMM YYYY') => (d ? dayjs(d).format(fmt) : '—');
 export const fromNow = (d?: string | null) => (d ? dayjs(d).fromNow() : '');
 export const initials = (name?: string | null) => (name || '?').trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
+
+export const formatPrice = (value: number | string | null | undefined, currency = 'SYP', locale = 'ar') => {
+  if (value === null || value === undefined || value === '') return '';
+  const n = Number(value);
+  if (!Number.isFinite(n)) return '';
+  const num = new Intl.NumberFormat(locale === 'ar' ? 'ar-SY' : 'en', { maximumFractionDigits: 2 }).format(n);
+  const cur = currency === 'SYP' ? (locale === 'ar' ? 'ل.س' : 'SYP') : currency === 'USD' ? '$' : currency;
+  return `${num} ${cur}`;
+};
+
+export const isoDay = (offset = 0) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Damascus' }).format(new Date(Date.now() + offset * 864e5));
+export const limitLabel = (n: number, unlimited: string) => (n === -1 ? unlimited : String(n));

@@ -24,7 +24,7 @@ import { fmtDate } from '@/utils/format';
 const color = (s: string) => (s === 'active' ? 'success' : s === 'pending' ? 'warning' : s === 'rejected' ? 'error' : 'default') as 'success' | 'warning' | 'error' | 'default';
 const toInput = (d?: string) => (d ? dayjs(d).format('YYYY-MM-DD') : '');
 
-const BusinessPicker = ({ value, onChange }: { value: string | null; onChange: (id: string | null) => void }) => {
+export const BusinessPicker = ({ value, onChange }: { value: string | null; onChange: (id: string | null) => void }) => {
   const { t } = useT();
   const [q, setQ] = useState('');
   const dq = useDebounce(q, 300);

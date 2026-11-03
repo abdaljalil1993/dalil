@@ -127,6 +127,76 @@
 | `GET` | `/admin/dashboard/stats` | 🛡️ Admin | Totals, pending actions, 12-month charts, top/recent businesses |
 | `GET` | `/admin/dashboard/searches` | 🛡️ Admin | Top searches & zero-result searches |
 | `GET` | `/admin/audit-logs` | 🛡️ Admin | Audit trail of write actions |
+| `GET` | `/billing/settings/public` | 🌐 Public | Public settings (billingEnabled, support contacts, payment instructions) |
+| `GET` | `/billing/settings` | 🛡️ Admin | All platform settings |
+| `PUT` | `/billing/settings` | 🛡️ Admin | Update settings — billingEnabled=true starts enforcing plan limits |
+| `GET` | `/billing/plans` | 🌐 Public (+token) | Plans (all=true for admin to include inactive) |
+| `POST` | `/billing/plans` | 🛡️ Admin | Create plan |
+| `PUT` | `/billing/plans/:id` | 🛡️ Admin | Update plan |
+| `DELETE` | `/billing/plans/:id` | 🛡️ Admin | Delete plan (only if unused) |
+| `GET` | `/billing/subscriptions/my` | 🔐 User | My subscription requests & history |
+| `POST` | `/billing/subscriptions/request` | 🔐 User | Owner requests a plan (pending until payment confirmed) |
+| `GET` | `/billing/subscriptions` | 🛡️ Admin | All subscriptions |
+| `POST` | `/billing/subscriptions` | 🛡️ Admin | Grant a subscription directly |
+| `PATCH` | `/billing/subscriptions/:id` | 🛡️ Admin | Update subscription (status / endDate / plan) |
+| `GET` | `/billing/payments` | 🛡️ Admin | Payments ledger |
+| `POST` | `/billing/payments` | 🛡️ Admin | Record a manual payment (featured, ad, other) |
+| `PATCH` | `/billing/payments/:id` | 🛡️ Admin | Confirm (activates subscription) / reject payment |
+| `GET` | `/businesses/:id/entitlements` | 🏪 Owner/Admin | Current plan, features & usage of a business |
+| `GET` | `/businesses/:id/items` | 🌐 Public (+token) | Menu / products / services grouped by section (all=true for owner incl. hidden) |
+| `POST` | `/businesses/:id/items` | 🏪 Owner/Admin | Add item (JSON or multipart with "image") |
+| `PUT` | `/businesses/:id/items/:itemId` | 🏪 Owner/Admin | Update item |
+| `DELETE` | `/businesses/:id/items/:itemId` | 🏪 Owner/Admin | Delete item |
+| `GET` | `/businesses/:id/offers` | 🌐 Public (+token) | Business offers (owner sees all incl. expired) |
+| `POST` | `/businesses/:id/offers` | 🏪 Owner/Admin | Publish offer (JSON or multipart with "image") |
+| `PUT` | `/businesses/:id/offers/:offerId` | 🏪 Owner/Admin | Update offer |
+| `DELETE` | `/businesses/:id/offers/:offerId` | 🏪 Owner/Admin | Delete offer |
+| `GET` | `/businesses/:id/duties` | 🌐 Public | Upcoming on-duty dates of a pharmacy |
+| `PUT` | `/businesses/:id/duties` | 🏪 Owner/Admin | Replace upcoming on-duty dates |
+| `PUT` | `/businesses/:id/booking-settings` | 🏪 Owner/Admin | Enable bookings / quotes and configure slots |
+| `GET` | `/businesses/:id/availability` | 🌐 Public | Free slots for a date |
+| `POST` | `/businesses/:id/appointments` | 🔐 User | Book an appointment / day |
+| `GET` | `/offers` | 🌐 Public | Active offers & discounts |
+| `GET` | `/pharmacies/on-duty` | 🌐 Public | On-duty pharmacies for a date (default today) |
+| `PUT` | `/pharmacies/on-duty` | 🛡️ Admin | Set on-duty pharmacies for a date (bulk) |
+| `GET` | `/emergency` | 🌐 Public | Emergency & public service numbers (nationwide + city) |
+| `GET` | `/emergency/admin` | 🛡️ Admin | All numbers |
+| `POST` | `/emergency` | 🛡️ Admin | Add number |
+| `PUT` | `/emergency/:id` | 🛡️ Admin | Update number |
+| `DELETE` | `/emergency/:id` | 🛡️ Admin | Delete number |
+| `GET` | `/listings/fields` | 🌐 Public | Field definitions per type (build forms & filters from it) |
+| `GET` | `/listings` | 🌐 Public (+token) | Browse active listings with filters |
+| `GET` | `/listings/my` | 🔐 User | My listings (all statuses) |
+| `GET` | `/listings/admin/all` | 🛡️ Admin | All listings for moderation |
+| `GET` | `/listings/applications/my` | 🔐 User | My job applications |
+| `PATCH` | `/listings/applications/:id` | 🔐 User | Update applicant status (job owner) |
+| `GET` | `/listings/:slug` | 🌐 Public (+token) | Listing details by slug or id |
+| `POST` | `/listings` | 🔐 User | Post a listing (pending review if enabled) |
+| `PUT` | `/listings/:id` | 🔐 User | Update my listing |
+| `PATCH` | `/listings/:id/status` | 🔐 User | Close (sold/rented/filled) or re-open |
+| `DELETE` | `/listings/:id` | 🔐 User | Delete my listing |
+| `POST` | `/listings/:id/images` | 🔐 User | Upload images (field "images", max 15 total) |
+| `DELETE` | `/listings/:id/images/:index` | 🔐 User | Remove image by index |
+| `PATCH` | `/listings/:id/moderate` | 🛡️ Admin | Approve / reject / feature |
+| `POST` | `/listings/:id/apply` | 🔐 User | Apply to a job (JSON or multipart with "image" = CV image) |
+| `GET` | `/listings/:id/applications` | 🔐 User | Applicants of my job post |
+| `POST` | `/service-requests` | 🔐 User | Request a service — matching businesses are notified (multipart "images" optional) |
+| `GET` | `/service-requests/my` | 🔐 User | My requests |
+| `GET` | `/service-requests/inbox` | 🔐 User | Open requests matching my businesses |
+| `GET` | `/service-requests/admin/all` | 🛡️ Admin | All requests |
+| `GET` | `/service-requests/:id` | 🔐 User | Request details + quotes |
+| `PATCH` | `/service-requests/:id/status` | 🔐 User | Close / cancel / re-open my request |
+| `POST` | `/service-requests/:id/quotes` | 🏪 Owner/Admin | Send / update a quote from my business |
+| `PATCH` | `/service-requests/quotes/:id` | 🔐 User | Accept / reject a quote (request owner) |
+| `DELETE` | `/service-requests/quotes/:id` | 🏪 Owner/Admin | Withdraw my quote |
+| `GET` | `/appointments/my` | 🔐 User | My bookings (upcoming; all=true for history) |
+| `GET` | `/appointments/owner` | 🏪 Owner/Admin | Bookings of my businesses |
+| `PATCH` | `/appointments/:id/status` | 🔐 User | Owner: confirm/reject/complete/no_show · Customer: cancel |
+| `POST` | `/auth/otp/request` | 🌐 Public | Send a 6-digit code by SMS (dev: returned as devCode) |
+| `POST` | `/auth/otp/verify` | 🌐 Public | Verify code → tokens (creates account if new: firstName/lastName required) |
+| `POST` | `/auth/otp/verify-phone` | 🔐 User | Signed-in user verifies/changes phone |
+| `POST` | `/devices` | 🔐 User | Register FCM token for push notifications |
+| `DELETE` | `/devices/:token` | 🔐 User | Unregister FCM token (on logout) |
 
 ## Details
 
@@ -210,6 +280,38 @@ Set a new password using the emailed token — 🌐 Public
 
 #### `GET /auth/me`
 Current user — 🔐 User
+
+#### `POST /auth/otp/request`
+Send a 6-digit code by SMS (dev: returned as devCode) — 🌐 Public
+
+```json
+{
+  "phone": "0944123456"
+}
+```
+
+#### `POST /auth/otp/verify`
+Verify code → tokens (creates account if new: firstName/lastName required) — 🌐 Public
+
+```json
+{
+  "phone": "0944123456",
+  "code": "123456",
+  "firstName": "فادي",
+  "lastName": "علي",
+  "cityId": 6
+}
+```
+
+#### `POST /auth/otp/verify-phone`
+Signed-in user verifies/changes phone — 🔐 User
+
+```json
+{
+  "phone": "0944123456",
+  "code": "123456"
+}
+```
 
 ### Users
 
@@ -755,6 +857,20 @@ Mark one as read — 🔐 User
 #### `DELETE /notifications/:id`
 Delete notification — 🔐 User
 
+#### `POST /devices`
+Register FCM token for push notifications — 🔐 User
+
+```json
+{
+  "token": "fcm-token",
+  "platform": "android",
+  "locale": "ar"
+}
+```
+
+#### `DELETE /devices/:token`
+Unregister FCM token (on logout) — 🔐 User
+
 ### Contact
 
 #### `POST /contact`
@@ -904,3 +1020,480 @@ Query: `days` (30)
 Audit trail of write actions — 🛡️ Admin
 
 Query: `action`, `userId`
+
+### Billing & plans
+
+#### `GET /billing/settings/public`
+Public settings (billingEnabled, support contacts, payment instructions) — 🌐 Public
+
+#### `GET /billing/settings`
+All platform settings — 🛡️ Admin
+
+#### `PUT /billing/settings`
+Update settings — billingEnabled=true starts enforcing plan limits — 🛡️ Admin
+
+```json
+{
+  "billingEnabled": false,
+  "paymentInstructions": "...",
+  "listingsRequireApproval": true,
+  "listingDurationDays": 60
+}
+```
+
+#### `GET /billing/plans`
+Plans (all=true for admin to include inactive) — 🌐 Public (+token)
+
+#### `POST /billing/plans`
+Create plan — 🛡️ Admin
+
+```json
+{
+  "code": "gold",
+  "name": "الذهبية",
+  "priceMonthly": 100000,
+  "priceYearly": 1000000,
+  "features": {
+    "maxImages": 30,
+    "maxItems": -1,
+    "maxActiveOffers": 10,
+    "maxActiveListings": 20,
+    "bookings": true,
+    "quotes": true,
+    "advancedStats": true,
+    "verifiedBadge": true,
+    "priorityBoost": 20,
+    "featuredDaysPerMonth": 7,
+    "socialLinks": true,
+    "whatsappButton": true
+  }
+}
+```
+
+#### `PUT /billing/plans/:id`
+Update plan — 🛡️ Admin
+
+#### `DELETE /billing/plans/:id`
+Delete plan (only if unused) — 🛡️ Admin
+
+#### `GET /billing/subscriptions/my`
+My subscription requests & history — 🔐 User
+
+#### `POST /billing/subscriptions/request`
+Owner requests a plan (pending until payment confirmed) — 🔐 User
+
+```json
+{
+  "businessId": "uuid",
+  "planId": 2,
+  "period": "monthly",
+  "method": "sham_cash",
+  "reference": "TX123",
+  "note": ""
+}
+```
+
+#### `GET /billing/subscriptions`
+All subscriptions — 🛡️ Admin
+
+Query: `status` (pending|active|expired|cancelled), `businessId` (uuid)
+
+#### `POST /billing/subscriptions`
+Grant a subscription directly — 🛡️ Admin
+
+```json
+{
+  "businessId": "uuid",
+  "planId": 2,
+  "period": "monthly",
+  "amount": 50000,
+  "method": "cash"
+}
+```
+
+#### `PATCH /billing/subscriptions/:id`
+Update subscription (status / endDate / plan) — 🛡️ Admin
+
+#### `GET /billing/payments`
+Payments ledger — 🛡️ Admin
+
+Query: `status` (pending|confirmed|rejected)
+
+#### `POST /billing/payments`
+Record a manual payment (featured, ad, other) — 🛡️ Admin
+
+```json
+{
+  "businessId": "uuid",
+  "purpose": "featured",
+  "amount": 25000,
+  "method": "sham_cash",
+  "reference": ""
+}
+```
+
+#### `PATCH /billing/payments/:id`
+Confirm (activates subscription) / reject payment — 🛡️ Admin
+
+```json
+{
+  "status": "confirmed",
+  "adminNote": ""
+}
+```
+
+### Business extras
+
+#### `GET /businesses/:id/entitlements`
+Current plan, features & usage of a business — 🏪 Owner/Admin
+
+#### `GET /businesses/:id/items`
+Menu / products / services grouped by section (all=true for owner incl. hidden) — 🌐 Public (+token)
+
+#### `POST /businesses/:id/items`
+Add item (JSON or multipart with "image") — 🏪 Owner/Admin
+
+```json
+{
+  "section": "مشاوي",
+  "name": "شيش طاووق",
+  "description": "...",
+  "price": 45000,
+  "oldPrice": null,
+  "unit": "للسيخ",
+  "durationMinutes": null,
+  "isPopular": true
+}
+```
+
+#### `PUT /businesses/:id/items/:itemId`
+Update item — 🏪 Owner/Admin
+
+#### `DELETE /businesses/:id/items/:itemId`
+Delete item — 🏪 Owner/Admin
+
+#### `GET /businesses/:id/offers`
+Business offers (owner sees all incl. expired) — 🌐 Public (+token)
+
+#### `POST /businesses/:id/offers`
+Publish offer (JSON or multipart with "image") — 🏪 Owner/Admin
+
+```json
+{
+  "title": "خصم 20%",
+  "description": "...",
+  "discountPercent": 20,
+  "startDate": "2026-11-01",
+  "endDate": "2026-11-30",
+  "couponCode": "DALIL20"
+}
+```
+
+#### `PUT /businesses/:id/offers/:offerId`
+Update offer — 🏪 Owner/Admin
+
+#### `DELETE /businesses/:id/offers/:offerId`
+Delete offer — 🏪 Owner/Admin
+
+#### `GET /businesses/:id/duties`
+Upcoming on-duty dates of a pharmacy — 🌐 Public
+
+#### `PUT /businesses/:id/duties`
+Replace upcoming on-duty dates — 🏪 Owner/Admin
+
+```json
+{
+  "duties": [
+    {
+      "date": "2026-11-07",
+      "startTime": "20:00",
+      "endTime": "08:00",
+      "note": ""
+    }
+  ]
+}
+```
+
+#### `PUT /businesses/:id/booking-settings`
+Enable bookings / quotes and configure slots — 🏪 Owner/Admin
+
+```json
+{
+  "bookingEnabled": true,
+  "bookingMode": "slot",
+  "slotMinutes": 30,
+  "slotCapacity": 1,
+  "bookingDaysAhead": 30,
+  "bookingAutoConfirm": false,
+  "acceptsQuotes": true
+}
+```
+
+#### `GET /businesses/:id/availability`
+Free slots for a date — 🌐 Public
+
+Query: `date` (YYYY-MM-DD)
+
+#### `POST /businesses/:id/appointments`
+Book an appointment / day — 🔐 User
+
+```json
+{
+  "date": "2026-11-08",
+  "time": "10:30",
+  "itemId": null,
+  "partySize": 1,
+  "note": ""
+}
+```
+
+### Offers
+
+#### `GET /offers`
+Active offers & discounts — 🌐 Public
+
+Query: `cityId`, `categoryId`, `page`, `limit`
+
+### Pharmacies on duty
+
+#### `GET /pharmacies/on-duty`
+On-duty pharmacies for a date (default today) — 🌐 Public
+
+Query: `cityId`, `date` (YYYY-MM-DD)
+
+#### `PUT /pharmacies/on-duty`
+Set on-duty pharmacies for a date (bulk) — 🛡️ Admin
+
+```json
+{
+  "date": "2026-11-07",
+  "businessIds": [
+    "uuid"
+  ]
+}
+```
+
+### Emergency numbers
+
+#### `GET /emergency`
+Emergency & public service numbers (nationwide + city) — 🌐 Public
+
+Query: `cityId`
+
+#### `GET /emergency/admin`
+All numbers — 🛡️ Admin
+
+#### `POST /emergency`
+Add number — 🛡️ Admin
+
+```json
+{
+  "cityId": null,
+  "type": "ambulance",
+  "name": "الإسعاف",
+  "phone": "110"
+}
+```
+
+#### `PUT /emergency/:id`
+Update number — 🛡️ Admin
+
+#### `DELETE /emergency/:id`
+Delete number — 🛡️ Admin
+
+### Listings (real estate, cars, jobs)
+
+#### `GET /listings/fields`
+Field definitions per type (build forms & filters from it) — 🌐 Public
+
+#### `GET /listings`
+Browse active listings with filters — 🌐 Public (+token)
+
+Query: `type` (real_estate|car|job|other), `purpose` (sale|rent|hire|wanted), `cityId`, `district`, `minPrice`, `maxPrice`, `q` (text (signed-in only)), `attr[rooms]` (exact / contains), `attrMin[year]` (min), `attrMax[mileageKm]` (max), `hasPhotos` (true), `sort` (newest|price_asc|price_desc|popular), `page`, `limit`
+
+#### `GET /listings/my`
+My listings (all statuses) — 🔐 User
+
+Query: `type`, `status`
+
+#### `GET /listings/admin/all`
+All listings for moderation — 🛡️ Admin
+
+Query: `type` (real_estate|car|job|other), `purpose` (sale|rent|hire|wanted), `cityId`, `district`, `minPrice`, `maxPrice`, `q` (text (signed-in only)), `attr[rooms]` (exact / contains), `attrMin[year]` (min), `attrMax[mileageKm]` (max), `hasPhotos` (true), `sort` (newest|price_asc|price_desc|popular), `page`, `limit`, `status` (pending|active|rejected|closed|expired|all)
+
+#### `GET /listings/applications/my`
+My job applications — 🔐 User
+
+#### `PATCH /listings/applications/:id`
+Update applicant status (job owner) — 🔐 User
+
+```json
+{
+  "status": "shortlisted"
+}
+```
+
+#### `GET /listings/:slug`
+Listing details by slug or id — 🌐 Public (+token)
+
+#### `POST /listings`
+Post a listing (pending review if enabled) — 🔐 User
+
+```json
+{
+  "type": "real_estate",
+  "purpose": "rent",
+  "title": "شقة 3 غرف مفروشة",
+  "description": "...",
+  "price": 1500000,
+  "pricePeriod": "monthly",
+  "cityId": 6,
+  "district": "الزراعة",
+  "attributes": {
+    "propertyType": "apartment",
+    "rooms": 3,
+    "bathrooms": 2,
+    "area": 140,
+    "floor": 2,
+    "furnished": true,
+    "ownership": "green_deed",
+    "hasSolar": true
+  },
+  "contactPhone": "0944...",
+  "businessId": null
+}
+```
+
+#### `PUT /listings/:id`
+Update my listing — 🔐 User
+
+#### `PATCH /listings/:id/status`
+Close (sold/rented/filled) or re-open — 🔐 User
+
+```json
+{
+  "status": "closed"
+}
+```
+
+#### `DELETE /listings/:id`
+Delete my listing — 🔐 User
+
+#### `POST /listings/:id/images`
+Upload images (field "images", max 15 total) — 🔐 User
+
+multipart: `images` — image files
+
+#### `DELETE /listings/:id/images/:index`
+Remove image by index — 🔐 User
+
+#### `PATCH /listings/:id/moderate`
+Approve / reject / feature — 🛡️ Admin
+
+```json
+{
+  "status": "active",
+  "adminNote": "",
+  "isFeatured": false
+}
+```
+
+#### `POST /listings/:id/apply`
+Apply to a job (JSON or multipart with "image" = CV image) — 🔐 User
+
+```json
+{
+  "message": "أرغب بالتقدم...",
+  "phone": "0944...",
+  "cvUrl": null
+}
+```
+
+#### `GET /listings/:id/applications`
+Applicants of my job post — 🔐 User
+
+### Service requests & quotes
+
+#### `POST /service-requests`
+Request a service — matching businesses are notified (multipart "images" optional) — 🔐 User
+
+```json
+{
+  "categoryId": 9,
+  "subCategoryId": 46,
+  "cityId": 6,
+  "district": "الزراعة",
+  "title": "تركيب منظومة طاقة شمسية",
+  "description": "منزل 3 غرف، بدي ألواح وبطارية ليثيوم...",
+  "budget": 15000000,
+  "preferredDate": "2026-11-10",
+  "sharePhone": true
+}
+```
+
+#### `GET /service-requests/my`
+My requests — 🔐 User
+
+#### `GET /service-requests/inbox`
+Open requests matching my businesses — 🔐 User
+
+#### `GET /service-requests/admin/all`
+All requests — 🛡️ Admin
+
+Query: `status`
+
+#### `GET /service-requests/:id`
+Request details + quotes — 🔐 User
+
+#### `PATCH /service-requests/:id/status`
+Close / cancel / re-open my request — 🔐 User
+
+```json
+{
+  "status": "closed"
+}
+```
+
+#### `POST /service-requests/:id/quotes`
+Send / update a quote from my business — 🏪 Owner/Admin
+
+```json
+{
+  "businessId": "uuid",
+  "price": 14000000,
+  "message": "نركّب خلال يومين مع ضمان سنة",
+  "etaDays": 2
+}
+```
+
+#### `PATCH /service-requests/quotes/:id`
+Accept / reject a quote (request owner) — 🔐 User
+
+```json
+{
+  "status": "accepted"
+}
+```
+
+#### `DELETE /service-requests/quotes/:id`
+Withdraw my quote — 🏪 Owner/Admin
+
+### Appointments
+
+#### `GET /appointments/my`
+My bookings (upcoming; all=true for history) — 🔐 User
+
+#### `GET /appointments/owner`
+Bookings of my businesses — 🏪 Owner/Admin
+
+Query: `businessId`, `date` (YYYY-MM-DD), `status`
+
+#### `PATCH /appointments/:id/status`
+Owner: confirm/reject/complete/no_show · Customer: cancel — 🔐 User
+
+```json
+{
+  "status": "confirmed",
+  "ownerNote": ""
+}
+```

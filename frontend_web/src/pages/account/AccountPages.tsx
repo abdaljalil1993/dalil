@@ -32,6 +32,19 @@ import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { fmtDate, fromNow, initials } from '@/utils/format';
 import { SearchBar } from '@/components/common/SearchBar';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const notifLink = (type: string, d: any): string | null => {
+  const map: Record<string, string> = {
+    subscription_activated: '/owner/subscription', subscription_expiring: '/owner/subscription', payment_rejected: '/owner/subscription',
+    job_application: '/account/listings', listing_rejected: '/account/listings', application_update: '/account/applications',
+    service_request: '/owner/requests', new_quote: '/account/requests', quote_accepted: '/owner/requests',
+    new_appointment: '/owner/bookings', appointment_update: '/account/bookings',
+  };
+  if (type === 'listing_approved' && d?.listingSlug) return `/l/${d.listingSlug}`;
+  if (map[type]) return map[type];
+  return d?.slug ? `/b/${d.slug}` : null;
+};
+
 export const Overview = () => {
   const { t } = useT();
   const navigate = useNavigate();
@@ -154,7 +167,7 @@ export const Notifications = () => {
             {data.items.map((n, i) => (
               <Box key={n.id}>
                 {i > 0 && <Divider />}
-                <ListItemButton onClick={() => { if (!n.isRead) read.mutate(n.id); if (n.data?.slug) navigate(`/b/${n.data.slug}`); }} sx={{ borderRadius: 0, py: 1.75, bgcolor: n.isRead ? 'transparent' : 'action.hover' }}>
+                <ListItemButton onClick={() => { if (!n.isRead) read.mutate(n.id); const to = notifLink(n.type, n.data); if (to) navigate(to); }} sx={{ borderRadius: 0, py: 1.75, bgcolor: n.isRead ? 'transparent' : 'action.hover' }}>
                   <ListItemIcon sx={{ minWidth: 32 }}>{!n.isRead && <CircleRounded sx={{ fontSize: 10 }} color="primary" />}</ListItemIcon>
                   <ListItemText primary={n.title} secondary={[n.body, fromNow(n.createdAt)].filter(Boolean).join(' · ')} primaryTypographyProps={{ fontWeight: n.isRead ? 500 : 800 }} />
                   <IconButton edge="end" onClick={(e) => { e.stopPropagation(); remove.mutate(n.id); }}><DeleteOutlineRounded fontSize="small" /></IconButton>

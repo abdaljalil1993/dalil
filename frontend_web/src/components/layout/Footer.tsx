@@ -22,12 +22,13 @@ export const Footer = () => {
     <Box component="footer" sx={{ mt: 10, borderTop: (th) => `1px solid ${th.custom.border}`, bgcolor: 'background.paper', pb: { xs: 10, md: 0 } }}>
       <Container maxWidth="xl" sx={{ py: 6 }}>
         <Grid container spacing={4}>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={3}>
             <Logo />
             <Typography color="text.secondary" sx={{ mt: 2, maxWidth: 360 }}>{t('app.slogan')}</Typography>
           </Grid>
-          <Grid item xs={6} md={3}>{col(t('footer.explore'), (cats || []).slice(0, 6).map((c) => ({ to: `/c/${c.slug}`, label: ln(c) })))}</Grid>
-          <Grid item xs={6} md={2.5}>{col(t('footer.forBusiness'), [{ to: '/owner/businesses/new', label: t('footer.listFree') }, { to: '/owner/promote', label: t('footer.advertise') }, { to: '/featured', label: t('nav.featured') }])}</Grid>
+          <Grid item xs={6} md={2}>{col(t('x.services'), [{ to: '/offers', label: t('x.offers') }, { to: '/pharmacies', label: t('x.pharmacies') }, { to: '/emergency', label: t('x.emergency') }, { to: '/real-estate', label: t('x.realEstate') }, { to: '/cars', label: t('x.cars') }, { to: '/jobs', label: t('x.jobs') }, { to: '/request-service', label: t('x.requestService') }])}</Grid>
+          <Grid item xs={6} md={2}>{col(t('footer.explore'), (cats || []).slice(0, 6).map((c) => ({ to: `/c/${c.slug}`, label: ln(c) })))}</Grid>
+          <Grid item xs={6} md={2.5}>{col(t('footer.forBusiness'), [{ to: '/owner/businesses/new', label: t('footer.listFree') }, { to: '/owner/subscription', label: t('x.plans') }, { to: '/owner/promote', label: t('footer.advertise') }, { to: '/featured', label: t('nav.featured') }])}</Grid>
           <Grid item xs={6} md={2.5}>{col(t('footer.company'), [{ to: '/about', label: t('nav.about') }, { to: '/contact', label: t('nav.contact') }, { to: '/categories', label: t('nav.categories') }])}</Grid>
         </Grid>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 5 }}>© {new Date().getFullYear()} {t('app.name')} — {t('footer.rights')}</Typography>

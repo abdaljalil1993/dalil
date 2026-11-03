@@ -22,6 +22,15 @@ import MailRounded from '@mui/icons-material/MailRounded';
 import ManageSearchRounded from '@mui/icons-material/ManageSearchRounded';
 import HistoryRounded from '@mui/icons-material/HistoryRounded';
 import ArrowBackRounded from '@mui/icons-material/ArrowBackRounded';
+import EventAvailableRounded from '@mui/icons-material/EventAvailableRounded';
+import CampaignOutlined from '@mui/icons-material/CampaignOutlined';
+import WorkRounded from '@mui/icons-material/WorkRounded';
+import HandymanRounded from '@mui/icons-material/HandymanRounded';
+import EventNoteRounded from '@mui/icons-material/EventNoteRounded';
+import InboxRounded from '@mui/icons-material/InboxRounded';
+import WorkspacePremiumRounded from '@mui/icons-material/WorkspacePremiumRounded';
+import PaymentsRounded from '@mui/icons-material/PaymentsRounded';
+import ContactEmergencyRounded from '@mui/icons-material/ContactEmergencyRounded';
 import { ReactNode, useState, useEffect } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -56,6 +65,10 @@ export const DashboardLayout = () => {
         { to: '/account', label: t('nav.overview'), icon: <DashboardRounded />, end: true },
         { to: '/account/favorites', label: t('nav.favorites'), icon: <FavoriteRounded /> },
         { to: '/account/reviews', label: t('nav.myReviews'), icon: <RateReviewRounded /> },
+        { to: '/account/bookings', label: t('x.myBookings'), icon: <EventAvailableRounded /> },
+        { to: '/account/requests', label: t('x.myRequests'), icon: <HandymanRounded /> },
+        { to: '/account/listings', label: t('x.myListings'), icon: <CampaignOutlined /> },
+        { to: '/account/applications', label: t('x.myApplications'), icon: <WorkRounded /> },
         { to: '/account/notifications', label: t('nav.notifications'), icon: <NotificationsRounded />, badge: unread },
         { to: '/account/profile', label: t('nav.profile'), icon: <PersonRounded /> },
         { to: '/account/settings', label: t('nav.settings'), icon: <SettingsRounded /> },
@@ -65,7 +78,10 @@ export const DashboardLayout = () => {
       title: t('nav.myBusinesses'),
       items: [
         { to: '/owner/businesses', label: t('nav.myBusinesses'), icon: <StorefrontRounded /> },
+        { to: '/owner/bookings', label: t('x.ownerBookings'), icon: <EventNoteRounded /> },
+        { to: '/owner/requests', label: t('x.inbox'), icon: <InboxRounded /> },
         { to: '/owner/reviews', label: t('nav.ownerReviews'), icon: <ForumRounded /> },
+        { to: '/owner/subscription', label: t('x.plans'), icon: <WorkspacePremiumRounded /> },
         { to: '/owner/promote', label: t('nav.promote'), icon: <CampaignRounded /> },
       ],
     },
@@ -84,6 +100,10 @@ export const DashboardLayout = () => {
         { to: '/admin/claims', label: t('nav.claims'), icon: <VerifiedUserRounded />, badge: p?.claims },
         { to: '/admin/ads', label: t('nav.ads'), icon: <ViewCarouselRounded />, badge: p?.ads },
         { to: '/admin/featured', label: t('nav.featuredMgmt'), icon: <BoltRounded />, badge: p?.featured },
+        { to: '/admin/billing', label: t('x.billing'), icon: <PaymentsRounded /> },
+        { to: '/admin/listings', label: t('x.listingsMod'), icon: <CampaignOutlined /> },
+        { to: '/admin/requests', label: t('x.requestsAdmin'), icon: <HandymanRounded /> },
+        { to: '/admin/emergency', label: t('x.emergencyAdmin'), icon: <ContactEmergencyRounded /> },
         { to: '/admin/messages', label: t('nav.messages'), icon: <MailRounded />, badge: p?.messages },
         { to: '/admin/insights', label: t('nav.insights'), icon: <ManageSearchRounded /> },
         { to: '/admin/audit', label: t('nav.audit'), icon: <HistoryRounded /> },

@@ -137,6 +137,11 @@ export interface Business {
   isVerified: boolean;
   isClaimed: boolean;
   isOpenNow: boolean | null;
+  bookingEnabled?: boolean;
+  bookingMode?: 'slot' | 'day';
+  bookingNote?: string | null;
+  acceptsQuotes?: boolean;
+  bookingSettings?: BookingSettings;
   categoryId: number;
   subCategoryId: number | null;
   cityId: number;
@@ -227,6 +232,8 @@ export interface HomeFeed {
   featured: Business[];
   topRated: Business[];
   newest: Business[];
+  offers: Offer[];
+  onDutyPharmacies: number;
   stats: { businesses: number; reviews: number; users: number; cities: number; categories: number };
 }
 
@@ -235,7 +242,7 @@ export interface Notification {
   type: string;
   title: string;
   body: string | null;
-  data: { slug?: string; businessId?: string } | null;
+  data: { slug?: string; businessId?: string; listingSlug?: string; requestId?: number; appointmentId?: number } | null;
   isRead: boolean;
   createdAt: string;
 }
@@ -315,3 +322,75 @@ export interface BusinessFilters {
   limit?: number;
   status?: string;
 }
+
+// ───────────── v2.1 ─────────────
+export interface PlanFeatures {
+  maxImages: number; maxItems: number; maxActiveOffers: number; maxActiveListings: number;
+  bookings: boolean; quotes: boolean; advancedStats: boolean; verifiedBadge: boolean;
+  priorityBoost: number; featuredDaysPerMonth: number; socialLinks: boolean; whatsappButton: boolean;
+}
+export interface Plan {
+  id: number; code: string; name: string; nameEn: string | null; description: string | null;
+  priceMonthly: string; priceYearly: string; currency: string; features: PlanFeatures; color: string | null;
+  isDefault: boolean; isRecommended: boolean; isActive: boolean; sortOrder: number;
+}
+export interface Entitlements {
+  plan: Pick<Plan, 'id' | 'code' | 'name' | 'nameEn' | 'features' | 'color'>;
+  subscription: Subscription | null;
+  billingEnabled: boolean;
+  features: PlanFeatures;
+  usage: { images: number; items: number; activeOffers: number; activeListings: number };
+}
+export interface Subscription {
+  id: number; businessId: string; planId: number; status: 'pending' | 'active' | 'expired' | 'cancelled'; period: 'monthly' | 'yearly';
+  startDate: string | null; endDate: string | null; note: string | null; createdAt: string;
+  plan?: Plan; business?: { id: string; name: string; slug: string } | null;
+}
+export interface Payment {
+  id: number; userId: string | null; businessId: string | null; subscriptionId: number | null; purpose: string; amount: string; currency: string;
+  method: string; reference: string | null; status: 'pending' | 'confirmed' | 'rejected'; note: string | null; adminNote: string | null; createdAt: string;
+  user?: { id: string; fullName: string; phone: string | null; email: string | null } | null; business?: { id: string; name: string; slug: string } | null;
+}
+export interface Settings {
+  billingEnabled: boolean; renewalReminderDays: number; paymentInstructions: string; listingsRequireApproval: boolean;
+  listingDurationDays: number; serviceRequestDurationDays: number; supportPhone: string; supportWhatsapp: string;
+}
+export interface BusinessItem {
+  id: number; businessId: string; section: string; name: string; nameEn: string | null; description: string | null; price: string | null; oldPrice: string | null;
+  currency: string; unit: string | null; image: string | null; durationMinutes: number | null; isAvailable: boolean; isPopular: boolean; sortOrder: number;
+}
+export interface Offer {
+  id: number; businessId: string; title: string; description: string | null; image: string | null; discountPercent: number | null; price: string | null; oldPrice: string | null;
+  currency: string; couponCode: string | null; terms: string | null; startDate: string; endDate: string; isActive: boolean;
+  business?: { id: string; name: string; nameEn: string | null; slug: string; logoImage: string | null; coverImage: string | null; city: { id: number; name: string; nameEn: string | null } | null; category: { id: number; name: string; nameEn: string | null; icon: string | null; color: string | null } | null };
+}
+export interface EmergencyContact { id: number; cityId: number | null; type: string; name: string; nameEn: string | null; phone: string; phone2: string | null; note: string | null; isActive: boolean; sortOrder: number; city?: City | null }
+export interface DutyItem { id: number; date: string; startTime: string | null; endTime: string | null; note: string | null; business: Business }
+export type ListingType = 'real_estate' | 'car' | 'job' | 'other';
+export type ListingPurpose = 'sale' | 'rent' | 'hire' | 'wanted';
+export interface ListingField { key: string; kind: 'num' | 'enum' | 'bool' | 'text'; options?: string[]; filter?: boolean }
+export interface Listing {
+  id: string; slug: string; type: ListingType; purpose: ListingPurpose; title: string; description: string | null; price: number | null; currency: string;
+  priceNegotiable: boolean; pricePeriod: string | null; cityId: number; city: { id: number; name: string; nameEn: string | null } | null; district: string | null; address: string | null;
+  latitude: number | null; longitude: number | null; attributes: Record<string, string | number | boolean>; images: { url: string }[]; contactPhone: string | null; whatsapp: string | null;
+  status: 'pending' | 'active' | 'rejected' | 'closed' | 'expired'; isFeatured: boolean; viewCount: number; applicationsCount?: number; adminNote?: string | null; expiresAt: string | null;
+  user: PublicUser | null; business: { id: string; name: string; slug: string; logoImage: string | null; isVerified: boolean } | null; createdAt: string;
+  viewer?: { canManage: boolean; hasApplied: boolean } | null;
+}
+export interface JobApplication { id: number; listingId: string; message: string | null; phone: string | null; cvUrl: string | null; status: string; createdAt: string; user?: (PublicUser & { email: string | null; phone: string | null }) | null; listing?: { id: string; slug: string; title: string; status: string; city?: string } | null }
+export interface Quote { id: number; price: string | null; currency: string; message: string; etaDays: number | null; status: 'pending' | 'accepted' | 'rejected' | 'withdrawn'; createdAt: string; business: { id: string; name: string; slug: string; logoImage: string | null; averageRating: number; reviewCount: number; phone: string | null; whatsapp: string | null; isVerified: boolean } | null }
+export interface ServiceRequest {
+  id: number; title: string; description: string; images: { url: string }[]; budget: string | null; preferredDate: string | null; district: string | null;
+  status: 'open' | 'assigned' | 'closed' | 'cancelled'; quotesCount: number; acceptedQuoteId: number | null; createdAt: string; phone: string | null; sharePhone: boolean;
+  category: { id: number; name: string; nameEn: string | null; icon: string | null; color: string | null } | null; subCategory: { id: number; name: string; nameEn: string | null } | null;
+  city: { id: number; name: string; nameEn: string | null } | null; categoryId: number; subCategoryId: number | null; cityId: number;
+  quotes?: Quote[]; user?: PublicUser | null; myQuote?: Quote | null; matchingBusinesses?: { id: string; name: string }[];
+}
+export interface Appointment {
+  id: number; date: string; time: string | null; endTime: string | null; partySize: number; phone: string | null; note: string | null; ownerNote: string | null;
+  status: 'pending' | 'confirmed' | 'rejected' | 'cancelled' | 'completed' | 'no_show'; createdAt: string;
+  business: { id: string; name: string; slug: string; logoImage: string | null; phone: string | null; address: string | null } | null;
+  item: { id: number; name: string; price: string | null } | null; user?: (PublicUser & { phone: string | null }) | null;
+}
+export interface Availability { bookingEnabled: boolean; bookingMode: 'slot' | 'day'; slotMinutes: number; slotCapacity: number; bookingDaysAhead: number; bookingNote: string | null; acceptsQuotes: boolean; bookingAutoConfirm: boolean; date: string; slots: { time: string; remaining: number }[]; available: boolean; remaining?: number }
+export interface BookingSettings { bookingEnabled: boolean; bookingMode: 'slot' | 'day'; slotMinutes: number; slotCapacity: number; bookingDaysAhead: number; bookingAutoConfirm: boolean; bookingNote: string | null; acceptsQuotes: boolean }

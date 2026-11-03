@@ -19,6 +19,8 @@ import { CategoryTile } from '@/components/business/CategoryTile';
 import { BusinessGrid } from '@/components/business/BusinessGrid';
 import { GridSkeleton } from '@/components/common/Skeletons';
 import { compact } from '@/utils/format';
+import { QuickServices } from '@/components/business/QuickServices';
+import { OfferCard } from '@/components/business/ExtraCards';
 
 const POPULAR_AR = ['طبيب أسنان', 'صيدلية مناوبة', 'مطعم شاورما', 'كهربائي', 'نقل عفش', 'محامي', 'فندق'];
 const POPULAR_EN = ['Dentist', 'Pharmacy', 'Shawarma', 'Electrician', 'Movers', 'Lawyer', 'Hotel'];
@@ -105,6 +107,12 @@ export const Home = () => {
           </Grid>
         )}
 
+        {/* quick services */}
+        <Box sx={{ mb: 7 }}>
+          <SectionHeader title={t('x.services')} subtitle={t('x.servicesSub')} />
+          <QuickServices counts={{ onDuty: data?.onDutyPharmacies, offers: data?.offers?.length }} />
+        </Box>
+
         {/* ads slider */}
         {!!data?.ads.slider.length && (
           <Box sx={{ mb: 7 }}>
@@ -117,6 +125,16 @@ export const Home = () => {
           <SectionHeader title={t('home.featured')} subtitle={t('home.featuredSub')} to="/featured" />
           {isLoading ? <GridSkeleton count={4} /> : <BusinessGrid items={(data?.featured || []).slice(0, 8)} />}
         </Box>
+
+        {/* offers */}
+        {!!data?.offers?.length && (
+          <Box sx={{ mb: 7 }}>
+            <SectionHeader title={t('x.offers')} subtitle={t('x.offersSub')} to="/offers" />
+            <Grid container spacing={2.5}>
+              {data.offers.slice(0, 4).map((o) => <Grid item xs={12} sm={6} md={3} key={o.id}><OfferCard offer={o} /></Grid>)}
+            </Grid>
+          </Box>
+        )}
 
         {/* categories */}
         <Box sx={{ mb: 7 }}>

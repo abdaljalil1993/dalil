@@ -49,6 +49,26 @@ const AdminAds = P(() => import('@/pages/admin/AdminPromotions'), 'AdminAds');
 const AdminFeatured = P(() => import('@/pages/admin/AdminPromotions'), 'AdminFeatured');
 const AdminInsights = P(() => import('@/pages/admin/AdminInsights'), 'AdminInsights');
 const AdminAudit = P(() => import('@/pages/admin/AdminInsights'), 'AdminAudit');
+// v2.1 services
+const OffersPage = P(() => import('@/pages/services/PublicServices'), 'OffersPage');
+const PharmaciesPage = P(() => import('@/pages/services/PublicServices'), 'PharmaciesPage');
+const EmergencyPage = P(() => import('@/pages/services/PublicServices'), 'EmergencyPage');
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ListingsPage = lazy(() => import('@/pages/services/Listings').then((m) => ({ default: m.ListingsPage as React.ComponentType<any> })));
+const ListingPage = P(() => import('@/pages/services/Listings'), 'ListingPage');
+const ListingEditor = P(() => import('@/pages/services/Listings'), 'ListingEditor');
+const RequestServicePage = P(() => import('@/pages/services/AccountExtras'), 'RequestServicePage');
+const MyRequests = P(() => import('@/pages/services/AccountExtras'), 'MyRequests');
+const MyBookings = P(() => import('@/pages/services/AccountExtras'), 'MyBookings');
+const MyListings = P(() => import('@/pages/services/AccountExtras'), 'MyListings');
+const MyApplications = P(() => import('@/pages/services/AccountExtras'), 'MyApplications');
+const OwnerBookings = P(() => import('@/pages/services/OwnerExtras'), 'OwnerBookings');
+const RequestsInbox = P(() => import('@/pages/services/OwnerExtras'), 'RequestsInbox');
+const SubscriptionPage = P(() => import('@/pages/services/OwnerExtras'), 'SubscriptionPage');
+const AdminBilling = P(() => import('@/pages/admin/AdminExtras'), 'AdminBilling');
+const AdminListings = P(() => import('@/pages/admin/AdminExtras'), 'AdminListings');
+const AdminRequests = P(() => import('@/pages/admin/AdminExtras'), 'AdminRequests');
+const AdminEmergency = P(() => import('@/pages/admin/AdminExtras'), 'AdminEmergency');
 
 const Loader = () => (
   <Box sx={{ minHeight: '60vh', display: 'grid', placeItems: 'center' }}>
@@ -81,6 +101,14 @@ export const AppRoutes = () => (
         <Route path="about" element={<About />} />
         <Route path="contact" element={<Contact />} />
         <Route path="search" element={<RequireAuth><SearchPage /></RequireAuth>} />
+        <Route path="offers" element={<OffersPage />} />
+        <Route path="pharmacies" element={<PharmaciesPage />} />
+        <Route path="emergency" element={<EmergencyPage />} />
+        <Route path="real-estate" element={<ListingsPage key="re" type="real_estate" />} />
+        <Route path="cars" element={<ListingsPage key="car" type="car" />} />
+        <Route path="jobs" element={<ListingsPage key="job" type="job" />} />
+        <Route path="l/:slug" element={<ListingPage />} />
+        <Route path="request-service" element={<RequireAuth><RequestServicePage /></RequireAuth>} />
         <Route path="login" element={<GuestOnly><Login /></GuestOnly>} />
         <Route path="register" element={<GuestOnly><Register /></GuestOnly>} />
         <Route path="forgot-password" element={<ForgotPassword />} />
@@ -98,6 +126,15 @@ export const AppRoutes = () => (
         <Route path="account/notifications" element={<Notifications />} />
         <Route path="account/profile" element={<Profile />} />
         <Route path="account/settings" element={<Settings />} />
+        <Route path="account/bookings" element={<MyBookings />} />
+        <Route path="account/requests" element={<MyRequests />} />
+        <Route path="account/listings" element={<MyListings />} />
+        <Route path="account/listings/new" element={<ListingEditor />} />
+        <Route path="account/listings/:id" element={<ListingEditor />} />
+        <Route path="account/applications" element={<MyApplications />} />
+        <Route path="owner/bookings" element={<OwnerBookings />} />
+        <Route path="owner/requests" element={<RequestsInbox />} />
+        <Route path="owner/subscription" element={<SubscriptionPage />} />
         <Route path="owner/businesses" element={<MyBusinesses />} />
         <Route path="owner/businesses/new" element={<BusinessEditor />} />
         <Route path="owner/businesses/:id" element={<BusinessEditor />} />
@@ -116,6 +153,10 @@ export const AppRoutes = () => (
         <Route path="admin/featured" element={<RequireAuth admin><AdminFeatured /></RequireAuth>} />
         <Route path="admin/insights" element={<RequireAuth admin><AdminInsights /></RequireAuth>} />
         <Route path="admin/audit" element={<RequireAuth admin><AdminAudit /></RequireAuth>} />
+        <Route path="admin/billing" element={<RequireAuth admin><AdminBilling /></RequireAuth>} />
+        <Route path="admin/listings" element={<RequireAuth admin><AdminListings /></RequireAuth>} />
+        <Route path="admin/requests" element={<RequireAuth admin><AdminRequests /></RequireAuth>} />
+        <Route path="admin/emergency" element={<RequireAuth admin><AdminEmergency /></RequireAuth>} />
       </Route>
     </Routes>
   </Suspense>

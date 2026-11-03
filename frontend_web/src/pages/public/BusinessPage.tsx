@@ -20,7 +20,7 @@ import YouTube from '@mui/icons-material/YouTube';
 import XIcon from '@mui/icons-material/X';
 import StorefrontRounded from '@mui/icons-material/StorefrontRounded';
 import { ReactNode, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { businessApi } from '@/api/services';
 import type { Review } from '@/api/types';
@@ -38,6 +38,9 @@ import { GalleryGrid, Lightbox } from '@/components/business/Gallery';
 import { HoursList } from '@/components/business/HoursList';
 import { ReviewsSection, useReport } from '@/components/business/ReviewsSection';
 import { BusinessGrid } from '@/components/business/BusinessGrid';
+import { BookingDialog, BusinessOffersBlock, MenuBlock } from '@/components/business/BusinessExtras';
+import EventAvailableRounded from '@mui/icons-material/EventAvailableRounded';
+import RequestQuoteRounded from '@mui/icons-material/RequestQuoteRounded';
 import { SingleLocationMap } from '@/components/maps/MapView';
 import { mapsLink, priceLabel, telLink, waLink, compact } from '@/utils/format';
 
@@ -66,6 +69,8 @@ export const BusinessPage = () => {
   const [reportType, setReportType] = useState('wrong_info');
   const [reportText, setReportText] = useState('');
   const [claimOpen, setClaimOpen] = useState(false);
+  const [bookOpen, setBookOpen] = useState(false);
+  const navigate = useNavigate();
   const [claimMsg, setClaimMsg] = useState('');
   const reportM = useReport(b?.id || '');
   const claimM = useMutation({ mutationFn: () => businessApi.claim(b!.id, { message: claimMsg }), onSuccess: () => { notify.success(t('business.claimSent')); setClaimOpen(false); }, onError: notify.error });
@@ -99,6 +104,8 @@ export const BusinessPage = () => {
       {b.whatsapp && <Button variant="contained" size="large" startIcon={<WhatsApp />} href={waLink(b.whatsapp)} target="_blank" onClick={() => track('whatsapp')} sx={{ background: '#25D366', '&:hover': { background: '#1EBE5A' } }}>{t('business.whatsapp')}</Button>}
       {directions && <Button variant="outlined" size="large" startIcon={<DirectionsRounded />} href={directions} target="_blank" onClick={() => track('directions')}>{t('business.directions')}</Button>}
       {b.website && <Button variant="outlined" size="large" startIcon={<LanguageRounded />} href={b.website} target="_blank" rel="noopener" onClick={() => track('website')}>{t('business.website')}</Button>}
+      {b.bookingEnabled && <Button variant="contained" color="secondary" size="large" startIcon={<EventAvailableRounded />} onClick={() => requireAuth(() => setBookOpen(true))}>{t('x.booking')}</Button>}
+      {b.acceptsQuotes && <Button variant="outlined" color="secondary" size="large" startIcon={<RequestQuoteRounded />} onClick={() => requireAuth(() => navigate(`/request-service?categoryId=${b.categoryId}${b.subCategoryId ? `&subCategoryId=${b.subCategoryId}` : ''}`), `/request-service?categoryId=${b.categoryId}`)}>{t('x.requestService')}</Button>}
     </Stack>
   );
 
@@ -131,6 +138,7 @@ export const BusinessPage = () => {
           ))}
         </Box>
         <Lightbox images={photos} index={lightbox} onClose={() => setLightbox(null)} />
+        {b.bookingEnabled && <BookingDialog b={b} open={bookOpen} onClose={() => setBookOpen(false)} />}
 
         {/* ── title block ── */}
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={2.5} alignItems={{ md: 'flex-end' }} sx={{ mt: { xs: -5, md: -6 }, px: { xs: 1, md: 3 }, position: 'relative' }}>
@@ -189,6 +197,8 @@ export const BusinessPage = () => {
                 )}
               </Block>
             )}
+            <BusinessOffersBlock b={b} />
+            <MenuBlock b={b} />
             {b.images.length > 0 && <Block title={t('business.gallery')}><GalleryGrid images={b.images} /></Block>}
             <Block title={t('business.reviews')} id="reviews">
               <ReviewsSection b={b} onReport={(r) => setReport({ open: true, review: r })} />

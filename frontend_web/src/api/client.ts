@@ -60,6 +60,8 @@ export const put = async <T>(url: string, body?: unknown, config?: AxiosRequestC
 export const patch = async <T>(url: string, body?: unknown): Promise<T> => (await http.patch<ApiEnvelope<T>>(url, body)).data.data;
 export const del = async <T>(url: string): Promise<T> => (await http.delete<ApiEnvelope<T>>(url)).data.data;
 
+export const errorCode = (err: unknown): string | undefined => (err as AxiosError<{ code?: string }>)?.response?.data?.code;
+
 export const errorMessage = (err: unknown, fallback = 'Something went wrong'): string => {
   const e = err as AxiosError<{ message?: string }>;
   if (e?.response?.data?.message) return e.response.data.message;

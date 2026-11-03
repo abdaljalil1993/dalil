@@ -30,13 +30,16 @@ import PhoneIphone from '@mui/icons-material/PhoneIphone';
 import Checkroom from '@mui/icons-material/Checkroom';
 import Chair from '@mui/icons-material/Chair';
 import Category from '@mui/icons-material/Category';
+import CleaningServices from '@mui/icons-material/CleaningServices';
+import HomeWork from '@mui/icons-material/HomeWork';
+import Work from '@mui/icons-material/Work';
 import { Box, BoxProps } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 
 export const CATEGORY_ICONS: Record<string, SvgIconComponent> = {
   MedicalServices, LocalHospital, LocalPharmacy, Restaurant, LocalCafe, Hotel, Gavel, Attractions, Handyman, LocalShipping,
   LocalGroceryStore, Spa, DirectionsCar, School, BusinessCenter, ShoppingBag, AccountBalance, Pets, FitnessCenter, Storefront,
-  Construction, Bolt, Plumbing, Celebration, Church, Mosque, Computer, PhoneIphone, Checkroom, Chair, Category,
+  Construction, Bolt, Plumbing, Celebration, Church, Mosque, Computer, PhoneIphone, Checkroom, Chair, Category, CleaningServices, HomeWork, Work,
 };
 
 export const getCategoryIcon = (name?: string | null): SvgIconComponent => (name && CATEGORY_ICONS[name]) || Category;

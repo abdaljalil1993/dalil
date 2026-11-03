@@ -25,6 +25,7 @@ import { HoursEditor, defaultHours } from '@/components/forms/HoursEditor';
 import { LocationPicker } from '@/components/maps/MapView';
 import { Cover } from '@/components/common/Cover';
 import { STATUS_COLOR } from './MyBusinesses';
+import { BookingTab, DutyTab, ItemsTab, OffersTab, PlanTab } from './BusinessEditorTabs';
 import VisibilityRounded from '@mui/icons-material/VisibilityRounded';
 import CallRounded from '@mui/icons-material/CallRounded';
 import DirectionsRounded from '@mui/icons-material/DirectionsRounded';
@@ -125,13 +126,21 @@ export const BusinessEditor = () => {
   const rmImg = useMutation({ mutationFn: (imageId: number) => businessApi.removeImage(id!, imageId), onSuccess: onMedia, onError: notify.error });
   const primary = useMutation({ mutationFn: (imageId: number) => businessApi.primaryImage(id!, imageId), onSuccess: onMedia, onError: notify.error });
 
+  const isPharmacy = /pharmac/i.test(`${existing?.category?.slug || ''} ${existing?.category?.nameEn || ''}`) || /صيدل/.test(existing?.category?.name || '');
   const tabs = [
     { v: 'basic', l: t('owner.steps.basic') },
     { v: 'contact', l: t('owner.steps.contact') },
     { v: 'location', l: t('owner.steps.location') },
     { v: 'hours', l: t('owner.steps.hours') },
     { v: 'media', l: t('owner.steps.media') },
-    ...(!isNew ? [{ v: 'insights', l: t('owner.steps.insights') }] : []),
+    ...(!isNew ? [
+      { v: 'items', l: t('x.tabItems') },
+      { v: 'offers', l: t('x.tabOffers') },
+      { v: 'booking', l: t('x.tabBooking') },
+      ...(isPharmacy ? [{ v: 'duty', l: t('x.tabDuty') }] : []),
+      { v: 'plan', l: t('x.tabPlan') },
+      { v: 'insights', l: t('owner.steps.insights') },
+    ] : []),
   ];
 
   return (
@@ -309,7 +318,13 @@ export const BusinessEditor = () => {
         </Grid>
       )}
 
-      {tab !== 'media' && tab !== 'insights' && (
+      {existing && tab === 'items' && <ItemsTab business={existing} />}
+      {existing && tab === 'offers' && <OffersTab business={existing} />}
+      {existing && tab === 'booking' && <BookingTab business={existing} onSaved={() => qc.invalidateQueries({ queryKey: ['business', 'managed', id] })} />}
+      {existing && tab === 'duty' && <DutyTab business={existing} />}
+      {existing && tab === 'plan' && <PlanTab business={existing} />}
+
+      {['basic', 'contact', 'location', 'hours'].includes(tab) && (
         <Stack direction="row" justifyContent="flex-end" sx={{ mt: 1 }}>
           <Button variant="contained" size="large" startIcon={<SaveRounded />} disabled={save.isPending} onClick={() => validate() && save.mutate()}>{t('common.save')}</Button>
         </Stack>

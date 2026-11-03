@@ -1,4 +1,6 @@
-import { Alert, Box, Button, Card, Container, Grid, IconButton, InputAdornment, Link as MLink, MenuItem, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Card, Container, Grid, IconButton, InputAdornment, Link as MLink, MenuItem, Stack, Tab, Tabs, TextField, Typography } from '@mui/material';
+import PhoneIphoneRounded from '@mui/icons-material/PhoneIphoneRounded';
+import AlternateEmailRounded from '@mui/icons-material/AlternateEmailRounded';
 import VisibilityRounded from '@mui/icons-material/VisibilityRounded';
 import VisibilityOffRounded from '@mui/icons-material/VisibilityOffRounded';
 import CheckCircleRounded from '@mui/icons-material/CheckCircleRounded';
@@ -8,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation } from '@tanstack/react-query';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { authApi } from '@/api/services';
+import { authApi, otpApi } from '@/api/services';
 import { useAuth } from '@/hooks/useAuth';
 import { useNotify } from '@/hooks/useNotify';
 import { useCities } from '@/hooks/queries';
@@ -70,16 +72,72 @@ export const Login = () => {
   const schema = z.object({ email: z.string().email(t('auth.invalidEmail')), password: z.string().min(1, t('common.required')) });
   const { register, handleSubmit, formState: { errors } } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
   const m = useMutation({ mutationFn: authApi.login, onSuccess: (p) => { onAuthenticated(p); notify.success(t('auth.welcome', { name: p.user.firstName })); done(); }, onError: notify.error });
+  const [mode, setMode] = useState<'email' | 'phone'>('email');
+  const location = useLocation();
   return (
     <AuthShell title={t('auth.loginTitle')} subtitle={t('auth.loginSubtitle')}>
+      <Tabs value={mode} onChange={(_, v) => setMode(v)} variant="fullWidth" sx={{ mb: 2.5, bgcolor: 'action.hover', borderRadius: 3, minHeight: 44, '& .MuiTab-root': { minHeight: 44 }, '& .MuiTabs-indicator': { height: '100%', borderRadius: 3, zIndex: 0, opacity: 0.14 } }}>
+        <Tab value="email" icon={<AlternateEmailRounded fontSize="small" />} iconPosition="start" label={t('x.emailLogin')} sx={{ zIndex: 1 }} />
+        <Tab value="phone" icon={<PhoneIphoneRounded fontSize="small" />} iconPosition="start" label={t('x.phoneLogin')} sx={{ zIndex: 1 }} />
+      </Tabs>
+      {mode === 'phone' ? <PhoneLogin /> : (
       <Stack component="form" spacing={2} onSubmit={handleSubmit((v) => m.mutate(v))}>
         <TextField fullWidth label={t('common.email')} type="email" autoComplete="email" {...register('email')} error={!!errors.email} helperText={errors.email?.message} />
         <PasswordField label={t('auth.password')} reg={register('password')} error={!!errors.password} helperText={errors.password?.message} />
         <MLink component={Link} to="/forgot-password" variant="body2" sx={{ alignSelf: 'flex-end' }}>{t('auth.forgot')}</MLink>
         <Button type="submit" variant="contained" size="large" disabled={m.isPending}>{t('auth.loginNow')}</Button>
-        <Typography variant="body2" align="center">{t('auth.noAccount')} <MLink component={Link} to="/register" state={useLocation().state} fontWeight={700}>{t('auth.registerNow')}</MLink></Typography>
+        <Typography variant="body2" align="center">{t('auth.noAccount')} <MLink component={Link} to="/register" state={location.state} fontWeight={700}>{t('auth.registerNow')}</MLink></Typography>
       </Stack>
+      )}
     </AuthShell>
+  );
+};
+
+const PhoneLogin = () => {
+  const { t } = useT();
+  const { onAuthenticated } = useAuth();
+  const notify = useNotify();
+  const done = useRedirectAfterAuth();
+  const [phone, setPhone] = useState('');
+  const [code, setCode] = useState('');
+  const [first, setFirst] = useState('');
+  const [last, setLast] = useState('');
+  const [sent, setSent] = useState<{ phone: string; isNewUser: boolean; devCode?: string } | null>(null);
+  const req = useMutation({ mutationFn: () => otpApi.request(phone), onSuccess: (r) => setSent(r), onError: notify.error });
+  const ver = useMutation({
+    mutationFn: () => otpApi.verify({ phone: sent!.phone, code, ...(sent!.isNewUser && { firstName: first, lastName: last }) }),
+    onSuccess: (p) => { onAuthenticated(p); notify.success(t('auth.welcome', { name: p.user.firstName })); done(); },
+    onError: notify.error,
+  });
+  if (!sent) {
+    return (
+      <Stack component="form" spacing={2} onSubmit={(e) => { e.preventDefault(); req.mutate(); }}>
+        <TextField fullWidth label={t('x.phone')} placeholder="09xx xxx xxx" value={phone} onChange={(e) => setPhone(e.target.value)} inputProps={{ dir: 'ltr', inputMode: 'tel' }} autoComplete="tel" />
+        <Button type="submit" variant="contained" size="large" disabled={phone.replace(/\D/g, '').length < 9 || req.isPending}>{t('x.sendCode')}</Button>
+      </Stack>
+    );
+  }
+  const ready = code.length >= 4 && (!sent.isNewUser || (first.trim().length >= 2 && last.trim().length >= 2));
+  return (
+    <Stack component="form" spacing={2} onSubmit={(e) => { e.preventDefault(); if (ready) ver.mutate(); }}>
+      <Alert severity="info">{t('x.codeSentTo', { phone: sent.phone })}</Alert>
+      {sent.devCode && <Alert severity="warning">{t('x.devCode', { code: sent.devCode })}</Alert>}
+      <TextField fullWidth autoFocus label={t('x.code')} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))} inputProps={{ dir: 'ltr', inputMode: 'numeric', style: { letterSpacing: 8, fontSize: 22, textAlign: 'center', fontWeight: 800 } }} />
+      {sent.isNewUser && (
+        <>
+          <Typography variant="subtitle2" fontWeight={700}>{t('x.newAccountName')}</Typography>
+          <Stack direction="row" spacing={2}>
+            <TextField fullWidth label={t('auth.firstName')} value={first} onChange={(e) => setFirst(e.target.value)} />
+            <TextField fullWidth label={t('auth.lastName')} value={last} onChange={(e) => setLast(e.target.value)} />
+          </Stack>
+        </>
+      )}
+      <Button type="submit" variant="contained" size="large" disabled={!ready || ver.isPending}>{t('x.verify')}</Button>
+      <Stack direction="row" justifyContent="space-between">
+        <Button size="small" onClick={() => { setSent(null); setCode(''); }}>{t('common.back')}</Button>
+        <Button size="small" disabled={req.isPending} onClick={() => req.mutate()}>{t('x.resend')}</Button>
+      </Stack>
+    </Stack>
   );
 };
 

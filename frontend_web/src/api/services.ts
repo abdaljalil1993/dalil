@@ -141,3 +141,108 @@ export const adminApi = {
   searches: (days = 30) => get<{ days: number; topSearches: { query: string; count: number; avgResults: number }[]; zeroResultSearches: { query: string; count: number }[]; daily: { day: string; count: number }[] }>('/admin/dashboard/searches', { days }),
   auditLogs: (params: { page?: number; limit?: number; action?: string }) => getPaged<{ id: number; userId: string; action: string; entityType: string; entityId: string; createdAt: string; ipAddress: string }>('/admin/audit-logs', clean(params)),
 };
+
+// ───────────── v2.1 ─────────────
+import type { Appointment, Availability, BusinessItem, DutyItem, EmergencyContact, Entitlements, JobApplication, Listing, ListingField, ListingPurpose, ListingType, Offer, Payment, Plan, ServiceRequest, Settings, Subscription } from './types';
+
+const fdOrJson = (body: Record<string, unknown>, file?: File | null) => (file ? form(file, 'image', body) : body);
+const cfg = (file?: File | null) => (file ? multipart : undefined);
+
+export const billingApi = {
+  publicSettings: () => get<Pick<Settings, 'billingEnabled' | 'supportPhone' | 'supportWhatsapp' | 'paymentInstructions'>>('/billing/settings/public'),
+  settings: () => get<Settings>('/billing/settings'),
+  saveSettings: (body: Partial<Settings>) => put<Settings>('/billing/settings', body),
+  plans: (all = false) => get<Plan[]>('/billing/plans', all ? { all: true } : undefined),
+  createPlan: (body: Record<string, unknown>) => post<Plan>('/billing/plans', body),
+  updatePlan: (id: number, body: Record<string, unknown>) => put<Plan>(`/billing/plans/${id}`, body),
+  deletePlan: (id: number) => del(`/billing/plans/${id}`),
+  entitlements: (businessId: string) => get<Entitlements>(`/businesses/${businessId}/entitlements`),
+  requestSubscription: (body: { businessId: string; planId: number; period: 'monthly' | 'yearly'; method: string; reference?: string; note?: string }) => post('/billing/subscriptions/request', body),
+  mySubscriptions: () => get<Subscription[]>('/billing/subscriptions/my'),
+  subscriptions: (p: { page?: number; limit?: number; status?: string }) => getPaged<Subscription>('/billing/subscriptions', clean(p)),
+  grant: (body: Record<string, unknown>) => post<Subscription>('/billing/subscriptions', body),
+  updateSubscription: (id: number, body: Record<string, unknown>) => patch<Subscription>(`/billing/subscriptions/${id}`, body),
+  payments: (p: { page?: number; limit?: number; status?: string }) => getPaged<Payment>('/billing/payments', clean(p)),
+  recordPayment: (body: Record<string, unknown>) => post<Payment>('/billing/payments', body),
+  decidePayment: (id: number, status: 'confirmed' | 'rejected', adminNote?: string) => patch<Payment>(`/billing/payments/${id}`, { status, adminNote }),
+};
+
+export const extrasApi = {
+  items: (businessId: string, all = false) => get<{ sections: { name: string; items: BusinessItem[] }[]; total: number }>(`/businesses/${businessId}/items`, all ? { all: true } : undefined),
+  createItem: (businessId: string, body: Record<string, unknown>, file?: File | null) => post<BusinessItem>(`/businesses/${businessId}/items`, fdOrJson(body, file), cfg(file)),
+  updateItem: (businessId: string, id: number, body: Record<string, unknown>, file?: File | null) => put<BusinessItem>(`/businesses/${businessId}/items/${id}`, fdOrJson(body, file), cfg(file)),
+  deleteItem: (businessId: string, id: number) => del(`/businesses/${businessId}/items/${id}`),
+  offersFeed: (p: { cityId?: number | null; categoryId?: number; page?: number; limit?: number }) => getPaged<Offer>('/offers', clean(p)),
+  businessOffers: (businessId: string) => get<Offer[]>(`/businesses/${businessId}/offers`),
+  createOffer: (businessId: string, body: Record<string, unknown>, file?: File | null) => post<Offer>(`/businesses/${businessId}/offers`, fdOrJson(body, file), cfg(file)),
+  updateOffer: (businessId: string, id: number, body: Record<string, unknown>, file?: File | null) => put<Offer>(`/businesses/${businessId}/offers/${id}`, fdOrJson(body, file), cfg(file)),
+  deleteOffer: (businessId: string, id: number) => del(`/businesses/${businessId}/offers/${id}`),
+  onDuty: (p: { cityId?: number | null; date?: string }) => get<{ date: string; items: DutyItem[] }>('/pharmacies/on-duty', clean(p)),
+  duties: (businessId: string) => get<{ id: number; date: string; startTime: string | null; endTime: string | null; note: string | null }[]>(`/businesses/${businessId}/duties`),
+  setDuties: (businessId: string, duties: { date: string; startTime?: string; endTime?: string; note?: string }[]) => put(`/businesses/${businessId}/duties`, { duties }),
+  emergency: (cityId?: number | null) => get<EmergencyContact[]>('/emergency', clean({ cityId })),
+  adminEmergency: () => get<EmergencyContact[]>('/emergency/admin'),
+  createEmergency: (body: Record<string, unknown>) => post<EmergencyContact>('/emergency', body),
+  updateEmergency: (id: number, body: Record<string, unknown>) => put<EmergencyContact>(`/emergency/${id}`, body),
+  deleteEmergency: (id: number) => del(`/emergency/${id}`),
+};
+
+export type ListingQuery = { type?: ListingType; purpose?: ListingPurpose; cityId?: number; district?: string; minPrice?: number; maxPrice?: number; q?: string; sort?: string; hasPhotos?: boolean; status?: string; page?: number; limit?: number; attr?: Record<string, string>; attrMin?: Record<string, string>; attrMax?: Record<string, string> };
+const listingParams = (q: ListingQuery) => {
+  const { attr, attrMin, attrMax, ...rest } = q;
+  const out: Record<string, unknown> = clean(rest);
+  Object.entries(attr || {}).forEach(([k, v]) => v !== '' && v !== undefined && (out[`attr[${k}]`] = v));
+  Object.entries(attrMin || {}).forEach(([k, v]) => v !== '' && v !== undefined && (out[`attrMin[${k}]`] = v));
+  Object.entries(attrMax || {}).forEach(([k, v]) => v !== '' && v !== undefined && (out[`attrMax[${k}]`] = v));
+  return out;
+};
+
+export const listingApi = {
+  fields: () => get<{ fields: Record<ListingType, ListingField[]>; purposes: Record<ListingType, ListingPurpose[]> }>('/listings/fields'),
+  search: (q: ListingQuery) => getPaged<Listing>('/listings', listingParams(q)),
+  mine: (q: ListingQuery = {}) => getPaged<Listing>('/listings/my', listingParams(q)),
+  admin: (q: ListingQuery) => getPaged<Listing>('/listings/admin/all', listingParams(q)),
+  get: (slug: string) => get<Listing>(`/listings/${encodeURIComponent(slug)}`),
+  create: (body: Record<string, unknown>) => post<Listing>('/listings', body),
+  update: (id: string, body: Record<string, unknown>) => put<Listing>(`/listings/${id}`, body),
+  setStatus: (id: string, status: 'closed' | 'active') => patch<Listing>(`/listings/${id}/status`, { status }),
+  remove: (id: string) => del(`/listings/${id}`),
+  addImages: (id: string, files: File[]) => post<Listing>(`/listings/${id}/images`, form(files, 'images'), multipart),
+  removeImage: (id: string, index: number) => del<Listing>(`/listings/${id}/images/${index}`),
+  moderate: (id: string, body: { status: string; adminNote?: string; isFeatured?: boolean }) => patch(`/listings/${id}/moderate`, body),
+  apply: (id: string, body: { message?: string; phone?: string }, cv?: File | null) => post(`/listings/${id}/apply`, fdOrJson(body, cv), cfg(cv)),
+  applications: (id: string) => get<JobApplication[]>(`/listings/${id}/applications`),
+  myApplications: () => get<JobApplication[]>('/listings/applications/my'),
+  setApplicationStatus: (id: number, status: string) => patch(`/listings/applications/${id}`, { status }),
+};
+
+export const requestApi = {
+  create: (body: Record<string, unknown>, files: File[] = []) => {
+    if (!files.length) return post<ServiceRequest & { notifiedBusinesses: number }>('/service-requests', body);
+    const fd = form(files, 'images', body);
+    return post<ServiceRequest & { notifiedBusinesses: number }>('/service-requests', fd, multipart);
+  },
+  mine: (p: { page?: number; limit?: number } = {}) => getPaged<ServiceRequest>('/service-requests/my', clean(p)),
+  inbox: (p: { page?: number; limit?: number } = {}) => getPaged<ServiceRequest>('/service-requests/inbox', clean(p)),
+  admin: (p: { page?: number; limit?: number; status?: string }) => getPaged<ServiceRequest>('/service-requests/admin/all', clean(p)),
+  get: (id: number) => get<ServiceRequest>(`/service-requests/${id}`),
+  setStatus: (id: number, status: string) => patch<ServiceRequest>(`/service-requests/${id}/status`, { status }),
+  quote: (id: number, body: { businessId: string; price?: number; message: string; etaDays?: number }) => post<ServiceRequest>(`/service-requests/${id}/quotes`, body),
+  decide: (quoteId: number, status: 'accepted' | 'rejected') => patch<ServiceRequest>(`/service-requests/quotes/${quoteId}`, { status }),
+  withdraw: (quoteId: number) => del(`/service-requests/quotes/${quoteId}`),
+};
+
+export const bookingApi = {
+  saveSettings: (businessId: string, body: Record<string, unknown>) => put(`/businesses/${businessId}/booking-settings`, body),
+  availability: (businessId: string, date: string) => get<Availability>(`/businesses/${businessId}/availability`, { date }),
+  book: (businessId: string, body: { date: string; time?: string | null; itemId?: number | null; partySize?: number; phone?: string; note?: string }) => post<Appointment>(`/businesses/${businessId}/appointments`, body),
+  mine: (all = false) => get<Appointment[]>('/appointments/my', all ? { all: true } : undefined),
+  owner: (p: { businessId?: string; date?: string; status?: string; page?: number; limit?: number }) => getPaged<Appointment>('/appointments/owner', clean(p)),
+  setStatus: (id: number, status: string, ownerNote?: string) => patch<Appointment>(`/appointments/${id}/status`, { status, ownerNote }),
+};
+
+export const otpApi = {
+  request: (phone: string) => post<{ phone: string; expiresInSeconds: number; isNewUser: boolean; devCode?: string }>('/auth/otp/request', { phone }),
+  verify: (body: { phone: string; code: string; firstName?: string; lastName?: string; cityId?: number }) => post<AuthPayload>('/auth/otp/verify', body),
+  verifyPhone: (phone: string, code: string) => post<User>('/auth/otp/verify-phone', { phone, code }),
+};
