@@ -21,6 +21,7 @@ export enum BusinessSource {
   ADMIN = 'admin',
   OWNER = 'owner',
   SUGGESTION = 'suggestion',
+  OSM = 'osm',
 }
 
 export enum AdStatus {

@@ -142,6 +142,7 @@ export interface Business {
   bookingNote?: string | null;
   acceptsQuotes?: boolean;
   bookingSettings?: BookingSettings;
+  dataSource?: 'osm' | null;
   categoryId: number;
   subCategoryId: number | null;
   cityId: number;
@@ -401,3 +402,10 @@ export type FeatureKey =
 export interface FeatureRule { enabled: boolean; cityIds: number[] }
 export interface FeaturesResolved { cityId: number | null; enabled: Record<FeatureKey, boolean>; cities: Record<FeatureKey, number[] | null> }
 export interface FeaturesAdmin { keys: FeatureKey[]; groups: Record<string, FeatureKey[]>; config: Record<FeatureKey, FeatureRule> }
+export interface OsmPreset { key: string; name: string; nameEn: string; category: string }
+export interface OsmJob {
+  id: string; status: 'running' | 'done' | 'failed'; startedAt: string; finishedAt: string | null;
+  options: { presets: string[]; scope: 'governorate' | 'radius'; cityId: number; radiusKm?: number; dryRun?: boolean; updateExisting?: boolean };
+  found: number; created: number; updated: number; skippedDuplicate: number; skippedNoName: number;
+  byPreset: Record<string, { found: number; created: number }>; samples: { name: string; preset: string; city: string; phone: string | null }[]; error: string | null;
+}

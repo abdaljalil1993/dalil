@@ -68,6 +68,7 @@ export const serializeBusiness = (b: Business, opts: { privileged?: boolean } & 
     bookingMode: b.bookingMode || 'slot',
     bookingNote: b.bookingNote || null,
     acceptsQuotes: Boolean(b.acceptsQuotes),
+    dataSource: b.source === 'osm' ? 'osm' : null,
     categoryId: b.categoryId,
     subCategoryId: b.subCategoryId,
     cityId: b.cityId,

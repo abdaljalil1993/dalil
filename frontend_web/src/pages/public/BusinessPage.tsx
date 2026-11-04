@@ -161,6 +161,7 @@ export const BusinessPage = () => {
               <Stack direction="row" spacing={0.5} alignItems="center" sx={{ color: 'text.secondary' }}><VisibilityRounded sx={{ fontSize: 16 }} /><Typography variant="body2">{compact(b.viewCount, locale)} {t('business.views')}</Typography></Stack>
             </Stack>
             {b.shortDescription && <Typography color="text.secondary" sx={{ mt: 1 }}>{b.shortDescription}</Typography>}
+            {b.dataSource === 'osm' && <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.75 }}>{t('x.osmSource')}</Typography>}
           </Box>
           <Stack direction="row" spacing={1}>
             {on('favorites') && <FavoriteButton businessId={b.id} initial={b.viewer?.isFavorite} variant="plain" />}

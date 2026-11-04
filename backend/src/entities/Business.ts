@@ -119,6 +119,11 @@ export class Business {
   @Column({ type: 'enum', enum: BusinessSource, default: BusinessSource.OWNER })
   source: BusinessSource;
 
+  /** OpenStreetMap element id (node/123, way/456) — prevents duplicate imports */
+  @Index({ unique: true })
+  @Column({ type: 'varchar', length: 40, nullable: true })
+  osmId: string | null;
+
   @Column({ default: true })
   isActive: boolean;
 

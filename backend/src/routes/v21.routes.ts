@@ -114,5 +114,12 @@ F.get('/', { summary: 'Which services are ON for a governorate (hide the rest in
 F.get('/admin', { summary: 'Full switch configuration', access: 'admin' }, authenticate, isAdmin, C.adminFeatures);
 F.put('/admin', { summary: 'Turn services on/off — all governorates (cityIds: []) or only selected ones', access: 'admin', body: { features: { jobs: { enabled: true, cityIds: [6] }, realEstate: { enabled: false } } } }, authenticate, isAdmin, audit('features.update', 'settings'), C.updateFeatures);
 
-export const v21Routers = { features: F.router, billing: billing.router, biz: biz.router, offers: offers.router, pharm: pharm.router, emerg: emerg.router, listings: L.router, requests: R.router, appointments: A.router, otp: O.router, devices: DV.router };
+const OSM = createDocumentedRouter('/admin/osm', 'Admin');
+OSM.get('/presets', { summary: 'What can be imported from OpenStreetMap (restaurants, hotels, pharmacies...)', access: 'admin' }, authenticate, isAdmin, C.osmPresets);
+OSM.post('/import', { summary: 'Start an import job (background). dryRun=true only counts. Never duplicates (osmId + same name within 150 m)', access: 'admin', body: { presets: ['restaurants', 'hotels', 'pharmacies'], scope: 'governorate', cityId: 6, radiusKm: 10, dryRun: true, updateExisting: false } }, authenticate, isAdmin, D.osmImportDto, validate, audit('osm.import', 'business'), C.osmStart);
+OSM.get('/jobs', { summary: 'Recent import jobs', access: 'admin' }, authenticate, isAdmin, C.osmJobs);
+OSM.get('/jobs/:id', { summary: 'Import job progress / result', access: 'admin' }, authenticate, isAdmin, C.osmJob);
+OSM.post('/remove', { summary: 'Undo: delete unclaimed imported places with no reviews in a city / governorate', access: 'admin', body: { cityId: 6, scope: 'governorate', dryRun: true } }, authenticate, isAdmin, D.osmRemoveDto, validate, audit('osm.remove', 'business'), C.osmRemove);
+
+export const v21Routers = { osm: OSM.router, features: F.router, billing: billing.router, biz: biz.router, offers: offers.router, pharm: pharm.router, emerg: emerg.router, listings: L.router, requests: R.router, appointments: A.router, otp: O.router, devices: DV.router };
 export const sitemapHandler = C.sitemap;

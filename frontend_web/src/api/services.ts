@@ -253,3 +253,12 @@ export const featuresApi = {
   admin: () => get<FeaturesAdmin>('/features/admin'),
   save: (features: Partial<Record<FeatureKey, Partial<FeatureRule>>>) => put<FeaturesAdmin>('/features/admin', { features }),
 };
+
+import type { OsmJob, OsmPreset } from './types';
+export const osmApi = {
+  presets: () => get<OsmPreset[]>('/admin/osm/presets'),
+  start: (body: { presets: string[]; scope: 'governorate' | 'radius'; cityId: number; radiusKm?: number; dryRun?: boolean; updateExisting?: boolean }) => post<OsmJob>('/admin/osm/import', body),
+  jobs: () => get<OsmJob[]>('/admin/osm/jobs'),
+  job: (id: string) => get<OsmJob>(`/admin/osm/jobs/${id}`),
+  remove: (body: { cityId: number; scope: 'city' | 'governorate'; dryRun?: boolean }) => post<{ count: number; deleted: boolean }>('/admin/osm/remove', body),
+};

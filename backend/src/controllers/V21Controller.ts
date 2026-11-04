@@ -12,6 +12,7 @@ import { AppointmentService, BookingSettingsInput } from '../services/Appointmen
 import { OtpService } from '../services/OtpService';
 import { PushService } from '../services/PushService';
 import { SitemapService } from '../services/SitemapService';
+import { OsmImportService } from '../services/OsmImportService';
 import { FEATURE_GROUPS, FEATURE_KEYS, FeatureService } from '../services/FeatureService';
 import { Plan, EmergencyContact } from '../entities';
 import { AppointmentStatus, ApplicationStatus, ListingStatus, PaymentStatus, QuoteStatus, ServiceRequestStatus, SubscriptionStatus } from '../entities/enums';
@@ -137,3 +138,10 @@ export const sitemap = asyncHandler(async (_req, res) => { res.type('application
 export const features = asyncHandler(async (req, res) => sendSuccess(res, await FeatureService.resolved(toInt(req.query.cityId as string) || null)));
 export const adminFeatures = asyncHandler(async (_req, res) => sendSuccess(res, { keys: FEATURE_KEYS, groups: FEATURE_GROUPS, config: await FeatureService.config() }));
 export const updateFeatures = asyncHandler(async (req, res) => sendSuccess(res, { keys: FEATURE_KEYS, groups: FEATURE_GROUPS, config: await FeatureService.update(req.body?.features || {}) }, 'Saved'));
+
+// ───────────── OpenStreetMap import ─────────────
+export const osmPresets = asyncHandler(async (_req, res) => sendSuccess(res, OsmImportService.presets()));
+export const osmStart = asyncHandler(async (req, res) => sendCreated(res, await OsmImportService.start(body(req), req.userId!), 'Import started'));
+export const osmJobs = asyncHandler(async (_req, res) => sendSuccess(res, OsmImportService.list()));
+export const osmJob = asyncHandler(async (req, res) => sendSuccess(res, OsmImportService.get(req.params.id)));
+export const osmRemove = asyncHandler(async (req, res) => sendSuccess(res, await OsmImportService.removeImported(Number(req.body.cityId), req.body.scope === 'governorate' ? 'governorate' : 'city', req.body.dryRun === true), 'Done'));

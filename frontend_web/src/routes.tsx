@@ -71,6 +71,7 @@ const AdminListings = P(() => import('@/pages/admin/AdminExtras'), 'AdminListing
 const AdminRequests = P(() => import('@/pages/admin/AdminExtras'), 'AdminRequests');
 const AdminEmergency = P(() => import('@/pages/admin/AdminExtras'), 'AdminEmergency');
 const AdminFeatures = P(() => import('@/pages/admin/AdminFeatures'), 'AdminFeatures');
+const AdminOsmImport = P(() => import('@/pages/admin/AdminOsmImport'), 'AdminOsmImport');
 
 const Loader = () => (
   <Box sx={{ minHeight: '60vh', display: 'grid', placeItems: 'center' }}>
@@ -160,6 +161,7 @@ export const AppRoutes = () => (
         <Route path="admin/requests" element={<RequireAuth admin><AdminRequests /></RequireAuth>} />
         <Route path="admin/emergency" element={<RequireAuth admin><AdminEmergency /></RequireAuth>} />
         <Route path="admin/features" element={<RequireAuth admin><AdminFeatures /></RequireAuth>} />
+        <Route path="admin/osm-import" element={<RequireAuth admin><AdminOsmImport /></RequireAuth>} />
       </Route>
     </Routes>
   </Suspense>

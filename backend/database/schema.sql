@@ -1,4 +1,4 @@
--- Dalilak v2.1 schema (generated from TypeORM entities). Import once: mysql -u root -p dalilak < database/schema.sql
+-- Dalilak v2.2 schema (generated from TypeORM entities). Import once: mysql -u root -p dalilak < database/schema.sql
 -- Then run: npm run seed   (cities, categories, plans, emergency numbers, admin)
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS=0;
@@ -200,7 +200,7 @@ CREATE TABLE IF NOT EXISTS `businesses` (
   `directionClicks` int(11) NOT NULL DEFAULT 0,
   `websiteClicks` int(11) NOT NULL DEFAULT 0,
   `status` enum('pending','approved','rejected','suspended') NOT NULL DEFAULT 'pending',
-  `source` enum('admin','owner','suggestion') NOT NULL DEFAULT 'owner',
+  `source` enum('admin','owner','suggestion','osm') NOT NULL DEFAULT 'owner',
   `isActive` tinyint(4) NOT NULL DEFAULT 1,
   `isFeatured` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Synced automatically from active featured promotions',
   `featuredPriority` int(11) NOT NULL DEFAULT 0,
@@ -221,11 +221,13 @@ CREATE TABLE IF NOT EXISTS `businesses` (
   `acceptsQuotes` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Accepts service requests (quotes) from customers',
   `createdAt` datetime(6) NOT NULL DEFAULT current_timestamp(6),
   `updatedAt` datetime(6) NOT NULL DEFAULT current_timestamp(6) ON UPDATE current_timestamp(6),
+  `osmId` varchar(40) DEFAULT NULL,
   `socialLinks` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '{ facebook, instagram, telegram, tiktok, youtube, x }' CHECK (json_valid(`socialLinks`)),
   `attributes` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'Free key/value details e.g. { specialty, experienceYears, languages }' CHECK (json_valid(`attributes`)),
   `amenities` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'Amenities/services list e.g. ["wifi","parking","delivery"]' CHECK (json_valid(`amenities`)),
   PRIMARY KEY (`id`),
   UNIQUE KEY `IDX_82ca19bc20713fdfa72626a5da` (`slug`),
+  UNIQUE KEY `IDX_83a0e4471f619c35f44ac44ddd` (`osmId`),
   KEY `IDX_31e657169754a8feaa08c17bc2` (`name`),
   KEY `IDX_02e7bfb8e766e8e0ef449cc0f3` (`ownerId`),
   KEY `IDX_4d7c89efebdcbe7f54e92f5eed` (`categoryId`),

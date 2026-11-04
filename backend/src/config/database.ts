@@ -11,7 +11,8 @@ export const AppDataSource = new DataSource({
   username: env.db.username,
   password: env.db.password,
   database: env.db.database,
-  synchronize: env.db.synchronize,
+  // never let TypeORM sync directly (it drops JSON columns on MariaDB) — see seed/sync.ts
+  synchronize: false,
   migrationsRun: false,
   logging: env.db.logging,
   entities,
@@ -23,6 +24,11 @@ export const AppDataSource = new DataSource({
 export const initializeDatabase = async (): Promise<void> => {
   try {
     await AppDataSource.initialize();
+    if (env.db.synchronize) {
+      const { safeSync } = await import('../seed/sync');
+      const n = await safeSync();
+      logger.info(`[Database] Safe schema sync done (${n} statements)`);
+    }
     logger.info(`[Database] Connected (synchronize=${env.db.synchronize})`);
   } catch (error) {
     logger.error('[Database] Failed to connect', { error: (error as Error).message });

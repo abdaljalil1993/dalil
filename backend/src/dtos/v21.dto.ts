@@ -211,3 +211,15 @@ export const otpVerifyDto = [
   body('cityId').optional({ values: 'falsy' }).isInt({ min: 1 }).toInt(),
 ];
 export const deviceDto = [body('token').isString().isLength({ min: 10, max: 300 }), body('platform').optional().isIn(['android', 'ios', 'web']), body('locale').optional().isIn(['ar', 'en'])];
+
+// ───────────── OSM import ─────────────
+export const osmImportDto = [
+  body('presets').isArray({ min: 1, max: 30 }),
+  body('presets.*').isString().isLength({ max: 40 }),
+  body('scope').isIn(['governorate', 'radius']),
+  body('cityId').isInt({ min: 1 }).toInt(),
+  body('radiusKm').optional().isFloat({ min: 1, max: 60 }).toFloat(),
+  body('dryRun').optional().isBoolean().toBoolean(),
+  body('updateExisting').optional().isBoolean().toBoolean(),
+];
+export const osmRemoveDto = [body('cityId').isInt({ min: 1 }).toInt(), body('scope').optional().isIn(['city', 'governorate']), body('dryRun').optional().isBoolean().toBoolean()];

@@ -46,7 +46,7 @@ npm run dev                 # http://localhost:4173
 cd backend && npm install && npm run db:sync && npm run seed   # seed آمن يتكرر: يضيف الناقص فقط (باقات، تصنيفات جديدة، أرقام طوارئ)
 cd ../frontend_web && npm install
 ```
-> ⚠️ `DB_SYNCHRONIZE=true` مع MariaDB بيمسح أعمدة JSON عند كل إقلاع — لهيك خليه `false` واستعمل `npm run db:sync`.
+> `npm run db:sync` آمن على MySQL و MariaDB (ما بيمسح بيانات أعمدة JSON). خلّي `DB_SYNCHRONIZE=false` واستعمل `db:sync` بعد كل تحديث.
 
 ## الاشتراكات
 كلها مجانية حالياً. للتفعيل: لوحة الإدارة ← الاشتراكات والمدفوعات ← تفعيل الاشتراكات المدفوعة.

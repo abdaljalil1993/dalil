@@ -1283,3 +1283,44 @@ Content-Type: application/json
   }
 }
 
+### What can be imported from OpenStreetMap (restaurants, hotels, pharmacies...)
+GET {{base}}/admin/osm/presets
+Authorization: Bearer {{token}}
+
+### Start an import job (background). dryRun=true only counts. Never duplicates (osmId + same name within 150 m)
+POST {{base}}/admin/osm/import
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "presets": [
+    "restaurants",
+    "hotels",
+    "pharmacies"
+  ],
+  "scope": "governorate",
+  "cityId": 6,
+  "radiusKm": 10,
+  "dryRun": true,
+  "updateExisting": false
+}
+
+### Recent import jobs
+GET {{base}}/admin/osm/jobs
+Authorization: Bearer {{token}}
+
+### Import job progress / result
+GET {{base}}/admin/osm/jobs/{{id}}
+Authorization: Bearer {{token}}
+
+### Undo: delete unclaimed imported places with no reviews in a city / governorate
+POST {{base}}/admin/osm/remove
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "cityId": 6,
+  "scope": "governorate",
+  "dryRun": true
+}
+

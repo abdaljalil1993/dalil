@@ -200,6 +200,11 @@
 | `GET` | `/features` | 🌐 Public | Which services are ON for a governorate (hide the rest in the apps) |
 | `GET` | `/features/admin` | 🛡️ Admin | Full switch configuration |
 | `PUT` | `/features/admin` | 🛡️ Admin | Turn services on/off — all governorates (cityIds: []) or only selected ones |
+| `GET` | `/admin/osm/presets` | 🛡️ Admin | What can be imported from OpenStreetMap (restaurants, hotels, pharmacies...) |
+| `POST` | `/admin/osm/import` | 🛡️ Admin | Start an import job (background). dryRun=true only counts. Never duplicates (osmId + same name within 150 m) |
+| `GET` | `/admin/osm/jobs` | 🛡️ Admin | Recent import jobs |
+| `GET` | `/admin/osm/jobs/:id` | 🛡️ Admin | Import job progress / result |
+| `POST` | `/admin/osm/remove` | 🛡️ Admin | Undo: delete unclaimed imported places with no reviews in a city / governorate |
 
 ## Details
 
@@ -1529,5 +1534,45 @@ Turn services on/off — all governorates (cityIds: []) or only selected ones �
       "enabled": false
     }
   }
+}
+```
+
+### Admin
+
+#### `GET /admin/osm/presets`
+What can be imported from OpenStreetMap (restaurants, hotels, pharmacies...) — 🛡️ Admin
+
+#### `POST /admin/osm/import`
+Start an import job (background). dryRun=true only counts. Never duplicates (osmId + same name within 150 m) — 🛡️ Admin
+
+```json
+{
+  "presets": [
+    "restaurants",
+    "hotels",
+    "pharmacies"
+  ],
+  "scope": "governorate",
+  "cityId": 6,
+  "radiusKm": 10,
+  "dryRun": true,
+  "updateExisting": false
+}
+```
+
+#### `GET /admin/osm/jobs`
+Recent import jobs — 🛡️ Admin
+
+#### `GET /admin/osm/jobs/:id`
+Import job progress / result — 🛡️ Admin
+
+#### `POST /admin/osm/remove`
+Undo: delete unclaimed imported places with no reviews in a city / governorate — 🛡️ Admin
+
+```json
+{
+  "cityId": 6,
+  "scope": "governorate",
+  "dryRun": true
 }
 ```

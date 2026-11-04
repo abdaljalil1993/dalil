@@ -25,6 +25,7 @@ router.use('/notifications', notificationRouter);
 router.use('/contact', contactRouter);
 router.use('/advertisements', adRouter);
 router.use('/featured', featuredRouter);
+router.use('/admin/osm', v.osm);
 router.use('/admin', adminRouter);
 router.use('/billing', v.billing);
 router.use('/offers', v.offers);

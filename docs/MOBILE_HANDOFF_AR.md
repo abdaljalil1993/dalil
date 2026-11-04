@@ -21,7 +21,8 @@
 14. **Push**: بعد الدخول سجّل توكن FCM: `POST /devices {token, platform: android|ios}` وعند الخروج `DELETE /devices/{token}`. الإشعار فيه `data.type` (نوع الإشعار) مع المعرّفات (مثل `businessId`, `requestId`, `appointmentId`) ← افتح الشاشة المناسبة حسب النوع.
 15. **الإعلانات المبوّبة** (عقارات/سيارات/وظائف): الحقول الخاصة بكل نوع من `GET /listings/fields` (لا تكتبها يدوياً) — الفلاتر `attr[key]=` و `attrMin[key]=` و `attrMax[key]=`. البحث النصي `q` للمسجّلين فقط.
 16. **مفاتيح الخدمات (مهم جداً):** عند فتح التطبيق وكل ما تغيّرت المدينة نادِ `GET /features?cityId=` ← `enabled.{offers, pharmacies, emergency, menu, bookings, serviceRequests, realEstate, cars, jobs, search, reviews, favorites, addBusiness, claims, reports, otpLogin, register, ads, featured, promote, subscriptions}`. أي خدمة `false` ← **أخفِ** زرها وشاشتها وتبويبها. إذا رجع `403` مع `code: FEATURE_DISABLED` اعرض «هذه الخدمة غير متاحة حالياً في منطقتك». خزّن النتيجة (cache) وحدّثها بالخلفية.
-17. التواريخ `YYYY-MM-DD` والأوقات `HH:MM` بتوقيت سوريا. المبالغ أرقام بالليرة السورية `SYP`.
+17. إذا النشاط فيه `dataSource: "osm"` اعرض سطر صغير «مصدر المعلومات: OpenStreetMap»، وحط بشاشة «حول التطبيق» جملة «بيانات الخرائط والأماكن © مساهمو OpenStreetMap» (شرط الترخيص).
+18. التواريخ `YYYY-MM-DD` والأوقات `HH:MM` بتوقيت سوريا. المبالغ أرقام بالليرة السورية `SYP`.
 
 ## الشاشات ← الـ API
 | الشاشة | Endpoints |

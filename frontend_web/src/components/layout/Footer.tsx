@@ -33,7 +33,7 @@ export const Footer = () => {
           <Grid item xs={6} md={2.5}>{col(t('footer.forBusiness'), [{ to: '/owner/businesses/new', label: t('footer.listFree') }, { to: '/owner/subscription', label: t('x.plans') }, { to: '/owner/promote', label: t('footer.advertise') }, { to: '/featured', label: t('nav.featured') }])}</Grid>
           <Grid item xs={6} md={2.5}>{col(t('footer.company'), [{ to: '/about', label: t('nav.about') }, { to: '/contact', label: t('nav.contact') }, { to: '/categories', label: t('nav.categories') }])}</Grid>
         </Grid>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 5 }}>© {new Date().getFullYear()} {t('app.name')} — {t('footer.rights')}</Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 5 }}>© {new Date().getFullYear()} {t('app.name')} — {t('footer.rights')} · {t('x.osmAttribution')}</Typography>
       </Container>
     </Box>
   );

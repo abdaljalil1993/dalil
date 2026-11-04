@@ -1,3 +1,4 @@
+import TravelExploreRounded from '@mui/icons-material/TravelExploreRounded';
 import ToggleOnRounded from '@mui/icons-material/ToggleOnRounded';
 import type { FeatureKey } from '@/api/types';
 import { useFeatures } from '@/hooks/useFeatures';
@@ -107,6 +108,7 @@ export const DashboardLayout = () => {
         { to: '/admin/ads', label: t('nav.ads'), icon: <ViewCarouselRounded />, badge: p?.ads },
         { to: '/admin/featured', label: t('nav.featuredMgmt'), icon: <BoltRounded />, badge: p?.featured },
         { to: '/admin/features', label: t('x.features'), icon: <ToggleOnRounded /> },
+        { to: '/admin/osm-import', label: t('x.osm'), icon: <TravelExploreRounded /> },
         { to: '/admin/billing', label: t('x.billing'), icon: <PaymentsRounded /> },
         { to: '/admin/listings', label: t('x.listingsMod'), icon: <CampaignOutlined /> },
         { to: '/admin/requests', label: t('x.requestsAdmin'), icon: <HandymanRounded /> },

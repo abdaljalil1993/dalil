@@ -86,6 +86,12 @@ export const env = {
     otpTtlMinutes: int(process.env.OTP_TTL_MINUTES, 5),
   },
 
+  osm: {
+    /** Overpass API endpoints (first that answers wins). Free; data © OpenStreetMap contributors (ODbL). */
+    overpassUrls: (process.env.OVERPASS_URLS || 'https://overpass-api.de/api/interpreter,https://overpass.kumi.systems/api/interpreter,https://overpass.private.coffee/api/interpreter')
+      .split(',').map((s) => s.trim()).filter(Boolean),
+  },
+
   firebase: {
     /** Path to a Firebase service-account JSON (or the JSON itself). Requires `npm i firebase-admin`. */
     serviceAccount: process.env.FIREBASE_SERVICE_ACCOUNT || '',

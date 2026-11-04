@@ -47,6 +47,13 @@ const x = {
     offers: 'العروض والخصومات', pharmacies: 'الصيدليات المناوبة', emergency: 'أرقام الطوارئ', menu: 'المنيو والمنتجات', bookings: 'حجز المواعيد', serviceRequests: 'اطلب خدمة (عروض أسعار)', realEstate: 'العقارات', cars: 'السيارات', jobs: 'الوظائف',
     ads: 'الإعلانات والبانرات', featured: 'الأنشطة المميزة', promote: 'طلبات الترويج', subscriptions: 'الباقات والاشتراكات' },
   catalogHint: 'لإخفاء مدينة أو تصنيف كامل استخدم زر "فعّال" من صفحتي المدن والتصنيفات.',
+  osm: 'استيراد من OpenStreetMap', osmSub: 'اسحب أماكن حقيقية (مطاعم، فنادق، صيدليات...) من خريطة OpenStreetMap المجانية — بدون تكرار',
+  osmWhere: 'المنطقة', osmWholeGov: 'المحافظة كاملة', osmRadius: 'حول المدينة', radiusKm: 'نصف القطر (كم)', osmWhat: 'شو بدك تسحب؟', selectAll: 'تحديد الكل', clearAll: 'إلغاء الكل',
+  osmUpdate: 'كمّل الناقص (هاتف، موقع، دوام) للأماكن المستوردة سابقاً', osmPreview: 'معاينة (بدون حفظ)', osmStart: 'ابدأ السحب', osmRunning: 'جارِ السحب من OpenStreetMap... (قد يأخذ دقيقة)',
+  osmFound: 'تم العثور', osmCreated: 'أضيف', osmWouldCreate: 'سيضاف', osmDup: 'موجود مسبقاً (تخطّي)', osmNoName: 'بدون اسم (تخطّي)', osmUpdated: 'تم تحديثه', osmSamples: 'أمثلة', osmHistory: 'آخر العمليات',
+  osmUndo: 'تراجع: حذف الأماكن المستوردة', osmUndoHint: 'يحذف فقط الأماكن المستوردة التي لم يطالب بها أحد ولا عليها تقييمات.', osmUndoCount: 'سيتم حذف {n} مكان', osmDeleted: 'تم حذف {n} مكان',
+  osmNote: 'البيانات من OpenStreetMap مجانية ومسموحة بشرط ذكر المصدر (مذكور تلقائياً بأسفل الموقع). جودتها تختلف: الاسم والموقع غالباً موجودين، الهاتف والدوام أحياناً. الأماكن المستوردة بتظهر مع زر "طلب ملكية" ليكمّل أصحابها معلوماتهم.',
+  osmSource: 'مصدر المعلومات: OpenStreetMap — قد لا تكون محدّثة.', osmAttribution: 'بيانات الخرائط والأماكن © مساهمو OpenStreetMap',
   // business page extras
   menu: 'المنيو / المنتجات والخدمات', bizOffers: 'عروض النشاط',
   // owner editor
