@@ -1,0 +1,1259 @@
+# Dalilak API - REST Client file (VS Code "REST Client" extension)
+@base = http://localhost:5003/api/v1
+@token = paste_access_token_here
+
+### Create account (role = user)
+POST {{base}}/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Fadi",
+  "lastName": "Ali",
+  "email": "fadi@example.com",
+  "password": "Secret123",
+  "phone": "+963991234567",
+  "cityId": 1
+}
+
+### Sign in - returns accessToken, refreshToken, user
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "fadi@example.com",
+  "password": "Secret123"
+}
+
+### Rotate tokens (old refresh token is revoked)
+POST {{base}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "..."
+}
+
+### Revoke a refresh token
+POST {{base}}/auth/logout
+Content-Type: application/json
+
+{
+  "refreshToken": "..."
+}
+
+### Revoke all sessions of the current user
+POST {{base}}/auth/logout-all
+Authorization: Bearer {{token}}
+
+### Change password (revokes other sessions)
+POST {{base}}/auth/change-password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "currentPassword": "Secret123",
+  "newPassword": "NewSecret456"
+}
+
+### Send reset link by email
+POST {{base}}/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "fadi@example.com"
+}
+
+### Set a new password using the emailed token
+POST {{base}}/auth/reset-password
+Content-Type: application/json
+
+{
+  "token": "...",
+  "newPassword": "NewSecret456"
+}
+
+### Current user
+GET {{base}}/auth/me
+Authorization: Bearer {{token}}
+
+### My profile + counters
+GET {{base}}/users/me
+Authorization: Bearer {{token}}
+
+### Update my profile
+PUT {{base}}/users/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "firstName": "Fadi",
+  "lastName": "Ali",
+  "phone": "+963...",
+  "bio": "...",
+  "cityId": 1
+}
+
+### Upload avatar
+POST {{base}}/users/me/avatar
+Authorization: Bearer {{token}}
+
+### List users
+GET {{base}}/users
+Authorization: Bearer {{token}}
+
+### User details
+GET {{base}}/users/{{id}}
+Authorization: Bearer {{token}}
+
+### Activate / suspend user
+PATCH {{base}}/users/{{id}}/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "suspended"
+}
+
+### Change user role
+PATCH {{base}}/users/{{id}}/role
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "role": "business_owner"
+}
+
+### Browse approved businesses (filters, no text search)
+GET {{base}}/businesses
+Authorization: Bearer {{token}}
+
+### Search (text + filters + geo) - logs the query
+GET {{base}}/businesses/search
+Authorization: Bearer {{token}}
+
+### Autocomplete (businesses, categories, sub-categories)
+GET {{base}}/businesses/suggest
+Authorization: Bearer {{token}}
+
+### My businesses (all statuses)
+GET {{base}}/businesses/my
+Authorization: Bearer {{token}}
+
+### All businesses for moderation
+GET {{base}}/businesses/admin/all
+Authorization: Bearer {{token}}
+
+### Full business record for editing (owner/admin)
+GET {{base}}/businesses/manage/{{id}}
+Authorization: Bearer {{token}}
+
+### Business details by slug or id (+ ratingBreakdown, viewer.isFavorite, viewer.myReview)
+GET {{base}}/businesses/{{slug}}
+Authorization: Bearer {{token}}
+
+### Similar businesses
+GET {{base}}/businesses/{{slug}}/related
+
+### Track contact click (phone/whatsapp/directions/website)
+POST {{base}}/businesses/{{id}}/track
+Content-Type: application/json
+
+{
+  "type": "phone"
+}
+
+### Submit a business (pending review). Admin → published directly. isOwner=false → suggestion
+POST {{base}}/businesses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "عيادة د. أحمد للعيون",
+  "nameEn": "Dr. Ahmad Eye Clinic",
+  "categoryId": 1,
+  "subCategoryId": 3,
+  "cityId": 1,
+  "shortDescription": "استشاري طب وجراحة العيون",
+  "description": "...",
+  "address": "شارع بغداد، بناء 12",
+  "district": "الزراعة",
+  "latitude": 35.5317,
+  "longitude": 35.7915,
+  "phone": "041 123 456",
+  "whatsapp": "+963991234567",
+  "website": "https://example.com",
+  "socialLinks": {
+    "facebook": "https://facebook.com/..."
+  },
+  "priceRange": 2,
+  "attributes": {
+    "specialty": "جراحة الشبكية",
+    "experienceYears": 15
+  },
+  "amenities": [
+    "parking",
+    "card_payment"
+  ],
+  "tags": [
+    "عيون",
+    "ليزر"
+  ],
+  "isOwner": true,
+  "workingHours": [
+    {
+      "dayOfWeek": 0,
+      "openTime": "09:00",
+      "closeTime": "17:00"
+    },
+    {
+      "dayOfWeek": 5,
+      "isClosed": true
+    }
+  ]
+}
+
+### Update business (owner/admin)
+PUT {{base}}/businesses/{{id}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "عيادة د. أحمد للعيون",
+  "nameEn": "Dr. Ahmad Eye Clinic",
+  "categoryId": 1,
+  "subCategoryId": 3,
+  "cityId": 1,
+  "shortDescription": "استشاري طب وجراحة العيون",
+  "description": "...",
+  "address": "شارع بغداد، بناء 12",
+  "district": "الزراعة",
+  "latitude": 35.5317,
+  "longitude": 35.7915,
+  "phone": "041 123 456",
+  "whatsapp": "+963991234567",
+  "website": "https://example.com",
+  "socialLinks": {
+    "facebook": "https://facebook.com/..."
+  },
+  "priceRange": 2,
+  "attributes": {
+    "specialty": "جراحة الشبكية",
+    "experienceYears": 15
+  },
+  "amenities": [
+    "parking",
+    "card_payment"
+  ],
+  "tags": [
+    "عيون",
+    "ليزر"
+  ],
+  "workingHours": [
+    {
+      "dayOfWeek": 0,
+      "openTime": "09:00",
+      "closeTime": "17:00"
+    },
+    {
+      "dayOfWeek": 5,
+      "isClosed": true
+    }
+  ]
+}
+
+### Delete business (owner/admin)
+DELETE {{base}}/businesses/{{id}}
+Authorization: Bearer {{token}}
+
+### Business analytics (views, clicks, ratings)
+GET {{base}}/businesses/{{id}}/stats
+Authorization: Bearer {{token}}
+
+### Approve / reject / suspend
+PATCH {{base}}/businesses/{{id}}/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "approved",
+  "adminNote": "optional reason"
+}
+
+### Alias of /status (backward compatible)
+PATCH {{base}}/businesses/{{id}}/approve
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "approved"
+}
+
+### Set verified / active / owner
+PATCH {{base}}/businesses/{{id}}/flags
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "isVerified": true,
+  "isActive": true,
+  "ownerId": "uuid"
+}
+
+### Upload gallery images
+POST {{base}}/businesses/{{id}}/images
+Authorization: Bearer {{token}}
+
+### Delete gallery image
+DELETE {{base}}/businesses/{{id}}/images/{{imageId}}
+Authorization: Bearer {{token}}
+
+### Set primary image
+PATCH {{base}}/businesses/{{id}}/images/{{imageId}}/primary
+Authorization: Bearer {{token}}
+
+### Upload cover image
+POST {{base}}/businesses/{{id}}/cover
+Authorization: Bearer {{token}}
+
+### Upload logo
+POST {{base}}/businesses/{{id}}/logo
+Authorization: Bearer {{token}}
+
+### Replace working hours (dayOfWeek 0=Sunday)
+PUT {{base}}/businesses/{{id}}/hours
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "hours": [
+    {
+      "dayOfWeek": 0,
+      "openTime": "09:00",
+      "closeTime": "17:00"
+    },
+    {
+      "dayOfWeek": 5,
+      "isClosed": true
+    }
+  ]
+}
+
+### Alias of PUT /hours
+POST {{base}}/businesses/{{id}}/hours
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "hours": [
+    {
+      "dayOfWeek": 0,
+      "openTime": "09:00",
+      "closeTime": "17:00"
+    },
+    {
+      "dayOfWeek": 5,
+      "isClosed": true
+    }
+  ]
+}
+
+### Business reviews
+GET {{base}}/businesses/{{businessId}}/reviews
+Authorization: Bearer {{token}}
+
+### Rate & review (one per user, edit via PUT /reviews/:id)
+POST {{base}}/businesses/{{businessId}}/reviews
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "rating": 5,
+  "content": "خدمة ممتازة"
+}
+
+### Report wrong info / spam / fake review
+POST {{base}}/businesses/{{businessId}}/reports
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "type": "wrong_info",
+  "description": "رقم الهاتف خاطئ",
+  "reviewId": null
+}
+
+### Claim ownership of a listing added by admin
+POST {{base}}/businesses/{{businessId}}/claim
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "message": "أنا صاحب العيادة",
+  "phone": "+963...",
+  "proofUrl": null
+}
+
+### Home feed: categories, cities, ads, featured, top rated, newest, stats
+GET {{base}}/home
+
+### All categories with sub-categories and business counts
+GET {{base}}/categories
+Authorization: Bearer {{token}}
+
+### Category by slug or id
+GET {{base}}/categories/{{slug}}
+
+### Create category
+POST {{base}}/categories
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "أطباء",
+  "nameEn": "Doctors",
+  "icon": "LocalHospital",
+  "color": "#EF4444",
+  "keywords": "طبيب,دكتور,عيادة",
+  "sortOrder": 1
+}
+
+### Update category
+PUT {{base}}/categories/{{id}}
+Authorization: Bearer {{token}}
+
+### Delete category (only if empty)
+DELETE {{base}}/categories/{{id}}
+Authorization: Bearer {{token}}
+
+### Upload category image
+POST {{base}}/categories/{{id}}/image
+Authorization: Bearer {{token}}
+
+### Create sub-category
+POST {{base}}/categories/sub
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "categoryId": 1,
+  "name": "طب العيون",
+  "nameEn": "Ophthalmology",
+  "keywords": "عيون,طبيب عيون,نظارات"
+}
+
+### Update sub-category
+PUT {{base}}/categories/sub/{{id}}
+Authorization: Bearer {{token}}
+
+### Delete sub-category
+DELETE {{base}}/categories/sub/{{id}}
+Authorization: Bearer {{token}}
+
+### All cities with business counts
+GET {{base}}/cities
+Authorization: Bearer {{token}}
+
+### City by id or slug
+GET {{base}}/cities/{{id}}
+
+### Create city
+POST {{base}}/cities
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "اللاذقية",
+  "nameEn": "Latakia",
+  "state": "اللاذقية",
+  "country": "سوريا",
+  "latitude": 35.5317,
+  "longitude": 35.7915
+}
+
+### Update city
+PUT {{base}}/cities/{{id}}
+Authorization: Bearer {{token}}
+
+### Delete city (only if empty)
+DELETE {{base}}/cities/{{id}}
+Authorization: Bearer {{token}}
+
+### My reviews
+GET {{base}}/reviews/my
+Authorization: Bearer {{token}}
+
+### Reviews on my businesses (owner inbox)
+GET {{base}}/reviews/owner
+Authorization: Bearer {{token}}
+
+### All reviews (moderation)
+GET {{base}}/reviews/admin/all
+Authorization: Bearer {{token}}
+
+### Edit my review
+PUT {{base}}/reviews/{{id}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "rating": 4,
+  "content": "..."
+}
+
+### Delete my review (admin: any)
+DELETE {{base}}/reviews/{{id}}
+Authorization: Bearer {{token}}
+
+### Owner reply (create/replace)
+POST {{base}}/reviews/{{id}}/reply
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "reply": "شكراً لك"
+}
+
+### Remove owner reply
+DELETE {{base}}/reviews/{{id}}/reply
+Authorization: Bearer {{token}}
+
+### Toggle "helpful"
+POST {{base}}/reviews/{{id}}/like
+Authorization: Bearer {{token}}
+
+### Hide / show review
+PATCH {{base}}/reviews/{{id}}/visibility
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "isHidden": true
+}
+
+### My favorites
+GET {{base}}/favorites
+Authorization: Bearer {{token}}
+
+### Toggle favorite
+POST {{base}}/favorites/{{businessId}}
+Authorization: Bearer {{token}}
+
+### Add favorite (idempotent)
+PUT {{base}}/favorites/{{businessId}}
+Authorization: Bearer {{token}}
+
+### Remove favorite
+DELETE {{base}}/favorites/{{businessId}}
+Authorization: Bearer {{token}}
+
+### Is favorite?
+GET {{base}}/favorites/{{businessId}}/check
+Authorization: Bearer {{token}}
+
+### All reports
+GET {{base}}/reports
+Authorization: Bearer {{token}}
+
+### Update report status
+PATCH {{base}}/reports/{{id}}/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "resolved",
+  "adminNote": "..."
+}
+
+### My ownership claims
+GET {{base}}/claims/my
+Authorization: Bearer {{token}}
+
+### All claims
+GET {{base}}/claims
+Authorization: Bearer {{token}}
+
+### Approve / reject claim (approve → user becomes owner)
+PATCH {{base}}/claims/{{id}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "approved",
+  "adminNote": ""
+}
+
+### My notifications
+GET {{base}}/notifications
+Authorization: Bearer {{token}}
+
+### Unread badge count
+GET {{base}}/notifications/unread-count
+Authorization: Bearer {{token}}
+
+### Mark all as read
+PATCH {{base}}/notifications/read-all
+Authorization: Bearer {{token}}
+
+### Mark one as read
+PATCH {{base}}/notifications/{{id}}/read
+Authorization: Bearer {{token}}
+
+### Delete notification
+DELETE {{base}}/notifications/{{id}}
+Authorization: Bearer {{token}}
+
+### Send a message to the platform team
+POST {{base}}/contact
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Fadi",
+  "email": "a@b.com",
+  "phone": "",
+  "subject": "اقتراح",
+  "message": "نص الرسالة..."
+}
+
+### Inbox
+GET {{base}}/contact
+Authorization: Bearer {{token}}
+
+### Mark read/unread
+PATCH {{base}}/contact/{{id}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "isRead": true
+}
+
+### Delete message
+DELETE {{base}}/contact/{{id}}
+Authorization: Bearer {{token}}
+
+### Active ads
+GET {{base}}/advertisements/active
+
+### Track click
+POST {{base}}/advertisements/{{id}}/click
+
+### Track impression
+POST {{base}}/advertisements/{{id}}/impression
+
+### My ad requests
+GET {{base}}/advertisements/my
+Authorization: Bearer {{token}}
+
+### Request an ad (owner) - pending until admin activates
+POST {{base}}/advertisements/request
+Authorization: Bearer {{token}}
+
+### All ads
+GET {{base}}/advertisements
+Authorization: Bearer {{token}}
+
+### Create ad (JSON or multipart with "image")
+POST {{base}}/advertisements
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "عرض خاص",
+  "placement": "home_slider",
+  "startDate": "2026-11-01",
+  "endDate": "2026-12-01",
+  "targetUrl": "https://...",
+  "imageUrl": "https://...",
+  "priority": 10,
+  "cityId": null,
+  "categoryId": null,
+  "businessId": null,
+  "status": "active"
+}
+
+### Update ad / approve request (status=active)
+PUT {{base}}/advertisements/{{id}}
+Authorization: Bearer {{token}}
+
+### Delete ad
+DELETE {{base}}/advertisements/{{id}}
+Authorization: Bearer {{token}}
+
+### Currently featured businesses
+GET {{base}}/featured/active
+
+### My featured requests
+GET {{base}}/featured/my
+Authorization: Bearer {{token}}
+
+### Request featuring my business
+POST {{base}}/featured/request
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "businessId": "uuid",
+  "startDate": "2026-11-01",
+  "endDate": "2026-12-01",
+  "note": "أرغب بباقة شهر"
+}
+
+### All featured entries
+GET {{base}}/featured
+Authorization: Bearer {{token}}
+
+### Feature a business
+POST {{base}}/featured
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "businessId": "uuid",
+  "startDate": "2026-11-01",
+  "endDate": "2026-12-01",
+  "priority": 5,
+  "price": 50000
+}
+
+### Update / approve request
+PUT {{base}}/featured/{{id}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "active"
+}
+
+### Remove featured entry
+DELETE {{base}}/featured/{{id}}
+Authorization: Bearer {{token}}
+
+### Totals, pending actions, 12-month charts, top/recent businesses
+GET {{base}}/admin/dashboard/stats
+Authorization: Bearer {{token}}
+
+### Top searches & zero-result searches
+GET {{base}}/admin/dashboard/searches
+Authorization: Bearer {{token}}
+
+### Audit trail of write actions
+GET {{base}}/admin/audit-logs
+Authorization: Bearer {{token}}
+
+### Public settings (billingEnabled, support contacts, payment instructions)
+GET {{base}}/billing/settings/public
+
+### All platform settings
+GET {{base}}/billing/settings
+Authorization: Bearer {{token}}
+
+### Update settings — billingEnabled=true starts enforcing plan limits
+PUT {{base}}/billing/settings
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "billingEnabled": false,
+  "paymentInstructions": "...",
+  "listingsRequireApproval": true,
+  "listingDurationDays": 60
+}
+
+### Plans (all=true for admin to include inactive)
+GET {{base}}/billing/plans
+Authorization: Bearer {{token}}
+
+### Create plan
+POST {{base}}/billing/plans
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "code": "gold",
+  "name": "الذهبية",
+  "priceMonthly": 100000,
+  "priceYearly": 1000000,
+  "features": {
+    "maxImages": 30,
+    "maxItems": -1,
+    "maxActiveOffers": 10,
+    "maxActiveListings": 20,
+    "bookings": true,
+    "quotes": true,
+    "advancedStats": true,
+    "verifiedBadge": true,
+    "priorityBoost": 20,
+    "featuredDaysPerMonth": 7,
+    "socialLinks": true,
+    "whatsappButton": true
+  }
+}
+
+### Update plan
+PUT {{base}}/billing/plans/{{id}}
+Authorization: Bearer {{token}}
+
+### Delete plan (only if unused)
+DELETE {{base}}/billing/plans/{{id}}
+Authorization: Bearer {{token}}
+
+### My subscription requests & history
+GET {{base}}/billing/subscriptions/my
+Authorization: Bearer {{token}}
+
+### Owner requests a plan (pending until payment confirmed)
+POST {{base}}/billing/subscriptions/request
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "businessId": "uuid",
+  "planId": 2,
+  "period": "monthly",
+  "method": "sham_cash",
+  "reference": "TX123",
+  "note": ""
+}
+
+### All subscriptions
+GET {{base}}/billing/subscriptions
+Authorization: Bearer {{token}}
+
+### Grant a subscription directly
+POST {{base}}/billing/subscriptions
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "businessId": "uuid",
+  "planId": 2,
+  "period": "monthly",
+  "amount": 50000,
+  "method": "cash"
+}
+
+### Update subscription (status / endDate / plan)
+PATCH {{base}}/billing/subscriptions/{{id}}
+Authorization: Bearer {{token}}
+
+### Payments ledger
+GET {{base}}/billing/payments
+Authorization: Bearer {{token}}
+
+### Record a manual payment (featured, ad, other)
+POST {{base}}/billing/payments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "businessId": "uuid",
+  "purpose": "featured",
+  "amount": 25000,
+  "method": "sham_cash",
+  "reference": ""
+}
+
+### Confirm (activates subscription) / reject payment
+PATCH {{base}}/billing/payments/{{id}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "confirmed",
+  "adminNote": ""
+}
+
+### Current plan, features & usage of a business
+GET {{base}}/businesses/{{id}}/entitlements
+Authorization: Bearer {{token}}
+
+### Menu / products / services grouped by section (all=true for owner incl. hidden)
+GET {{base}}/businesses/{{id}}/items
+Authorization: Bearer {{token}}
+
+### Add item (JSON or multipart with "image")
+POST {{base}}/businesses/{{id}}/items
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "section": "مشاوي",
+  "name": "شيش طاووق",
+  "description": "...",
+  "price": 45000,
+  "oldPrice": null,
+  "unit": "للسيخ",
+  "durationMinutes": null,
+  "isPopular": true
+}
+
+### Update item
+PUT {{base}}/businesses/{{id}}/items/{{itemId}}
+Authorization: Bearer {{token}}
+
+### Delete item
+DELETE {{base}}/businesses/{{id}}/items/{{itemId}}
+Authorization: Bearer {{token}}
+
+### Business offers (owner sees all incl. expired)
+GET {{base}}/businesses/{{id}}/offers
+Authorization: Bearer {{token}}
+
+### Publish offer (JSON or multipart with "image")
+POST {{base}}/businesses/{{id}}/offers
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "خصم 20%",
+  "description": "...",
+  "discountPercent": 20,
+  "startDate": "2026-11-01",
+  "endDate": "2026-11-30",
+  "couponCode": "DALIL20"
+}
+
+### Update offer
+PUT {{base}}/businesses/{{id}}/offers/{{offerId}}
+Authorization: Bearer {{token}}
+
+### Delete offer
+DELETE {{base}}/businesses/{{id}}/offers/{{offerId}}
+Authorization: Bearer {{token}}
+
+### Upcoming on-duty dates of a pharmacy
+GET {{base}}/businesses/{{id}}/duties
+
+### Replace upcoming on-duty dates
+PUT {{base}}/businesses/{{id}}/duties
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "duties": [
+    {
+      "date": "2026-11-07",
+      "startTime": "20:00",
+      "endTime": "08:00",
+      "note": ""
+    }
+  ]
+}
+
+### Enable bookings / quotes and configure slots
+PUT {{base}}/businesses/{{id}}/booking-settings
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "bookingEnabled": true,
+  "bookingMode": "slot",
+  "slotMinutes": 30,
+  "slotCapacity": 1,
+  "bookingDaysAhead": 30,
+  "bookingAutoConfirm": false,
+  "acceptsQuotes": true
+}
+
+### Free slots for a date
+GET {{base}}/businesses/{{id}}/availability
+
+### Book an appointment / day
+POST {{base}}/businesses/{{id}}/appointments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "date": "2026-11-08",
+  "time": "10:30",
+  "itemId": null,
+  "partySize": 1,
+  "note": ""
+}
+
+### Active offers & discounts
+GET {{base}}/offers
+
+### On-duty pharmacies for a date (default today)
+GET {{base}}/pharmacies/on-duty
+
+### Set on-duty pharmacies for a date (bulk)
+PUT {{base}}/pharmacies/on-duty
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "date": "2026-11-07",
+  "businessIds": [
+    "uuid"
+  ]
+}
+
+### Emergency & public service numbers (nationwide + city)
+GET {{base}}/emergency
+
+### All numbers
+GET {{base}}/emergency/admin
+Authorization: Bearer {{token}}
+
+### Add number
+POST {{base}}/emergency
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "cityId": null,
+  "type": "ambulance",
+  "name": "الإسعاف",
+  "phone": "110"
+}
+
+### Update number
+PUT {{base}}/emergency/{{id}}
+Authorization: Bearer {{token}}
+
+### Delete number
+DELETE {{base}}/emergency/{{id}}
+Authorization: Bearer {{token}}
+
+### Field definitions per type (build forms & filters from it)
+GET {{base}}/listings/fields
+
+### Browse active listings with filters
+GET {{base}}/listings
+Authorization: Bearer {{token}}
+
+### My listings (all statuses)
+GET {{base}}/listings/my
+Authorization: Bearer {{token}}
+
+### All listings for moderation
+GET {{base}}/listings/admin/all
+Authorization: Bearer {{token}}
+
+### My job applications
+GET {{base}}/listings/applications/my
+Authorization: Bearer {{token}}
+
+### Update applicant status (job owner)
+PATCH {{base}}/listings/applications/{{id}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "shortlisted"
+}
+
+### Listing details by slug or id
+GET {{base}}/listings/{{slug}}
+Authorization: Bearer {{token}}
+
+### Post a listing (pending review if enabled)
+POST {{base}}/listings
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "type": "real_estate",
+  "purpose": "rent",
+  "title": "شقة 3 غرف مفروشة",
+  "description": "...",
+  "price": 1500000,
+  "pricePeriod": "monthly",
+  "cityId": 6,
+  "district": "الزراعة",
+  "attributes": {
+    "propertyType": "apartment",
+    "rooms": 3,
+    "bathrooms": 2,
+    "area": 140,
+    "floor": 2,
+    "furnished": true,
+    "ownership": "green_deed",
+    "hasSolar": true
+  },
+  "contactPhone": "0944...",
+  "businessId": null
+}
+
+### Update my listing
+PUT {{base}}/listings/{{id}}
+Authorization: Bearer {{token}}
+
+### Close (sold/rented/filled) or re-open
+PATCH {{base}}/listings/{{id}}/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "closed"
+}
+
+### Delete my listing
+DELETE {{base}}/listings/{{id}}
+Authorization: Bearer {{token}}
+
+### Upload images (field "images", max 15 total)
+POST {{base}}/listings/{{id}}/images
+Authorization: Bearer {{token}}
+
+### Remove image by index
+DELETE {{base}}/listings/{{id}}/images/{{index}}
+Authorization: Bearer {{token}}
+
+### Approve / reject / feature
+PATCH {{base}}/listings/{{id}}/moderate
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "active",
+  "adminNote": "",
+  "isFeatured": false
+}
+
+### Apply to a job (JSON or multipart with "image" = CV image)
+POST {{base}}/listings/{{id}}/apply
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "message": "أرغب بالتقدم...",
+  "phone": "0944...",
+  "cvUrl": null
+}
+
+### Applicants of my job post
+GET {{base}}/listings/{{id}}/applications
+Authorization: Bearer {{token}}
+
+### Request a service — matching businesses are notified (multipart "images" optional)
+POST {{base}}/service-requests
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "categoryId": 9,
+  "subCategoryId": 46,
+  "cityId": 6,
+  "district": "الزراعة",
+  "title": "تركيب منظومة طاقة شمسية",
+  "description": "منزل 3 غرف، بدي ألواح وبطارية ليثيوم...",
+  "budget": 15000000,
+  "preferredDate": "2026-11-10",
+  "sharePhone": true
+}
+
+### My requests
+GET {{base}}/service-requests/my
+Authorization: Bearer {{token}}
+
+### Open requests matching my businesses
+GET {{base}}/service-requests/inbox
+Authorization: Bearer {{token}}
+
+### All requests
+GET {{base}}/service-requests/admin/all
+Authorization: Bearer {{token}}
+
+### Request details + quotes
+GET {{base}}/service-requests/{{id}}
+Authorization: Bearer {{token}}
+
+### Close / cancel / re-open my request
+PATCH {{base}}/service-requests/{{id}}/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "closed"
+}
+
+### Send / update a quote from my business
+POST {{base}}/service-requests/{{id}}/quotes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "businessId": "uuid",
+  "price": 14000000,
+  "message": "نركّب خلال يومين مع ضمان سنة",
+  "etaDays": 2
+}
+
+### Accept / reject a quote (request owner)
+PATCH {{base}}/service-requests/quotes/{{id}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "accepted"
+}
+
+### Withdraw my quote
+DELETE {{base}}/service-requests/quotes/{{id}}
+Authorization: Bearer {{token}}
+
+### My bookings (upcoming; all=true for history)
+GET {{base}}/appointments/my
+Authorization: Bearer {{token}}
+
+### Bookings of my businesses
+GET {{base}}/appointments/owner
+Authorization: Bearer {{token}}
+
+### Owner: confirm/reject/complete/no_show · Customer: cancel
+PATCH {{base}}/appointments/{{id}}/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "confirmed",
+  "ownerNote": ""
+}
+
+### Send a 6-digit code by SMS (dev: returned as devCode)
+POST {{base}}/auth/otp/request
+Content-Type: application/json
+
+{
+  "phone": "0944123456"
+}
+
+### Verify code → tokens (creates account if new: firstName/lastName required)
+POST {{base}}/auth/otp/verify
+Content-Type: application/json
+
+{
+  "phone": "0944123456",
+  "code": "123456",
+  "firstName": "فادي",
+  "lastName": "علي",
+  "cityId": 6
+}
+
+### Signed-in user verifies/changes phone
+POST {{base}}/auth/otp/verify-phone
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "phone": "0944123456",
+  "code": "123456"
+}
+
+### Register FCM token for push notifications
+POST {{base}}/devices
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "token": "fcm-token",
+  "platform": "android",
+  "locale": "ar"
+}
+
+### Unregister FCM token (on logout)
+DELETE {{base}}/devices/{{token}}
+Authorization: Bearer {{token}}
+
