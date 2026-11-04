@@ -14,7 +14,7 @@
 7. عند الضغط على اتصال/واتساب/اتجاهات/موقع ← `POST /businesses/{id}/track {type}` (إحصائيات صاحب النشاط).
 8. الإعلانات: عند ظهور الإعلان `POST /advertisements/{id}/impression`، عند الضغط `/click`. `targetUrl` إذا بلّش بـ `/b/` أو `/c/` افتحه داخل التطبيق (deep link).
 9. رفع الصور `multipart/form-data`: حقل `image` (مفرد) أو `images` (متعدد ≤10)، ≤5MB، jpg/png/webp. اضغط الصورة قبل الرفع.
-10. واتساب: حوّل `09xxxxxxxx` إلى `9639xxxxxxxx` ← `https://wa.me/...`. الاتجاهات: `https://www.google.com/maps/dir/?api=1&destination=lat,lng`.
+10. واتساب: حوّل `09xxxxxxxx` إلى `9639xxxxxxxx` ← `https://wa.me/...`. الاتجاهات: `https://www.google.com/maps/dir/?api=1&destination=lat,lng&travelmode=driving` — وإذا عندك موقع المستخدم (GPS) ضيف `&origin=lat,lng` (بدونه Google بيحزر موقعك من الـ IP/VPN وبيطلع مسار غلط)، أو افتح تطبيق الخرائط مباشرة `google.navigation:q=lat,lng` على أندرويد.
 11. `Accept-Language: ar|en` بالهيدر، والأسماء: استخدم `nameEn` إذا اللغة إنجليزي وموجود وإلا `name`.
 12. **الباقات (402)**: إذا رجع الخطأ `status 402` مع `code: PLAN_LIMIT` أو `PLAN_FEATURE` ← اعرض BottomSheet «هذه الميزة تحتاج ترقية باقتك» وزر يفتح شاشة الباقات. حالياً الاشتراكات مطفية فما رح يطلع، بس لازم يكون جاهز.
 13. **OTP**: `POST /auth/otp/request {phone}` ← `isNewUser` (إذا true اطلب الاسم الأول والأخير) ← `POST /auth/otp/verify {phone, code, firstName?, lastName?}` يرجع نفس رد الدخول. بوضع التطوير بيرجع `devCode`.

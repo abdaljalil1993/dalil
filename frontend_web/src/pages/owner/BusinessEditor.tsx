@@ -256,7 +256,7 @@ export const BusinessEditor = () => {
           </Grid>
           <LocationPicker lat={f.latitude} lng={f.longitude} fallback={fallbackCenter} onChange={(lat, lng) => setF((s) => ({ ...s, latitude: lat, longitude: lng }))} />
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ mt: 2 }} alignItems={{ sm: 'center' }}>
-            <Button variant="outlined" startIcon={<MyLocationRounded />} disabled={geo.loading} onClick={async () => { const c = await geo.locate(); if (c) setF((s) => ({ ...s, latitude: c.lat, longitude: c.lng })); else notify.error(t('search.locationDenied')); }}>{t('owner.useMyLocation')}</Button>
+            <Button variant="outlined" startIcon={<MyLocationRounded />} disabled={geo.loading} onClick={async () => { const c = await geo.locate(); if (c) setF((s) => ({ ...s, latitude: c.lat, longitude: c.lng })); else notify.error(geo.reason() === 'outside' ? t('x.geoOutside') : t('search.locationDenied')); }}>{t('owner.useMyLocation')}</Button>
             <TextField size="small" type="number" label={t('owner.lat')} value={f.latitude ?? ''} onChange={(e) => set('latitude', e.target.value === '' ? null : Number(e.target.value))} />
             <TextField size="small" type="number" label={t('owner.lng')} value={f.longitude ?? ''} onChange={(e) => set('longitude', e.target.value === '' ? null : Number(e.target.value))} />
           </Stack>

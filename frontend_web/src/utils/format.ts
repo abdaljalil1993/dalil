@@ -8,9 +8,9 @@ export const waLink = (p?: string | null, text?: string): string => {
   if (n.startsWith('09')) n = `963${n.slice(1)}`; // Syrian mobile local → international
   return `https://wa.me/${n}${text ? `?text=${encodeURIComponent(text)}` : ''}`;
 };
-export const mapsLink = (lat?: number | null, lng?: number | null, label?: string): string =>
+export const mapsLink = (lat?: number | null, lng?: number | null, label?: string, origin?: { lat: number; lng: number } | null): string =>
   lat != null && lng != null
-    ? `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
+    ? `https://www.google.com/maps/dir/?api=1&destination=${Number(lat)},${Number(lng)}&travelmode=driving${origin ? `&origin=${origin.lat},${origin.lng}` : ''}`
     : label
       ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(label)}`
       : '';
@@ -46,3 +46,30 @@ export const formatPrice = (value: number | string | null | undefined, currency 
 
 export const isoDay = (offset = 0) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Damascus' }).format(new Date(Date.now() + offset * 864e5));
 export const limitLabel = (n: number, unlimited: string) => (n === -1 ? unlimited : String(n));
+
+/**
+ * Opens Google Maps directions FROM the user's real GPS position (not the IP/VPN guess Google uses otherwise).
+ * The tab is opened synchronously (no popup blocking), then pointed at the final URL.
+ */
+export const openDirections = (lat?: number | null, lng?: number | null, label?: string) => {
+  const fallback = mapsLink(lat, lng, label);
+  if (!fallback) return;
+  const win = window.open('about:blank', '_blank');
+  const go = (url: string) => { if (win) win.location.href = url; else window.location.href = url; };
+  if (lat == null || lng == null || !navigator.geolocation) return go(fallback);
+  let done = false;
+  const timer = setTimeout(() => { if (!done) { done = true; go(fallback); } }, 4000);
+  navigator.geolocation.getCurrentPosition(
+    (p) => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      const o = { lat: Number(p.coords.latitude.toFixed(6)), lng: Number(p.coords.longitude.toFixed(6)) };
+      // VPN / IP guesses (e.g. Malta, Greece) or very rough positions → let Google Maps ask the user instead
+      const plausible = o.lat >= 32.2 && o.lat <= 37.5 && o.lng >= 35.5 && o.lng <= 42.5 && p.coords.accuracy <= 5000;
+      go(plausible ? mapsLink(lat, lng, label, o) : fallback);
+    },
+    () => { if (done) return; done = true; clearTimeout(timer); go(fallback); },
+    { enableHighAccuracy: true, timeout: 3500, maximumAge: 120_000 },
+  );
+};

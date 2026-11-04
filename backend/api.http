@@ -1305,6 +1305,23 @@ Content-Type: application/json
   "updateExisting": false
 }
 
+### Get the Overpass query + an overpass-turbo.eu link (for "Import from file" when the server has no internet access)
+POST {{base}}/admin/osm/query
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "presets": [
+    "restaurants"
+  ],
+  "scope": "governorate",
+  "cityId": 6
+}
+
+### Import from a JSON file exported from Overpass Turbo (multipart: file + presets="a,b" + cityId + dryRun)
+POST {{base}}/admin/osm/import-file
+Authorization: Bearer {{token}}
+
 ### Recent import jobs
 GET {{base}}/admin/osm/jobs
 Authorization: Bearer {{token}}

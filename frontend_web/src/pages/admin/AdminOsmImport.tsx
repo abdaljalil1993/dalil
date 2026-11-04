@@ -3,6 +3,9 @@ import TravelExploreRounded from '@mui/icons-material/TravelExploreRounded';
 import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
 import VisibilityRounded from '@mui/icons-material/VisibilityRounded';
 import DeleteSweepRounded from '@mui/icons-material/DeleteSweepRounded';
+import OpenInNewRounded from '@mui/icons-material/OpenInNewRounded';
+import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded';
+import UploadFileRounded from '@mui/icons-material/UploadFileRounded';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { osmApi } from '@/api/services';
@@ -33,8 +36,15 @@ const JobView = ({ job, presetName, cityName }: { job: OsmJob; presetName: (k: s
           <Box sx={{ flex: 1 }} />
           <Typography variant="caption" color="text.secondary">{fromNow(job.startedAt)}</Typography>
         </Stack>
-        {job.status === 'running' && <><Typography variant="body2" sx={{ mb: 1 }}>{t('x.osmRunning')}</Typography><LinearProgress sx={{ mb: 2, height: 6, borderRadius: 3 }} /></>}
-        {job.error && <Alert severity="error" sx={{ mb: 2 }}>{job.error}</Alert>}
+        {job.status === 'running' && (
+          <>
+            <Typography variant="body2" sx={{ mb: 1 }}>{job.progress?.current ? t('x.osmProgress', { cur: presetName(job.progress.current), done: job.progress.done, total: job.progress.total }) : t('x.osmRunning')}</Typography>
+            <LinearProgress variant={job.progress?.total ? 'determinate' : 'indeterminate'} value={job.progress?.total ? (job.progress.done / job.progress.total) * 100 : undefined} sx={{ mb: 1.5, height: 6, borderRadius: 3 }} />
+            {job.note && <Alert severity="warning" sx={{ mb: 2 }}>{t('x.osmBusy', { s: job.note.match(/(\d+)s/)?.[1] || '' })}</Alert>}
+          </>
+        )}
+        {job.status !== 'running' && !job.error && (job.failedTiles || 0) > 0 && <Alert severity="warning" sx={{ mb: 2 }}>{job.stoppedEarly ? t('x.osmStopped') : t('x.osmPartial', { n: job.failedTiles || 0 })}</Alert>}
+        {job.error && <Alert severity="error" sx={{ mb: 2 }}>{job.error.includes('cuts long') ? t('x.osmCutFail') : job.error.includes('busy') ? t('x.osmBusyFail') : job.error}</Alert>}
         <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
           <Stat label={t('x.osmFound')} value={job.found} />
           <Stat label={dry ? t('x.osmWouldCreate') : t('x.osmCreated')} value={job.created} color="#12B76A" />
@@ -75,6 +85,8 @@ export const AdminOsmImport = () => {
   const [updateExisting, setUpdate] = useState(false);
   const [jobId, setJobId] = useState<string | null>(null);
   const [undo, setUndo] = useState<{ count: number } | null>(null);
+  const [mode, setMode] = useState<'live' | 'file'>('live');
+  const [file, setFile] = useState<File | null>(null);
 
   useEffect(() => { if (!cityId && cities?.length) setCityId(cities.find((c) => c.nameEn === 'Latakia')?.id || cities[0].id); }, [cities, cityId]);
   useEffect(() => { if (presets && !picked.length) setPicked(presets.map((p) => p.key)); }, [presets]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -90,10 +102,19 @@ export const AdminOsmImport = () => {
   }, [job?.status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const start = useMutation({
-    mutationFn: (dryRun: boolean) => osmApi.start({ presets: picked, scope, cityId: Number(cityId), radiusKm: scope === 'radius' ? radiusKm : undefined, dryRun, updateExisting }),
+    mutationFn: (dryRun: boolean) => (mode === 'file' && file
+      ? osmApi.startFile(file, { presets: picked, cityId: Number(cityId), dryRun, updateExisting })
+      : osmApi.start({ presets: picked, scope, cityId: Number(cityId), radiusKm: scope === 'radius' ? radiusKm : undefined, dryRun, updateExisting })),
     onSuccess: (j) => setJobId(j.id),
     onError: notify.error,
   });
+  const turbo = useMutation({
+    mutationFn: () => osmApi.query({ presets: picked, scope, cityId: Number(cityId), radiusKm: scope === 'radius' ? radiusKm : undefined }),
+    onError: notify.error,
+  });
+  const openTurbo = async () => { const r = await turbo.mutateAsync(); window.open(r.turboUrl, '_blank', 'noopener'); };
+  const copyQuery = async () => { const r = await turbo.mutateAsync(); await navigator.clipboard.writeText(r.query); notify.info(t('x.osmCopied')); };
+  const liveFailed = job?.status === 'failed' && (job.error || '').includes('Could not reach');
   const removeCheck = useMutation({ mutationFn: () => osmApi.remove({ cityId: Number(cityId), scope: scope === 'governorate' ? 'governorate' : 'city', dryRun: true }), onSuccess: (r) => setUndo({ count: r.count }), onError: notify.error });
   const remove = useMutation({ mutationFn: () => osmApi.remove({ cityId: Number(cityId), scope: scope === 'governorate' ? 'governorate' : 'city' }), onSuccess: (r) => { setUndo(null); notify.success(t('x.osmDeleted', { n: r.count })); qc.invalidateQueries({ queryKey: ['home'] }); }, onError: notify.error });
 
@@ -109,6 +130,10 @@ export const AdminOsmImport = () => {
       <Grid container spacing={2.5}>
         <Grid item xs={12} lg={7}>
           <Card><CardContent sx={{ p: { xs: 2, md: 3 } }}>
+            <ToggleButtonGroup exclusive fullWidth size="small" value={mode} onChange={(_, v) => v && setMode(v)} sx={{ mb: 2.5 }}>
+              <ToggleButton value="live">{t('x.osmModeLive')}</ToggleButton>
+              <ToggleButton value="file">{t('x.osmModeFile')}</ToggleButton>
+            </ToggleButtonGroup>
             <Typography variant="h6" fontWeight={800} sx={{ mb: 2 }}>{t('x.osmWhere')}</Typography>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems={{ sm: 'center' }}>
               <TextField select label={t('common.city')} value={cityId} onChange={(e) => setCityId(Number(e.target.value))} sx={{ minWidth: 240 }}>
@@ -136,11 +161,26 @@ export const AdminOsmImport = () => {
                 </Grid>
               ))}
             </Grid>
+            {mode === 'file' && (
+              <Box sx={{ mt: 2, p: 2, borderRadius: 3, bgcolor: 'action.hover' }}>
+                <Typography variant="body2" fontWeight={700}>{t('x.osmFileStep1')}</Typography>
+                <Stack direction="row" spacing={1} sx={{ my: 1 }} flexWrap="wrap" useFlexGap>
+                  <Button size="small" variant="outlined" startIcon={<OpenInNewRounded />} disabled={!picked.length || !cityId || turbo.isPending} onClick={openTurbo}>{t('x.osmOpenTurbo')}</Button>
+                  <Button size="small" startIcon={<ContentCopyRounded />} disabled={!picked.length || !cityId || turbo.isPending} onClick={copyQuery}>{t('x.osmCopyQuery')}</Button>
+                </Stack>
+                <Typography variant="body2" fontWeight={700}>{t('x.osmFileStep2')}</Typography>
+                <Typography variant="body2" fontWeight={700} sx={{ mt: 1 }}>{t('x.osmFileStep3')}</Typography>
+                <Button component="label" variant="contained" color="secondary" startIcon={<UploadFileRounded />} sx={{ mt: 1 }}>
+                  {file ? file.name : t('x.osmPickFile')}
+                  <input hidden type="file" accept=".json,application/json" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+                </Button>
+              </Box>
+            )}
             <FormControlLabel sx={{ mt: 1 }} control={<Switch checked={updateExisting} onChange={(e) => setUpdate(e.target.checked)} />} label={t('x.osmUpdate')} />
 
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ mt: 2.5 }}>
-              <Button variant="outlined" size="large" startIcon={<VisibilityRounded />} disabled={busy || !picked.length || !cityId} onClick={() => start.mutate(true)}>{t('x.osmPreview')}</Button>
-              <Button variant="contained" size="large" startIcon={<CloudDownloadRounded />} disabled={busy || !picked.length || !cityId} onClick={() => start.mutate(false)}>{t('x.osmStart')}</Button>
+              <Button variant="outlined" size="large" startIcon={<VisibilityRounded />} disabled={busy || !picked.length || !cityId || (mode === 'file' && !file)} onClick={() => start.mutate(true)}>{t('x.osmPreview')}</Button>
+              <Button variant="contained" size="large" startIcon={<CloudDownloadRounded />} disabled={busy || !picked.length || !cityId || (mode === 'file' && !file)} onClick={() => start.mutate(false)}>{t('x.osmStart')}</Button>
             </Stack>
           </CardContent></Card>
 
@@ -153,6 +193,7 @@ export const AdminOsmImport = () => {
 
         <Grid item xs={12} lg={5}>
           <Stack spacing={2}>
+            {liveFailed && <Alert severity="warning" action={<Button color="inherit" size="small" onClick={() => setMode('file')}>{t('x.osmModeFile').split(' (')[0]}</Button>}>{t('x.osmLiveFailed')}</Alert>}
             {job && <JobView job={job} presetName={presetName} cityName={cityName} />}
             {(jobs || []).filter((j) => j.id !== job?.id).length > 0 && (
               <>

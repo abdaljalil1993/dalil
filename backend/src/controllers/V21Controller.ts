@@ -1,4 +1,5 @@
 import { Request } from 'express';
+import { AppError } from '../utils/AppError';
 import { asyncHandler } from '../utils/asyncHandler';
 import { sendCreated, sendSuccess } from '../utils/response';
 import { body, queryData } from '../middleware/validate';
@@ -142,6 +143,16 @@ export const updateFeatures = asyncHandler(async (req, res) => sendSuccess(res, 
 // ───────────── OpenStreetMap import ─────────────
 export const osmPresets = asyncHandler(async (_req, res) => sendSuccess(res, OsmImportService.presets()));
 export const osmStart = asyncHandler(async (req, res) => sendCreated(res, await OsmImportService.start(body(req), req.userId!), 'Import started'));
+export const osmQuery = asyncHandler(async (req, res) => sendSuccess(res, await OsmImportService.query(body(req))));
+export const osmStartFile = asyncHandler(async (req, res) => {
+  const file = (req as Request & { file?: Express.Multer.File }).file;
+  if (!file) throw new AppError('Upload the JSON file exported from Overpass Turbo (field "file")', 400);
+  let data: unknown;
+  try { data = JSON.parse(file.buffer.toString('utf8')); } catch { throw new AppError('The file is not valid JSON', 400); }
+  const b = body<Record<string, unknown>>(req);
+  const opts = { ...b, presets: String(b.presets || '').split(',').filter(Boolean) } as never;
+  sendCreated(res, await OsmImportService.start(opts, req.userId!, data as never), 'Import started');
+});
 export const osmJobs = asyncHandler(async (_req, res) => sendSuccess(res, OsmImportService.list()));
 export const osmJob = asyncHandler(async (req, res) => sendSuccess(res, OsmImportService.get(req.params.id)));
 export const osmRemove = asyncHandler(async (req, res) => sendSuccess(res, await OsmImportService.removeImported(Number(req.body.cityId), req.body.scope === 'governorate' ? 'governorate' : 'city', req.body.dryRun === true), 'Done'));

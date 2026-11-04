@@ -260,5 +260,8 @@ export const osmApi = {
   start: (body: { presets: string[]; scope: 'governorate' | 'radius'; cityId: number; radiusKm?: number; dryRun?: boolean; updateExisting?: boolean }) => post<OsmJob>('/admin/osm/import', body),
   jobs: () => get<OsmJob[]>('/admin/osm/jobs'),
   job: (id: string) => get<OsmJob>(`/admin/osm/jobs/${id}`),
+  query: (body: { presets: string[]; scope: 'governorate' | 'radius'; cityId: number; radiusKm?: number }) => post<{ query: string; turboUrl: string }>('/admin/osm/query', body),
+  startFile: (file: File, o: { presets: string[]; cityId: number; dryRun?: boolean; updateExisting?: boolean }) =>
+    post<OsmJob>('/admin/osm/import-file', form(file, 'file', { presets: o.presets.join(','), cityId: o.cityId, dryRun: Boolean(o.dryRun), updateExisting: Boolean(o.updateExisting) }), multipart),
   remove: (body: { cityId: number; scope: 'city' | 'governorate'; dryRun?: boolean }) => post<{ count: number; deleted: boolean }>('/admin/osm/remove', body),
 };

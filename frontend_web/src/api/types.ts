@@ -407,5 +407,6 @@ export interface OsmJob {
   id: string; status: 'running' | 'done' | 'failed'; startedAt: string; finishedAt: string | null;
   options: { presets: string[]; scope: 'governorate' | 'radius'; cityId: number; radiusKm?: number; dryRun?: boolean; updateExisting?: boolean };
   found: number; created: number; updated: number; skippedDuplicate: number; skippedNoName: number;
+  progress?: { done: number; total: number; current: string | null }; note?: string | null; failedTiles?: number; stoppedEarly?: boolean;
   byPreset: Record<string, { found: number; created: number }>; samples: { name: string; preset: string; city: string; phone: string | null }[]; error: string | null;
 }

@@ -43,7 +43,7 @@ import { BookingDialog, BusinessOffersBlock, MenuBlock } from '@/components/busi
 import EventAvailableRounded from '@mui/icons-material/EventAvailableRounded';
 import RequestQuoteRounded from '@mui/icons-material/RequestQuoteRounded';
 import { SingleLocationMap } from '@/components/maps/MapView';
-import { mapsLink, priceLabel, telLink, waLink, compact } from '@/utils/format';
+import { openDirections, mapsLink, priceLabel, telLink, waLink, compact } from '@/utils/format';
 
 const SOCIAL: Record<string, ReactNode> = { facebook: <Facebook />, instagram: <Instagram />, telegram: <Telegram />, youtube: <YouTube />, x: <XIcon /> };
 
@@ -97,14 +97,15 @@ export const BusinessPage = () => {
     else { await navigator.clipboard.writeText(url); notify.info(t('common.copied')); }
   };
   const track = (type: 'phone' | 'whatsapp' | 'directions' | 'website') => businessApi.track(b.id, type);
-  const directions = mapsLink(b.latitude, b.longitude, [b.name, b.address, ln(b.city)].filter(Boolean).join(' '));
+  const dirLabel = [b.name, b.address, ln(b.city)].filter(Boolean).join(' ');
+  const directions = mapsLink(b.latitude, b.longitude, dirLabel);
   const attrs = Object.entries(b.attributes || {}).filter(([, v]) => v !== '' && v !== null && v !== undefined);
 
   const actions = (
     <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
       {b.phone && <Button variant="contained" size="large" startIcon={<CallRounded />} href={telLink(b.phone)} onClick={() => track('phone')}>{t('business.call')}</Button>}
       {b.whatsapp && <Button variant="contained" size="large" startIcon={<WhatsApp />} href={waLink(b.whatsapp)} target="_blank" onClick={() => track('whatsapp')} sx={{ background: '#25D366', '&:hover': { background: '#1EBE5A' } }}>{t('business.whatsapp')}</Button>}
-      {directions && <Button variant="outlined" size="large" startIcon={<DirectionsRounded />} href={directions} target="_blank" onClick={() => track('directions')}>{t('business.directions')}</Button>}
+      {directions && <Button variant="outlined" size="large" startIcon={<DirectionsRounded />} onClick={() => { track('directions'); openDirections(b.latitude, b.longitude, dirLabel); }}>{t('business.directions')}</Button>}
       {b.website && <Button variant="outlined" size="large" startIcon={<LanguageRounded />} href={b.website} target="_blank" rel="noopener" onClick={() => track('website')}>{t('business.website')}</Button>}
       {b.bookingEnabled && on('bookings') && <Button variant="contained" color="secondary" size="large" startIcon={<EventAvailableRounded />} onClick={() => requireAuth(() => setBookOpen(true))}>{t('x.booking')}</Button>}
       {b.acceptsQuotes && on('serviceRequests') && <Button variant="outlined" color="secondary" size="large" startIcon={<RequestQuoteRounded />} onClick={() => requireAuth(() => navigate(`/request-service?categoryId=${b.categoryId}${b.subCategoryId ? `&subCategoryId=${b.subCategoryId}` : ''}`), `/request-service?categoryId=${b.categoryId}`)}>{t('x.requestService')}</Button>}
@@ -233,7 +234,7 @@ export const BusinessPage = () => {
                 {b.latitude != null && b.longitude != null ? (
                   <>
                     <SingleLocationMap lat={b.latitude} lng={b.longitude} color={color} />
-                    <Button fullWidth variant="outlined" startIcon={<DirectionsRounded />} href={directions} target="_blank" onClick={() => track('directions')} sx={{ mt: 1.5 }}>{t('business.directions')}</Button>
+                    <Button fullWidth variant="outlined" startIcon={<DirectionsRounded />} onClick={() => { track('directions'); openDirections(b.latitude, b.longitude, dirLabel); }} sx={{ mt: 1.5 }}>{t('business.directions')}</Button>
                   </>
                 ) : (
                   <Typography color="text.secondary">{t('business.mapUnavailable')}</Typography>
@@ -263,7 +264,7 @@ export const BusinessPage = () => {
         <Stack direction="row" spacing={1}>
           {b.phone && <Button fullWidth variant="contained" startIcon={<CallRounded />} href={telLink(b.phone)} onClick={() => track('phone')}>{t('business.call')}</Button>}
           {b.whatsapp && <Button fullWidth variant="contained" startIcon={<WhatsApp />} href={waLink(b.whatsapp)} target="_blank" onClick={() => track('whatsapp')} sx={{ background: '#25D366' }}>{t('business.whatsapp')}</Button>}
-          {directions && <Button fullWidth variant="outlined" startIcon={<DirectionsRounded />} href={directions} target="_blank" onClick={() => track('directions')} sx={{ bgcolor: 'background.paper' }}>{t('business.directions')}</Button>}
+          {directions && <Button fullWidth variant="outlined" startIcon={<DirectionsRounded />} onClick={() => { track('directions'); openDirections(b.latitude, b.longitude, dirLabel); }} sx={{ bgcolor: 'background.paper' }}>{t('business.directions')}</Button>}
         </Stack>
       </Box>
 

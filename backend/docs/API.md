@@ -202,6 +202,8 @@
 | `PUT` | `/features/admin` | 🛡️ Admin | Turn services on/off — all governorates (cityIds: []) or only selected ones |
 | `GET` | `/admin/osm/presets` | 🛡️ Admin | What can be imported from OpenStreetMap (restaurants, hotels, pharmacies...) |
 | `POST` | `/admin/osm/import` | 🛡️ Admin | Start an import job (background). dryRun=true only counts. Never duplicates (osmId + same name within 150 m) |
+| `POST` | `/admin/osm/query` | 🛡️ Admin | Get the Overpass query + an overpass-turbo.eu link (for "Import from file" when the server has no internet access) |
+| `POST` | `/admin/osm/import-file` | 🛡️ Admin | Import from a JSON file exported from Overpass Turbo (multipart: file + presets="a,b" + cityId + dryRun) |
 | `GET` | `/admin/osm/jobs` | 🛡️ Admin | Recent import jobs |
 | `GET` | `/admin/osm/jobs/:id` | 🛡️ Admin | Import job progress / result |
 | `POST` | `/admin/osm/remove` | 🛡️ Admin | Undo: delete unclaimed imported places with no reviews in a city / governorate |
@@ -1559,6 +1561,24 @@ Start an import job (background). dryRun=true only counts. Never duplicates (osm
   "updateExisting": false
 }
 ```
+
+#### `POST /admin/osm/query`
+Get the Overpass query + an overpass-turbo.eu link (for "Import from file" when the server has no internet access) — 🛡️ Admin
+
+```json
+{
+  "presets": [
+    "restaurants"
+  ],
+  "scope": "governorate",
+  "cityId": 6
+}
+```
+
+#### `POST /admin/osm/import-file`
+Import from a JSON file exported from Overpass Turbo (multipart: file + presets="a,b" + cityId + dryRun) — 🛡️ Admin
+
+multipart: `file` — export.json, `presets` — restaurants,hotels, `cityId` — 6, `dryRun` — false
 
 #### `GET /admin/osm/jobs`
 Recent import jobs — 🛡️ Admin

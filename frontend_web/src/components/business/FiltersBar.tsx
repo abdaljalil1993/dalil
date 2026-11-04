@@ -42,7 +42,7 @@ export const useFiltersUI = ({ filters: f, onChange, total, fixedCategory, allow
   const nearMe = async () => {
     if (f.lat) return set({ lat: undefined, lng: undefined, radius: undefined, sort: f.sort === 'distance' ? undefined : f.sort });
     const c = await geo.locate();
-    if (!c) return notify.error(t('search.locationDenied'));
+    if (!c) return notify.error(geo.reason() === 'outside' ? t('x.geoOutside') : t('search.locationDenied'));
     set({ lat: c.lat, lng: c.lng, radius: f.radius || 10, sort: 'distance' });
   };
 

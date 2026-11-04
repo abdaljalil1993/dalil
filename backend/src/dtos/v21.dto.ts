@@ -223,3 +223,11 @@ export const osmImportDto = [
   body('updateExisting').optional().isBoolean().toBoolean(),
 ];
 export const osmRemoveDto = [body('cityId').isInt({ min: 1 }).toInt(), body('scope').optional().isIn(['city', 'governorate']), body('dryRun').optional().isBoolean().toBoolean()];
+export const osmQueryDto = [body('presets').isArray({ min: 1, max: 30 }), body('presets.*').isString(), body('scope').isIn(['governorate', 'radius']), body('cityId').isInt({ min: 1 }).toInt(), body('radiusKm').optional().isFloat({ min: 1, max: 60 }).toFloat()];
+export const osmFileDto = [
+  body('presets').isString().isLength({ min: 2, max: 500 }),
+  body('scope').optional().isIn(['governorate', 'radius']),
+  body('cityId').isInt({ min: 1 }).toInt(),
+  body('dryRun').optional().isBoolean().toBoolean(),
+  body('updateExisting').optional().isBoolean().toBoolean(),
+];

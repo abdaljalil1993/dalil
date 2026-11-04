@@ -8,6 +8,9 @@ import { upload, uploadMultiple, uploadSingle } from '../middleware/upload';
 import { authRateLimiter, uploadRateLimiter, writeRateLimiter } from '../middleware/rateLimiter';
 import { audit } from '../middleware/auditLogger';
 import { createDocumentedRouter } from '../docs/registry';
+import multer from 'multer';
+
+const osmFile = multer({ storage: multer.memoryStorage(), limits: { fileSize: 40 * 1024 * 1024, files: 1 } });
 import { requireFeature as RF, LISTING_FEATURE } from '../services/FeatureService';
 
 // ───────────── settings / plans / subscriptions / payments ─────────────
@@ -117,6 +120,8 @@ F.put('/admin', { summary: 'Turn services on/off — all governorates (cityIds: 
 const OSM = createDocumentedRouter('/admin/osm', 'Admin');
 OSM.get('/presets', { summary: 'What can be imported from OpenStreetMap (restaurants, hotels, pharmacies...)', access: 'admin' }, authenticate, isAdmin, C.osmPresets);
 OSM.post('/import', { summary: 'Start an import job (background). dryRun=true only counts. Never duplicates (osmId + same name within 150 m)', access: 'admin', body: { presets: ['restaurants', 'hotels', 'pharmacies'], scope: 'governorate', cityId: 6, radiusKm: 10, dryRun: true, updateExisting: false } }, authenticate, isAdmin, D.osmImportDto, validate, audit('osm.import', 'business'), C.osmStart);
+OSM.post('/query', { summary: 'Get the Overpass query + an overpass-turbo.eu link (for "Import from file" when the server has no internet access)', access: 'admin', body: { presets: ['restaurants'], scope: 'governorate', cityId: 6 } }, authenticate, isAdmin, D.osmQueryDto, validate, C.osmQuery);
+OSM.post('/import-file', { summary: 'Import from a JSON file exported from Overpass Turbo (multipart: file + presets="a,b" + cityId + dryRun)', access: 'admin', multipart: { file: 'export.json', presets: 'restaurants,hotels', cityId: '6', dryRun: 'false' } }, authenticate, isAdmin, osmFile.single('file'), D.osmFileDto, validate, audit('osm.import', 'business'), C.osmStartFile);
 OSM.get('/jobs', { summary: 'Recent import jobs', access: 'admin' }, authenticate, isAdmin, C.osmJobs);
 OSM.get('/jobs/:id', { summary: 'Import job progress / result', access: 'admin' }, authenticate, isAdmin, C.osmJob);
 OSM.post('/remove', { summary: 'Undo: delete unclaimed imported places with no reviews in a city / governorate', access: 'admin', body: { cityId: 6, scope: 'governorate', dryRun: true } }, authenticate, isAdmin, D.osmRemoveDto, validate, audit('osm.remove', 'business'), C.osmRemove);

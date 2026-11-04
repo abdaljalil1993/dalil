@@ -90,6 +90,10 @@ export const env = {
     /** Overpass API endpoints (first that answers wins). Free; data © OpenStreetMap contributors (ODbL). */
     overpassUrls: (process.env.OVERPASS_URLS || 'https://overpass-api.de/api/interpreter,https://overpass.kumi.systems/api/interpreter,https://overpass.private.coffee/api/interpreter')
       .split(',').map((s) => s.trim()).filter(Boolean),
+    /** Optional HTTP(S) proxy for Overpass, e.g. http://127.0.0.1:8080 */
+    proxy: process.env.OSM_PROXY || '',
+    /** 4 = force IPv4 (default, avoids stalled IPv6 routes) · 6 · 0 = system default */
+    ipFamily: (Number(process.env.OSM_IP_FAMILY ?? 4) || 0) as 0 | 4 | 6,
   },
 
   firebase: {
