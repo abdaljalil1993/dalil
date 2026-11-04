@@ -4,10 +4,11 @@ import { validate } from '../middleware/validate';
 import { authenticate } from '../middleware/authenticate';
 import { authRateLimiter } from '../middleware/rateLimiter';
 import { createDocumentedRouter } from '../docs/registry';
+import { requireFeature as RF, LISTING_FEATURE } from '../services/FeatureService';
 
 const r = createDocumentedRouter('/auth', 'Auth');
 
-r.post('/register', { summary: 'Create account (role = user)', access: 'public', body: { firstName: 'Fadi', lastName: 'Ali', email: 'fadi@example.com', password: 'Secret123', phone: '+963991234567', cityId: 1 } }, authRateLimiter, D.registerDto, validate, C.register);
+r.post('/register', { summary: 'Create account (role = user)', access: 'public', body: { firstName: 'Fadi', lastName: 'Ali', email: 'fadi@example.com', password: 'Secret123', phone: '+963991234567', cityId: 1 } }, authRateLimiter, D.registerDto, validate, RF('register', 'body'), C.register);
 r.post('/login', { summary: 'Sign in - returns accessToken, refreshToken, user', access: 'public', body: { email: 'fadi@example.com', password: 'Secret123' } }, authRateLimiter, D.loginDto, validate, C.login);
 r.post('/refresh', { summary: 'Rotate tokens (old refresh token is revoked)', access: 'public', body: { refreshToken: '...' } }, D.refreshDto, validate, C.refresh);
 r.post('/logout', { summary: 'Revoke a refresh token', access: 'public', body: { refreshToken: '...' } }, D.logoutDto, validate, C.logout);

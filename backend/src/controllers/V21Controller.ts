@@ -12,6 +12,7 @@ import { AppointmentService, BookingSettingsInput } from '../services/Appointmen
 import { OtpService } from '../services/OtpService';
 import { PushService } from '../services/PushService';
 import { SitemapService } from '../services/SitemapService';
+import { FEATURE_GROUPS, FEATURE_KEYS, FeatureService } from '../services/FeatureService';
 import { Plan, EmergencyContact } from '../entities';
 import { AppointmentStatus, ApplicationStatus, ListingStatus, PaymentStatus, QuoteStatus, ServiceRequestStatus, SubscriptionStatus } from '../entities/enums';
 
@@ -85,7 +86,7 @@ const listingFilter = (req: Request): ListingFilter => {
   return { ...q, page, limit };
 };
 export const listingFields = asyncHandler(async (_req, res) => sendSuccess(res, listings.fields()));
-export const searchListings = asyncHandler(async (req, res) => { const r = await listings.search({ ...listingFilter(req), status: ListingStatus.ACTIVE }, req.user); sendSuccess(res, r.items, 'Listings', 200, r.meta); });
+export const searchListings = asyncHandler(async (req, res) => { const r = await listings.search({ ...listingFilter(req), status: ListingStatus.ACTIVE, publicScope: true }, req.user); sendSuccess(res, r.items, 'Listings', 200, r.meta); });
 export const myListings = asyncHandler(async (req, res) => { const r = await listings.search({ ...listingFilter(req), userId: req.userId, status: (req.query.status as ListingStatus) || 'all' }, req.user); sendSuccess(res, r.items, 'My listings', 200, r.meta); });
 export const adminListings = asyncHandler(async (req, res) => { const r = await listings.search({ ...listingFilter(req), status: (req.query.status as ListingStatus) || 'all' }, req.user); sendSuccess(res, r.items, 'Listings', 200, r.meta); });
 export const getListing = asyncHandler(async (req, res) => sendSuccess(res, await listings.get(req.params.slug, req.user)));
@@ -131,3 +132,8 @@ export const verifyMyPhone = asyncHandler(async (req, res) => { const b = body<{
 export const registerDevice = asyncHandler(async (req, res) => { const b = body<{ token: string; platform?: string; locale?: string }>(req); await PushService.register(req.userId!, b.token, b.platform, b.locale); sendSuccess(res, null, 'Device registered'); });
 export const unregisterDevice = asyncHandler(async (req, res) => { await PushService.unregister(req.params.token); sendSuccess(res, null, 'Device removed'); });
 export const sitemap = asyncHandler(async (_req, res) => { res.type('application/xml').send(await SitemapService.xml()); });
+
+// ───────────── feature switches ─────────────
+export const features = asyncHandler(async (req, res) => sendSuccess(res, await FeatureService.resolved(toInt(req.query.cityId as string) || null)));
+export const adminFeatures = asyncHandler(async (_req, res) => sendSuccess(res, { keys: FEATURE_KEYS, groups: FEATURE_GROUPS, config: await FeatureService.config() }));
+export const updateFeatures = asyncHandler(async (req, res) => sendSuccess(res, { keys: FEATURE_KEYS, groups: FEATURE_GROUPS, config: await FeatureService.update(req.body?.features || {}) }, 'Saved'));

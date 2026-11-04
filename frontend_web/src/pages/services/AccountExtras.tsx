@@ -1,3 +1,4 @@
+import { useFeatures } from '@/hooks/useFeatures';
 import { Alert, Avatar, Box, Button, Card, CardContent, Chip, Container, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControlLabel, Grid, IconButton, MenuItem, Stack, Switch, TextField, Tooltip, Typography } from '@mui/material';
 import HandymanRounded from '@mui/icons-material/HandymanRounded';
 import EventAvailableRounded from '@mui/icons-material/EventAvailableRounded';
@@ -300,13 +301,14 @@ export const MyListings = () => {
   const qc = useQueryClient();
   const [del, setDel] = useState<Listing | null>(null);
   const [apps, setApps] = useState<Listing | null>(null);
+  const { on } = useFeatures();
   const { data, isLoading } = useQuery({ queryKey: ['listings', 'mine'], queryFn: () => listingApi.mine({ limit: 50 }) });
   const inv = () => qc.invalidateQueries({ queryKey: ['listings'] });
   const status = useMutation({ mutationFn: ({ id, s }: { id: string; s: 'closed' | 'active' }) => listingApi.setStatus(id, s), onSuccess: () => { inv(); notify.success(t('common.saved')); }, onError: notify.error });
   const remove = useMutation({ mutationFn: (id: string) => listingApi.remove(id), onSuccess: () => { setDel(null); inv(); notify.success(t('common.deleted')); }, onError: notify.error });
   const newBtns = (
     <>
-      {(['real_estate', 'car', 'job'] as const).map((ty) => (
+      {(['real_estate', 'car', 'job'] as const).filter((ty) => on(({ real_estate: 'realEstate', car: 'cars', job: 'jobs' } as const)[ty])).map((ty) => (
         <Button key={ty} variant="outlined" startIcon={LISTING_META[ty].icon} component={Link} to={`/account/listings/new?type=${ty}`}>{t(`x.${LISTING_META[ty].key}`)}</Button>
       ))}
     </>

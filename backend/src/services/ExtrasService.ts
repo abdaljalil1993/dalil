@@ -1,3 +1,4 @@
+import { FeatureService } from './FeatureService';
 import { Brackets, In, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { repos, repos2 } from '../repositories';
 import { BusinessItem, Offer, User, EmergencyContact } from '../entities';
@@ -68,6 +69,10 @@ export class ExtrasService {
       .leftJoinAndSelect('b.city', 'city')
       .where('o.isActive = true AND o.startDate <= :now AND o.endDate >= :now', { now });
     if (filter.cityId) qb.andWhere('b.cityId = :cityId', { cityId: filter.cityId });
+    else if (!filter.businessId) {
+      const sc = await FeatureService.scope('offers');
+      if (sc) qb.andWhere(sc.length ? 'b.cityId IN (:...offerCities)' : '1 = 0', { offerCities: sc });
+    }
     if (filter.categoryId) qb.andWhere('b.categoryId = :categoryId', { categoryId: filter.categoryId });
     if (filter.businessId) qb.andWhere('o.businessId = :bid', { bid: filter.businessId });
     const [items, total] = await qb.orderBy('b.isFeatured', 'DESC').addOrderBy('o.createdAt', 'DESC').skip((page - 1) * limit).take(limit).getManyAndCount();
@@ -128,6 +133,10 @@ export class ExtrasService {
       .leftJoinAndSelect('b.workingHours', 'wh')
       .where('d.date = :date', { date });
     if (filter.cityId) qb.andWhere('b.cityId = :cityId', { cityId: filter.cityId });
+    else {
+      const sc = await FeatureService.scope('pharmacies');
+      if (sc) qb.andWhere(sc.length ? 'b.cityId IN (:...dutyCities)' : '1 = 0', { dutyCities: sc });
+    }
     const rows = await qb.orderBy('b.district', 'ASC').getMany();
     return { date, items: rows.map((d) => ({ id: d.id, date: d.date, startTime: d.startTime?.slice(0, 5) || null, endTime: d.endTime?.slice(0, 5) || null, note: d.note, business: serializeBusiness(d.business) })) };
   }

@@ -1,3 +1,4 @@
+import { useFeatures } from '@/hooks/useFeatures';
 import { AppBar, Box, Button, Container, Divider, Drawer, IconButton, List, ListItemButton, ListItemIcon, ListItemText, ListSubheader, Menu, MenuItem, Stack, Toolbar } from '@mui/material';
 import KeyboardArrowDownRounded from '@mui/icons-material/KeyboardArrowDownRounded';
 import { useServiceTiles } from '@/components/business/QuickServices';
@@ -27,6 +28,7 @@ export const Navbar = ({ transparent = false }: { transparent?: boolean }) => {
   const [scrolled, setScrolled] = useState(false);
   const [svcEl, setSvcEl] = useState<HTMLElement | null>(null);
   const tiles = useServiceTiles();
+  const { on } = useFeatures();
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 24);
     on();
@@ -64,7 +66,7 @@ export const Navbar = ({ transparent = false }: { transparent?: boolean }) => {
                 {l.label}
               </Button>
             ))}
-            <Button onClick={(e) => setSvcEl(e.currentTarget)} endIcon={<KeyboardArrowDownRounded />} sx={{ color: fg || 'text.secondary', fontWeight: 600 }}>{t('x.services')}</Button>
+            {tiles.length > 0 && <Button onClick={(e) => setSvcEl(e.currentTarget)} endIcon={<KeyboardArrowDownRounded />} sx={{ color: fg || 'text.secondary', fontWeight: 600 }}>{t('x.services')}</Button>}
           </Stack>
           <Menu anchorEl={svcEl} open={Boolean(svcEl)} onClose={() => setSvcEl(null)} PaperProps={{ sx: { borderRadius: 3, mt: 1, p: 1, width: 440 } }}>
             <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0.5 }}>
@@ -77,17 +79,17 @@ export const Navbar = ({ transparent = false }: { transparent?: boolean }) => {
             </Box>
           </Menu>
           <Box sx={{ flex: 1 }} />
-          <IconButton sx={{ color: fg }} onClick={() => requireAuth(() => navigate('/search'), '/search')} aria-label="search"><SearchRounded /></IconButton>
+          {on('search') && <IconButton sx={{ color: fg }} onClick={() => requireAuth(() => navigate('/search'), '/search')} aria-label="search"><SearchRounded /></IconButton>}
           <Box sx={{ display: { xs: 'none', sm: 'flex' } }}><PrefsToggles color={fg} /></Box>
-          <Button onClick={addBusiness} variant={solid ? 'outlined' : 'contained'} startIcon={<AddBusinessRounded />} sx={{ display: { xs: 'none', lg: 'inline-flex' }, ...(solid ? {} : { background: 'rgba(255,255,255,.18)', '&:hover': { background: 'rgba(255,255,255,.28)' } }) }}>
+          {on('addBusiness') && <Button onClick={addBusiness} variant={solid ? 'outlined' : 'contained'} startIcon={<AddBusinessRounded />} sx={{ display: { xs: 'none', lg: 'inline-flex' }, ...(solid ? {} : { background: 'rgba(255,255,255,.18)', '&:hover': { background: 'rgba(255,255,255,.28)' } }) }}>
             {t('nav.addBusiness')}
-          </Button>
+          </Button>}
           {isAuthenticated ? (
             <UserMenu />
           ) : (
             <Stack direction="row" spacing={1}>
               <Button component={Link} to="/login" sx={{ color: fg || 'text.primary', display: { xs: 'none', sm: 'inline-flex' } }}>{t('nav.login')}</Button>
-              <Button component={Link} to="/register" variant="contained" sx={!solid ? { background: '#fff', color: '#101828', '&:hover': { background: '#f2f2f7' } } : undefined}>{t('nav.register')}</Button>
+              {on('register') && <Button component={Link} to="/register" variant="contained" sx={!solid ? { background: '#fff', color: '#101828', '&:hover': { background: '#f2f2f7' } } : undefined}>{t('nav.register')}</Button>}
             </Stack>
           )}
         </Toolbar>
@@ -111,7 +113,7 @@ export const Navbar = ({ transparent = false }: { transparent?: boolean }) => {
           ))}
         </List>
         <Divider sx={{ my: 1 }} />
-        <Button fullWidth variant="contained" startIcon={<AddBusinessRounded />} onClick={addBusiness} sx={{ my: 1 }}>{t('nav.addBusiness')}</Button>
+        {on('addBusiness') && <Button fullWidth variant="contained" startIcon={<AddBusinessRounded />} onClick={addBusiness} sx={{ my: 1 }}>{t('nav.addBusiness')}</Button>}
         <Stack direction="row" justifyContent="center"><PrefsToggles /></Stack>
       </Drawer>
     </AppBar>

@@ -197,6 +197,9 @@
 | `POST` | `/auth/otp/verify-phone` | 🔐 User | Signed-in user verifies/changes phone |
 | `POST` | `/devices` | 🔐 User | Register FCM token for push notifications |
 | `DELETE` | `/devices/:token` | 🔐 User | Unregister FCM token (on logout) |
+| `GET` | `/features` | 🌐 Public | Which services are ON for a governorate (hide the rest in the apps) |
+| `GET` | `/features/admin` | 🛡️ Admin | Full switch configuration |
+| `PUT` | `/features/admin` | 🛡️ Admin | Turn services on/off — all governorates (cityIds: []) or only selected ones |
 
 ## Details
 
@@ -1495,5 +1498,36 @@ Owner: confirm/reject/complete/no_show · Customer: cancel — 🔐 User
 {
   "status": "confirmed",
   "ownerNote": ""
+}
+```
+
+### Features
+
+#### `GET /features`
+Which services are ON for a governorate (hide the rest in the apps) — 🌐 Public
+
+> Response: { enabled: { offers: true, jobs: false, ... }, cities: { key: null (all) | [ids] | [] (off) } }. Guarded endpoints return 403 with code FEATURE_DISABLED.
+
+Query: `cityId` (optional)
+
+#### `GET /features/admin`
+Full switch configuration — 🛡️ Admin
+
+#### `PUT /features/admin`
+Turn services on/off — all governorates (cityIds: []) or only selected ones — 🛡️ Admin
+
+```json
+{
+  "features": {
+    "jobs": {
+      "enabled": true,
+      "cityIds": [
+        6
+      ]
+    },
+    "realEstate": {
+      "enabled": false
+    }
+  }
 }
 ```

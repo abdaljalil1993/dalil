@@ -39,6 +39,14 @@ const x = {
   apptStatus: { pending: 'بانتظار التأكيد', confirmed: 'مؤكد', rejected: 'مرفوض', cancelled: 'ملغى', completed: 'تم', no_show: 'لم يحضر' }, confirm: 'تأكيد', complete: 'تم الموعد', noShow: 'لم يحضر', cancelBooking: 'إلغاء الحجز',
   bookingHoursHint: 'المواعيد المتاحة تُحسب تلقائياً من أوقات الدوام (تبويب الدوام) ومن الحجوزات الموجودة.',
   cleaning: 'تنظيف ومنزل', events: 'مناسبات وأفراح', servicesSub: 'كل ما تحتاجه في مكان واحد', onDutyCount: '{n} مناوبة اليوم', offersCount: '{n} عرض',
+  featureOff: 'هذه الخدمة غير متاحة حالياً في منطقتك', featureOffText: 'نعمل على إطلاقها قريباً في محافظتك. جرّب تغيير المدينة أو عد لاحقاً.',
+  features: 'تشغيل الخدمات', featuresSub: 'شغّل أو أطفئ أي خدمة لكل المحافظات أو لمحافظات محددة — يطبّق فوراً على الويب والتطبيق',
+  allGovs: 'كل المحافظات', someGovs: 'محافظات محددة', pickGovs: 'اختر المحافظات', offEverywhere: 'متوقفة', onCount: 'مفعّلة في {n} محافظة', onAll: 'مفعّلة في كل المحافظات',
+  fgroups: { core: 'الأساسيات', services: 'الخدمات', business: 'أصحاب الأنشطة والربح' },
+  fnames: { search: 'البحث النصي', reviews: 'كتابة التقييمات', favorites: 'المفضلة', addBusiness: 'إضافة نشاط', claims: 'طلب ملكية نشاط', reports: 'الإبلاغ', otpLogin: 'الدخول برقم الموبايل', register: 'التسجيل بالبريد',
+    offers: 'العروض والخصومات', pharmacies: 'الصيدليات المناوبة', emergency: 'أرقام الطوارئ', menu: 'المنيو والمنتجات', bookings: 'حجز المواعيد', serviceRequests: 'اطلب خدمة (عروض أسعار)', realEstate: 'العقارات', cars: 'السيارات', jobs: 'الوظائف',
+    ads: 'الإعلانات والبانرات', featured: 'الأنشطة المميزة', promote: 'طلبات الترويج', subscriptions: 'الباقات والاشتراكات' },
+  catalogHint: 'لإخفاء مدينة أو تصنيف كامل استخدم زر "فعّال" من صفحتي المدن والتصنيفات.',
   // business page extras
   menu: 'المنيو / المنتجات والخدمات', bizOffers: 'عروض النشاط',
   // owner editor

@@ -20,6 +20,7 @@ export const useNotify = () => {
         });
         return;
       }
+      if (code === 'FEATURE_DISABLED') { enqueueSnackbar(t('x.featureOff'), { variant: 'info' }); return; }
       enqueueSnackbar(typeof err === 'string' ? err : errorMessage(err, t('errors.generic')), { variant: 'error' });
     },
     [enqueueSnackbar, t]

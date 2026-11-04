@@ -1,3 +1,4 @@
+import { useFeatures } from '@/hooks/useFeatures';
 import { Alert, Box, Breadcrumbs, Button, Card, Chip, Container, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, MenuItem, Skeleton, Stack, TextField, Tooltip, Typography, Link as MLink } from '@mui/material';
 import CallRounded from '@mui/icons-material/CallRounded';
 import WhatsApp from '@mui/icons-material/WhatsApp';
@@ -70,6 +71,7 @@ export const BusinessPage = () => {
   const [reportText, setReportText] = useState('');
   const [claimOpen, setClaimOpen] = useState(false);
   const [bookOpen, setBookOpen] = useState(false);
+  const { on } = useFeatures();
   const navigate = useNavigate();
   const [claimMsg, setClaimMsg] = useState('');
   const reportM = useReport(b?.id || '');
@@ -104,8 +106,8 @@ export const BusinessPage = () => {
       {b.whatsapp && <Button variant="contained" size="large" startIcon={<WhatsApp />} href={waLink(b.whatsapp)} target="_blank" onClick={() => track('whatsapp')} sx={{ background: '#25D366', '&:hover': { background: '#1EBE5A' } }}>{t('business.whatsapp')}</Button>}
       {directions && <Button variant="outlined" size="large" startIcon={<DirectionsRounded />} href={directions} target="_blank" onClick={() => track('directions')}>{t('business.directions')}</Button>}
       {b.website && <Button variant="outlined" size="large" startIcon={<LanguageRounded />} href={b.website} target="_blank" rel="noopener" onClick={() => track('website')}>{t('business.website')}</Button>}
-      {b.bookingEnabled && <Button variant="contained" color="secondary" size="large" startIcon={<EventAvailableRounded />} onClick={() => requireAuth(() => setBookOpen(true))}>{t('x.booking')}</Button>}
-      {b.acceptsQuotes && <Button variant="outlined" color="secondary" size="large" startIcon={<RequestQuoteRounded />} onClick={() => requireAuth(() => navigate(`/request-service?categoryId=${b.categoryId}${b.subCategoryId ? `&subCategoryId=${b.subCategoryId}` : ''}`), `/request-service?categoryId=${b.categoryId}`)}>{t('x.requestService')}</Button>}
+      {b.bookingEnabled && on('bookings') && <Button variant="contained" color="secondary" size="large" startIcon={<EventAvailableRounded />} onClick={() => requireAuth(() => setBookOpen(true))}>{t('x.booking')}</Button>}
+      {b.acceptsQuotes && on('serviceRequests') && <Button variant="outlined" color="secondary" size="large" startIcon={<RequestQuoteRounded />} onClick={() => requireAuth(() => navigate(`/request-service?categoryId=${b.categoryId}${b.subCategoryId ? `&subCategoryId=${b.subCategoryId}` : ''}`), `/request-service?categoryId=${b.categoryId}`)}>{t('x.requestService')}</Button>}
     </Stack>
   );
 
@@ -161,9 +163,9 @@ export const BusinessPage = () => {
             {b.shortDescription && <Typography color="text.secondary" sx={{ mt: 1 }}>{b.shortDescription}</Typography>}
           </Box>
           <Stack direction="row" spacing={1}>
-            <FavoriteButton businessId={b.id} initial={b.viewer?.isFavorite} variant="plain" />
+            {on('favorites') && <FavoriteButton businessId={b.id} initial={b.viewer?.isFavorite} variant="plain" />}
             <Tooltip title={t('common.share')}><IconButton onClick={share}><ShareRounded /></IconButton></Tooltip>
-            <Tooltip title={t('common.report')}><IconButton onClick={() => requireAuth(() => setReport({ open: true }))}><FlagRounded /></IconButton></Tooltip>
+            {on('reports') && <Tooltip title={t('common.report')}><IconButton onClick={() => requireAuth(() => setReport({ open: true }))}><FlagRounded /></IconButton></Tooltip>}
           </Stack>
         </Stack>
         <Box sx={{ mt: 2.5, px: { md: 3 } }}>{actions}</Box>
@@ -197,8 +199,8 @@ export const BusinessPage = () => {
                 )}
               </Block>
             )}
-            <BusinessOffersBlock b={b} />
-            <MenuBlock b={b} />
+            {on('offers') && <BusinessOffersBlock b={b} />}
+            {on('menu') && <MenuBlock b={b} />}
             {b.images.length > 0 && <Block title={t('business.gallery')}><GalleryGrid images={b.images} /></Block>}
             <Block title={t('business.reviews')} id="reviews">
               <ReviewsSection b={b} onReport={(r) => setReport({ open: true, review: r })} />
@@ -236,7 +238,7 @@ export const BusinessPage = () => {
                   <Typography color="text.secondary">{t('business.mapUnavailable')}</Typography>
                 )}
               </Block>
-              {!b.isClaimed && !b.viewer?.canManage && (
+              {!b.isClaimed && !b.viewer?.canManage && on('claims') && (
                 <Card sx={{ p: 2.5, mb: 2.5, background: (th) => th.custom.gradientSoft, border: 'none' }}>
                   <Typography fontWeight={800}>{t('business.claim')}</Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ my: 1 }}>{t('business.claimText')}</Typography>

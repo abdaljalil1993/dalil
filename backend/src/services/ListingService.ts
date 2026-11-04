@@ -1,3 +1,4 @@
+import { FeatureService, LISTING_FEATURE } from './FeatureService';
 import { Brackets, In, IsNull } from 'typeorm';
 import { repos, repos2 } from '../repositories';
 import { Listing, User } from '../entities';
@@ -62,6 +63,8 @@ const PURPOSES: Record<ListingType, ListingPurpose[]> = {
 };
 
 export interface ListingFilter {
+  /** apply feature switches (public browse only) */
+  publicScope?: boolean;
   type?: ListingType;
   purpose?: ListingPurpose;
   cityId?: number;
@@ -148,6 +151,18 @@ export class ListingService {
     if (f.type) qb.andWhere('l.type = :type', { type: f.type });
     if (f.purpose) qb.andWhere('l.purpose = :purpose', { purpose: f.purpose });
     if (f.cityId) qb.andWhere('l.cityId = :cityId', { cityId: f.cityId });
+    if (f.publicScope) {
+      // respect the admin's feature switches (type off everywhere / only some governorates)
+      const types = f.type ? [f.type] : (Object.keys(LISTING_FEATURE) as ListingType[]);
+      const parts: string[] = [];
+      for (const ty of types) {
+        const key = LISTING_FEATURE[ty];
+        const sc = key ? await FeatureService.scope(key) : null;
+        if (sc && !sc.length) continue;
+        parts.push(sc && !f.cityId ? `(l.type = '${ty}' AND l.cityId IN (${sc.map(Number).join(',')}))` : `l.type = '${ty}'`);
+      }
+      qb.andWhere(parts.length ? `(${parts.join(' OR ')})` : '1 = 0');
+    }
     if (f.district) qb.andWhere('l.district LIKE :district', { district: `%${escapeLike(f.district)}%` });
     if (f.minPrice !== undefined) qb.andWhere('l.price >= :minPrice', { minPrice: f.minPrice });
     if (f.maxPrice !== undefined) qb.andWhere('l.price <= :maxPrice', { maxPrice: f.maxPrice });

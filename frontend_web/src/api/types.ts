@@ -394,3 +394,10 @@ export interface Appointment {
 }
 export interface Availability { bookingEnabled: boolean; bookingMode: 'slot' | 'day'; slotMinutes: number; slotCapacity: number; bookingDaysAhead: number; bookingNote: string | null; acceptsQuotes: boolean; bookingAutoConfirm: boolean; date: string; slots: { time: string; remaining: number }[]; available: boolean; remaining?: number }
 export interface BookingSettings { bookingEnabled: boolean; bookingMode: 'slot' | 'day'; slotMinutes: number; slotCapacity: number; bookingDaysAhead: number; bookingAutoConfirm: boolean; bookingNote: string | null; acceptsQuotes: boolean }
+export type FeatureKey =
+  | 'search' | 'reviews' | 'favorites' | 'addBusiness' | 'claims' | 'reports' | 'otpLogin' | 'register'
+  | 'offers' | 'pharmacies' | 'emergency' | 'menu' | 'bookings' | 'serviceRequests' | 'realEstate' | 'cars' | 'jobs'
+  | 'ads' | 'featured' | 'promote' | 'subscriptions';
+export interface FeatureRule { enabled: boolean; cityIds: number[] }
+export interface FeaturesResolved { cityId: number | null; enabled: Record<FeatureKey, boolean>; cities: Record<FeatureKey, number[] | null> }
+export interface FeaturesAdmin { keys: FeatureKey[]; groups: Record<string, FeatureKey[]>; config: Record<FeatureKey, FeatureRule> }

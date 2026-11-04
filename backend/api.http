@@ -1257,3 +1257,29 @@ Content-Type: application/json
 DELETE {{base}}/devices/{{token}}
 Authorization: Bearer {{token}}
 
+### Which services are ON for a governorate (hide the rest in the apps)
+GET {{base}}/features
+
+### Full switch configuration
+GET {{base}}/features/admin
+Authorization: Bearer {{token}}
+
+### Turn services on/off — all governorates (cityIds: []) or only selected ones
+PUT {{base}}/features/admin
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "features": {
+    "jobs": {
+      "enabled": true,
+      "cityIds": [
+        6
+      ]
+    },
+    "realEstate": {
+      "enabled": false
+    }
+  }
+}
+

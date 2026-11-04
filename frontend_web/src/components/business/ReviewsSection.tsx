@@ -1,3 +1,4 @@
+import { useFeatures } from '@/hooks/useFeatures';
 import { Avatar, Box, Button, Card, Chip, IconButton, LinearProgress, Menu, MenuItem, Rating, Stack, TextField, Typography } from '@mui/material';
 import StarRounded from '@mui/icons-material/StarRounded';
 import ThumbUpAltRounded from '@mui/icons-material/ThumbUpAltRounded';
@@ -53,6 +54,7 @@ const ReviewForm = ({ b }: { b: BusinessDetails }) => {
   const [open, setOpen] = useState(false);
   useEffect(() => { setRating(mine?.rating ?? null); setContent(mine?.content ?? ''); }, [mine]);
   const requireAuth = useRequireAuth();
+  const { on } = useFeatures();
   const notify = useNotify();
   const qc = useQueryClient();
   const m = useMutation({
@@ -65,7 +67,7 @@ const ReviewForm = ({ b }: { b: BusinessDetails }) => {
     },
     onError: notify.error,
   });
-  if (b.viewer?.canManage) return null;
+  if (b.viewer?.canManage || !on('reviews')) return null;
   if (!open)
     return (
       <Button variant="contained" startIcon={<RateReviewRounded />} onClick={() => requireAuth(() => setOpen(true))}>

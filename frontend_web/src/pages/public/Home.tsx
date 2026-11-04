@@ -1,3 +1,4 @@
+import { useFeatures } from '@/hooks/useFeatures';
 import { Box, Button, Card, Chip, Container, Grid, Stack, Typography } from '@mui/material';
 import AddBusinessRounded from '@mui/icons-material/AddBusinessRounded';
 import SearchRounded from '@mui/icons-material/SearchRounded';
@@ -32,6 +33,7 @@ export const Home = () => {
   const requireAuth = useRequireAuth();
   const { cityId, setCityId } = usePrefs();
   const { data, isLoading } = useHome(cityId);
+  const { on } = useFeatures();
 
   const quickSearch = (q: string) => {
     const target = `/search?q=${encodeURIComponent(q)}${cityId ? `&cityId=${cityId}` : ''}`;
@@ -55,14 +57,14 @@ export const Home = () => {
           </motion.div>
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.1 }}>
             <Box sx={{ maxWidth: 900, mx: 'auto', color: 'text.primary' }}>
-              <SearchBar />
+              {on('search') && <SearchBar />}
             </Box>
-            <Stack direction="row" spacing={1} justifyContent="center" flexWrap="wrap" useFlexGap sx={{ mt: 2.5 }}>
+            {on('search') && <Stack direction="row" spacing={1} justifyContent="center" flexWrap="wrap" useFlexGap sx={{ mt: 2.5 }}>
               <Typography variant="body2" sx={{ opacity: 0.85, alignSelf: 'center' }}>{t('home.popular')}</Typography>
               {(locale === 'ar' ? POPULAR_AR : POPULAR_EN).map((q) => (
                 <Chip key={q} label={q} onClick={() => quickSearch(q)} sx={{ bgcolor: 'rgba(255,255,255,.14)', color: '#fff', '&:hover': { bgcolor: 'rgba(255,255,255,.26)' } }} />
               ))}
-            </Stack>
+            </Stack>}
           </motion.div>
         </Container>
       </Box>

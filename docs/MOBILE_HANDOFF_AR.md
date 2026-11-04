@@ -20,7 +20,8 @@
 13. **OTP**: `POST /auth/otp/request {phone}` ← `isNewUser` (إذا true اطلب الاسم الأول والأخير) ← `POST /auth/otp/verify {phone, code, firstName?, lastName?}` يرجع نفس رد الدخول. بوضع التطوير بيرجع `devCode`.
 14. **Push**: بعد الدخول سجّل توكن FCM: `POST /devices {token, platform: android|ios}` وعند الخروج `DELETE /devices/{token}`. الإشعار فيه `data.type` (نوع الإشعار) مع المعرّفات (مثل `businessId`, `requestId`, `appointmentId`) ← افتح الشاشة المناسبة حسب النوع.
 15. **الإعلانات المبوّبة** (عقارات/سيارات/وظائف): الحقول الخاصة بكل نوع من `GET /listings/fields` (لا تكتبها يدوياً) — الفلاتر `attr[key]=` و `attrMin[key]=` و `attrMax[key]=`. البحث النصي `q` للمسجّلين فقط.
-16. التواريخ `YYYY-MM-DD` والأوقات `HH:MM` بتوقيت سوريا. المبالغ أرقام بالليرة السورية `SYP`.
+16. **مفاتيح الخدمات (مهم جداً):** عند فتح التطبيق وكل ما تغيّرت المدينة نادِ `GET /features?cityId=` ← `enabled.{offers, pharmacies, emergency, menu, bookings, serviceRequests, realEstate, cars, jobs, search, reviews, favorites, addBusiness, claims, reports, otpLogin, register, ads, featured, promote, subscriptions}`. أي خدمة `false` ← **أخفِ** زرها وشاشتها وتبويبها. إذا رجع `403` مع `code: FEATURE_DISABLED` اعرض «هذه الخدمة غير متاحة حالياً في منطقتك». خزّن النتيجة (cache) وحدّثها بالخلفية.
+17. التواريخ `YYYY-MM-DD` والأوقات `HH:MM` بتوقيت سوريا. المبالغ أرقام بالليرة السورية `SYP`.
 
 ## الشاشات ← الـ API
 | الشاشة | Endpoints |
@@ -42,6 +43,7 @@
 | الترويج | `POST /featured/request` · `POST /advertisements/request` · `GET /featured/my` · `GET /advertisements/my` |
 | تواصل معنا | `POST /contact` |
 | **— v2.1 —** | |
+| مفاتيح الخدمات | `GET /features?cityId=` (يحدد شو يبين بالتطبيق) |
 | الدخول برقم الموبايل | `POST /auth/otp/request` · `POST /auth/otp/verify` · `POST /auth/otp/verify-phone` · `POST /devices` |
 | الرئيسية (إضافات) | `GET /home` صار فيه `offers[]` و `onDutyPharmacies` (عدد) ← صف "خدمات سريعة": عروض، صيدليات مناوبة، طوارئ، اطلب خدمة، عقارات، سيارات، وظائف، تنظيف، مناسبات |
 | العروض | `GET /offers?cityId=&categoryId=` · `GET /businesses/{id}/offers` |
@@ -100,6 +102,8 @@ Business rules:
   token with POST /devices after login; route notification taps by data.type and the ids it carries.
 - Listings attribute fields come from GET /listings/fields (render inputs/filters dynamically by kind num|enum|bool|text).
   Text search (q) on listings and businesses requires login.
+- Feature switches: call GET /features?cityId= on start and whenever the city changes; hide every button, tab, tile and
+  screen whose key is false. A 403 with code FEATURE_DISABLED → show "not available in your area".
 - Booking: GET availability for a date → show slot chips (slot mode) or a single "book the day" button (day mode).
 
 Screens: splash, onboarding (pick language + city), login, register, forgot/reset password, home (hero search,

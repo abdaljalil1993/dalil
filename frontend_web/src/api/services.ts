@@ -246,3 +246,10 @@ export const otpApi = {
   verify: (body: { phone: string; code: string; firstName?: string; lastName?: string; cityId?: number }) => post<AuthPayload>('/auth/otp/verify', body),
   verifyPhone: (phone: string, code: string) => post<User>('/auth/otp/verify-phone', { phone, code }),
 };
+
+import type { FeatureRule, FeaturesAdmin, FeaturesResolved, FeatureKey } from './types';
+export const featuresApi = {
+  get: (cityId?: number | null) => get<FeaturesResolved>('/features', clean({ cityId })),
+  admin: () => get<FeaturesAdmin>('/features/admin'),
+  save: (features: Partial<Record<FeatureKey, Partial<FeatureRule>>>) => put<FeaturesAdmin>('/features/admin', { features }),
+};

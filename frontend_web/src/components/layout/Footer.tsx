@@ -1,3 +1,4 @@
+import { useServiceTiles } from '@/components/business/QuickServices';
 import { Box, Container, Grid, Stack, Typography, Link as MLink } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { useCategories } from '@/hooks/queries';
@@ -6,6 +7,7 @@ import { Logo } from '../common/Logo';
 
 export const Footer = () => {
   const { t } = useT();
+  const tiles = useServiceTiles();
   const ln = useLocalName();
   const { data: cats } = useCategories();
   const col = (title: string, links: { to: string; label: string }[]) => (
@@ -26,7 +28,7 @@ export const Footer = () => {
             <Logo />
             <Typography color="text.secondary" sx={{ mt: 2, maxWidth: 360 }}>{t('app.slogan')}</Typography>
           </Grid>
-          <Grid item xs={6} md={2}>{col(t('x.services'), [{ to: '/offers', label: t('x.offers') }, { to: '/pharmacies', label: t('x.pharmacies') }, { to: '/emergency', label: t('x.emergency') }, { to: '/real-estate', label: t('x.realEstate') }, { to: '/cars', label: t('x.cars') }, { to: '/jobs', label: t('x.jobs') }, { to: '/request-service', label: t('x.requestService') }])}</Grid>
+          <Grid item xs={6} md={2}>{col(t('x.services'), tiles.slice(0, 7).map((s) => ({ to: s.to, label: s.label })))}</Grid>
           <Grid item xs={6} md={2}>{col(t('footer.explore'), (cats || []).slice(0, 6).map((c) => ({ to: `/c/${c.slug}`, label: ln(c) })))}</Grid>
           <Grid item xs={6} md={2.5}>{col(t('footer.forBusiness'), [{ to: '/owner/businesses/new', label: t('footer.listFree') }, { to: '/owner/subscription', label: t('x.plans') }, { to: '/owner/promote', label: t('footer.advertise') }, { to: '/featured', label: t('nav.featured') }])}</Grid>
           <Grid item xs={6} md={2.5}>{col(t('footer.company'), [{ to: '/about', label: t('nav.about') }, { to: '/contact', label: t('nav.contact') }, { to: '/categories', label: t('nav.categories') }])}</Grid>

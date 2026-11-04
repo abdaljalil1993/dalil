@@ -10,6 +10,7 @@ import { uploadMultiple, uploadSingle } from '../middleware/upload';
 import { uploadRateLimiter, writeRateLimiter } from '../middleware/rateLimiter';
 import { audit } from '../middleware/auditLogger';
 import { createDocumentedRouter } from '../docs/registry';
+import { requireFeature as RF, LISTING_FEATURE } from '../services/FeatureService';
 
 const r = createDocumentedRouter('/businesses', 'Businesses');
 
@@ -30,8 +31,8 @@ const SAMPLE = {
 
 // Discovery
 r.get('/', { summary: 'Browse approved businesses (filters, no text search)', access: 'optional', query: FILTERS, notes: 'Paid (featured) businesses are listed first except when sort=distance.' }, optionalAuth, D.listQuery, validate, B.browse);
-r.get('/search', { summary: 'Search (text + filters + geo) - logs the query', access: 'user', query: { q: 'e.g. "طبيب عيون"', ...FILTERS }, notes: 'Arabic-normalized, matches name, description, tags, category/sub-category synonyms, district, city.' }, authenticate, isUser, D.searchQuery, validate, B.search);
-r.get('/suggest', { summary: 'Autocomplete (businesses, categories, sub-categories)', access: 'user', query: { q: 'text', cityId: 'number' } }, authenticate, isUser, D.suggestQuery, validate, B.suggest);
+r.get('/search', { summary: 'Search (text + filters + geo) - logs the query', access: 'user', query: { q: 'e.g. "طبيب عيون"', ...FILTERS }, notes: 'Arabic-normalized, matches name, description, tags, category/sub-category synonyms, district, city.' }, authenticate, isUser, D.searchQuery, validate, RF('search'), B.search);
+r.get('/suggest', { summary: 'Autocomplete (businesses, categories, sub-categories)', access: 'user', query: { q: 'text', cityId: 'number' } }, authenticate, isUser, D.suggestQuery, validate, RF('search'), B.suggest);
 
 // Owner & admin lists (must be declared before /:slug)
 r.get('/my', { summary: 'My businesses (all statuses)', access: 'user', query: { status: 'pending|approved|rejected|suspended' } }, authenticate, isUser, paginationQuery, validate, B.mine);
@@ -44,7 +45,7 @@ r.get('/:slug/related', { summary: 'Similar businesses', access: 'public' }, B.r
 r.post('/:id/track', { summary: 'Track contact click (phone/whatsapp/directions/website)', access: 'public', body: { type: 'phone' } }, uuidParam(), D.trackDto, validate, B.track);
 
 // Create / update
-r.post('/', { summary: 'Submit a business (pending review). Admin → published directly. isOwner=false → suggestion', access: 'user', body: SAMPLE }, authenticate, isUser, writeRateLimiter, D.createBusinessDto, validate, audit('business.create', 'business'), B.create);
+r.post('/', { summary: 'Submit a business (pending review). Admin → published directly. isOwner=false → suggestion', access: 'user', body: SAMPLE }, authenticate, isUser, writeRateLimiter, D.createBusinessDto, validate, audit('business.create', 'business'), RF('addBusiness', 'body'), B.create);
 r.put('/:id', { summary: 'Update business (owner/admin)', access: 'owner', body: { ...SAMPLE, isOwner: undefined } }, authenticate, uuidParam(), D.updateBusinessDto, validate, audit('business.update', 'business'), B.update);
 r.delete('/:id', { summary: 'Delete business (owner/admin)', access: 'owner' }, authenticate, uuidParam(), validate, audit('business.delete', 'business'), B.remove);
 r.get('/:id/stats', { summary: 'Business analytics (views, clicks, ratings)', access: 'owner' }, authenticate, uuidParam(), validate, B.stats);
@@ -67,8 +68,8 @@ r.post('/:id/hours', { summary: 'Alias of PUT /hours', access: 'owner', body: { 
 
 // Reviews / reports / claims on a business
 r.get('/:businessId/reviews', { summary: 'Business reviews', access: 'optional', query: { sort: 'newest|oldest|highest|lowest|helpful', rating: '1-5', page: '', limit: '' } }, optionalAuth, uuidParam('businessId'), ED.reviewListQuery, paginationQuery, validate, E.businessReviews);
-r.post('/:businessId/reviews', { summary: 'Rate & review (one per user, edit via PUT /reviews/:id)', access: 'user', body: { rating: 5, content: 'خدمة ممتازة' } }, authenticate, isUser, writeRateLimiter, uuidParam('businessId'), ED.createReviewDto, validate, E.createReview);
-r.post('/:businessId/reports', { summary: 'Report wrong info / spam / fake review', access: 'user', body: { type: 'wrong_info', description: 'رقم الهاتف خاطئ', reviewId: null } }, authenticate, isUser, writeRateLimiter, uuidParam('businessId'), ED.createReportDto, validate, E.createReport);
-r.post('/:businessId/claim', { summary: 'Claim ownership of a listing added by admin', access: 'user', body: { message: 'أنا صاحب العيادة', phone: '+963...', proofUrl: null } }, authenticate, isUser, writeRateLimiter, uuidParam('businessId'), ED.createClaimDto, validate, E.createClaim);
+r.post('/:businessId/reviews', { summary: 'Rate & review (one per user, edit via PUT /reviews/:id)', access: 'user', body: { rating: 5, content: 'خدمة ممتازة' } }, authenticate, isUser, writeRateLimiter, uuidParam('businessId'), ED.createReviewDto, validate, RF('reviews', 'business'), E.createReview);
+r.post('/:businessId/reports', { summary: 'Report wrong info / spam / fake review', access: 'user', body: { type: 'wrong_info', description: 'رقم الهاتف خاطئ', reviewId: null } }, authenticate, isUser, writeRateLimiter, uuidParam('businessId'), ED.createReportDto, validate, RF('reports', 'business'), E.createReport);
+r.post('/:businessId/claim', { summary: 'Claim ownership of a listing added by admin', access: 'user', body: { message: 'أنا صاحب العيادة', phone: '+963...', proofUrl: null } }, authenticate, isUser, writeRateLimiter, uuidParam('businessId'), ED.createClaimDto, validate, RF('claims', 'business'), E.createClaim);
 
 export default r.router;

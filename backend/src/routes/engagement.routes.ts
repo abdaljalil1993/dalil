@@ -7,6 +7,7 @@ import { isAdmin, isUser } from '../middleware/authorize';
 import { writeRateLimiter } from '../middleware/rateLimiter';
 import { audit } from '../middleware/auditLogger';
 import { createDocumentedRouter } from '../docs/registry';
+import { requireFeature as RF, LISTING_FEATURE } from '../services/FeatureService';
 
 const reviews = createDocumentedRouter('/reviews', 'Reviews');
 reviews.get('/my', { summary: 'My reviews', access: 'user' }, authenticate, paginationQuery, validate, E.myReviews);
@@ -21,7 +22,7 @@ reviews.patch('/:id/visibility', { summary: 'Hide / show review', access: 'admin
 
 const fav = createDocumentedRouter('/favorites', 'Favorites');
 fav.get('/', { summary: 'My favorites', access: 'user' }, authenticate, isUser, paginationQuery, validate, E.listFavorites);
-fav.post('/:businessId', { summary: 'Toggle favorite', access: 'user' }, authenticate, isUser, uuidParam('businessId'), validate, E.toggleFavorite);
+fav.post('/:businessId', { summary: 'Toggle favorite', access: 'user' }, authenticate, isUser, uuidParam('businessId'), validate, RF('favorites', 'business'), E.toggleFavorite);
 fav.put('/:businessId', { summary: 'Add favorite (idempotent)', access: 'user' }, authenticate, isUser, uuidParam('businessId'), validate, E.addFavorite);
 fav.delete('/:businessId', { summary: 'Remove favorite', access: 'user' }, authenticate, isUser, uuidParam('businessId'), validate, E.removeFavorite);
 fav.get('/:businessId/check', { summary: 'Is favorite?', access: 'user' }, authenticate, isUser, uuidParam('businessId'), validate, E.checkFavorite);

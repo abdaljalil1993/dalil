@@ -1,3 +1,4 @@
+import { FeatureGate as FG } from '@/hooks/useFeatures';
 import { lazy, Suspense, ReactNode } from 'react';
 import { Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import { Box, CircularProgress } from '@mui/material';
@@ -69,6 +70,7 @@ const AdminBilling = P(() => import('@/pages/admin/AdminExtras'), 'AdminBilling'
 const AdminListings = P(() => import('@/pages/admin/AdminExtras'), 'AdminListings');
 const AdminRequests = P(() => import('@/pages/admin/AdminExtras'), 'AdminRequests');
 const AdminEmergency = P(() => import('@/pages/admin/AdminExtras'), 'AdminEmergency');
+const AdminFeatures = P(() => import('@/pages/admin/AdminFeatures'), 'AdminFeatures');
 
 const Loader = () => (
   <Box sx={{ minHeight: '60vh', display: 'grid', placeItems: 'center' }}>
@@ -100,17 +102,17 @@ export const AppRoutes = () => (
         <Route path="featured" element={<FeaturedPage />} />
         <Route path="about" element={<About />} />
         <Route path="contact" element={<Contact />} />
-        <Route path="search" element={<RequireAuth><SearchPage /></RequireAuth>} />
-        <Route path="offers" element={<OffersPage />} />
-        <Route path="pharmacies" element={<PharmaciesPage />} />
-        <Route path="emergency" element={<EmergencyPage />} />
-        <Route path="real-estate" element={<ListingsPage key="re" type="real_estate" />} />
-        <Route path="cars" element={<ListingsPage key="car" type="car" />} />
-        <Route path="jobs" element={<ListingsPage key="job" type="job" />} />
+        <Route path="search" element={<RequireAuth><FG k="search"><SearchPage /></FG></RequireAuth>} />
+        <Route path="offers" element={<FG k="offers"><OffersPage /></FG>} />
+        <Route path="pharmacies" element={<FG k="pharmacies"><PharmaciesPage /></FG>} />
+        <Route path="emergency" element={<FG k="emergency"><EmergencyPage /></FG>} />
+        <Route path="real-estate" element={<FG k="realEstate"><ListingsPage key="re" type="real_estate" /></FG>} />
+        <Route path="cars" element={<FG k="cars"><ListingsPage key="car" type="car" /></FG>} />
+        <Route path="jobs" element={<FG k="jobs"><ListingsPage key="job" type="job" /></FG>} />
         <Route path="l/:slug" element={<ListingPage />} />
-        <Route path="request-service" element={<RequireAuth><RequestServicePage /></RequireAuth>} />
+        <Route path="request-service" element={<RequireAuth><FG k="serviceRequests"><RequestServicePage /></FG></RequireAuth>} />
         <Route path="login" element={<GuestOnly><Login /></GuestOnly>} />
-        <Route path="register" element={<GuestOnly><Register /></GuestOnly>} />
+        <Route path="register" element={<GuestOnly><FG k="register"><Register /></FG></GuestOnly>} />
         <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="reset-password" element={<ResetPassword />} />
         {/* legacy paths from v1 */}
@@ -134,12 +136,12 @@ export const AppRoutes = () => (
         <Route path="account/applications" element={<MyApplications />} />
         <Route path="owner/bookings" element={<OwnerBookings />} />
         <Route path="owner/requests" element={<RequestsInbox />} />
-        <Route path="owner/subscription" element={<SubscriptionPage />} />
+        <Route path="owner/subscription" element={<FG k="subscriptions"><SubscriptionPage /></FG>} />
         <Route path="owner/businesses" element={<MyBusinesses />} />
-        <Route path="owner/businesses/new" element={<BusinessEditor />} />
+        <Route path="owner/businesses/new" element={<FG k="addBusiness"><BusinessEditor /></FG>} />
         <Route path="owner/businesses/:id" element={<BusinessEditor />} />
         <Route path="owner/reviews" element={<OwnerReviews />} />
-        <Route path="owner/promote" element={<Promote />} />
+        <Route path="owner/promote" element={<FG k="promote"><Promote /></FG>} />
         <Route path="admin" element={<RequireAuth admin><AdminDashboard /></RequireAuth>} />
         <Route path="admin/businesses" element={<RequireAuth admin><AdminBusinesses /></RequireAuth>} />
         <Route path="admin/categories" element={<RequireAuth admin><AdminCategories /></RequireAuth>} />
@@ -157,6 +159,7 @@ export const AppRoutes = () => (
         <Route path="admin/listings" element={<RequireAuth admin><AdminListings /></RequireAuth>} />
         <Route path="admin/requests" element={<RequireAuth admin><AdminRequests /></RequireAuth>} />
         <Route path="admin/emergency" element={<RequireAuth admin><AdminEmergency /></RequireAuth>} />
+        <Route path="admin/features" element={<RequireAuth admin><AdminFeatures /></RequireAuth>} />
       </Route>
     </Routes>
   </Suspense>

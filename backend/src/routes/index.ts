@@ -34,5 +34,6 @@ router.use('/listings', v.listings);
 router.use('/service-requests', v.requests);
 router.use('/appointments', v.appointments);
 router.use('/devices', v.devices);
+router.use('/features', v.features);
 
 export default router;

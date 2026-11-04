@@ -1,3 +1,4 @@
+import { useFeatures } from '@/hooks/useFeatures';
 import { Alert, Autocomplete, Box, Button, Card, Chip, FormControlLabel, Grid, IconButton, InputAdornment, MenuItem, Radio, RadioGroup, Stack, Tab, Tabs, TextField, Tooltip, Typography } from '@mui/material';
 import StorefrontRounded from '@mui/icons-material/StorefrontRounded';
 import SaveRounded from '@mui/icons-material/SaveRounded';
@@ -126,6 +127,7 @@ export const BusinessEditor = () => {
   const rmImg = useMutation({ mutationFn: (imageId: number) => businessApi.removeImage(id!, imageId), onSuccess: onMedia, onError: notify.error });
   const primary = useMutation({ mutationFn: (imageId: number) => businessApi.primaryImage(id!, imageId), onSuccess: onMedia, onError: notify.error });
 
+  const { on } = useFeatures();
   const isPharmacy = /pharmac/i.test(`${existing?.category?.slug || ''} ${existing?.category?.nameEn || ''}`) || /صيدل/.test(existing?.category?.name || '');
   const tabs = [
     { v: 'basic', l: t('owner.steps.basic') },
@@ -134,11 +136,11 @@ export const BusinessEditor = () => {
     { v: 'hours', l: t('owner.steps.hours') },
     { v: 'media', l: t('owner.steps.media') },
     ...(!isNew ? [
-      { v: 'items', l: t('x.tabItems') },
-      { v: 'offers', l: t('x.tabOffers') },
-      { v: 'booking', l: t('x.tabBooking') },
-      ...(isPharmacy ? [{ v: 'duty', l: t('x.tabDuty') }] : []),
-      { v: 'plan', l: t('x.tabPlan') },
+      ...(on('menu') ? [{ v: 'items', l: t('x.tabItems') }] : []),
+      ...(on('offers') ? [{ v: 'offers', l: t('x.tabOffers') }] : []),
+      ...(on('bookings') || on('serviceRequests') ? [{ v: 'booking', l: t('x.tabBooking') }] : []),
+      ...(isPharmacy && on('pharmacies') ? [{ v: 'duty', l: t('x.tabDuty') }] : []),
+      ...(on('subscriptions') ? [{ v: 'plan', l: t('x.tabPlan') }] : []),
       { v: 'insights', l: t('owner.steps.insights') },
     ] : []),
   ];

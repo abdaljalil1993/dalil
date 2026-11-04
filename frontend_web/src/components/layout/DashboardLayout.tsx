@@ -1,3 +1,6 @@
+import ToggleOnRounded from '@mui/icons-material/ToggleOnRounded';
+import type { FeatureKey } from '@/api/types';
+import { useFeatures } from '@/hooks/useFeatures';
 import { AppBar, Badge, Box, Divider, Drawer, IconButton, List, ListItemButton, ListItemIcon, ListItemText, ListSubheader, Stack, Toolbar, Typography, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import MenuRounded from '@mui/icons-material/MenuRounded';
@@ -44,7 +47,7 @@ import { UserMenu } from './UserMenu';
 
 const WIDTH = 272;
 
-interface Item { to: string; label: string; icon: ReactNode; badge?: number; end?: boolean }
+interface Item { to: string; label: string; icon: ReactNode; badge?: number; end?: boolean; f?: FeatureKey }
 
 export const DashboardLayout = () => {
   const { t, isRtl } = useT();
@@ -63,12 +66,12 @@ export const DashboardLayout = () => {
       title: t('nav.account'),
       items: [
         { to: '/account', label: t('nav.overview'), icon: <DashboardRounded />, end: true },
-        { to: '/account/favorites', label: t('nav.favorites'), icon: <FavoriteRounded /> },
+        { to: '/account/favorites', label: t('nav.favorites'), icon: <FavoriteRounded />, f: 'favorites' },
         { to: '/account/reviews', label: t('nav.myReviews'), icon: <RateReviewRounded /> },
-        { to: '/account/bookings', label: t('x.myBookings'), icon: <EventAvailableRounded /> },
-        { to: '/account/requests', label: t('x.myRequests'), icon: <HandymanRounded /> },
-        { to: '/account/listings', label: t('x.myListings'), icon: <CampaignOutlined /> },
-        { to: '/account/applications', label: t('x.myApplications'), icon: <WorkRounded /> },
+        { to: '/account/bookings', label: t('x.myBookings'), icon: <EventAvailableRounded />, f: 'bookings' },
+        { to: '/account/requests', label: t('x.myRequests'), icon: <HandymanRounded />, f: 'serviceRequests' },
+        { to: '/account/listings', label: t('x.myListings'), icon: <CampaignOutlined />, f: 'realEstate' },
+        { to: '/account/applications', label: t('x.myApplications'), icon: <WorkRounded />, f: 'jobs' },
         { to: '/account/notifications', label: t('nav.notifications'), icon: <NotificationsRounded />, badge: unread },
         { to: '/account/profile', label: t('nav.profile'), icon: <PersonRounded /> },
         { to: '/account/settings', label: t('nav.settings'), icon: <SettingsRounded /> },
@@ -78,14 +81,17 @@ export const DashboardLayout = () => {
       title: t('nav.myBusinesses'),
       items: [
         { to: '/owner/businesses', label: t('nav.myBusinesses'), icon: <StorefrontRounded /> },
-        { to: '/owner/bookings', label: t('x.ownerBookings'), icon: <EventNoteRounded /> },
-        { to: '/owner/requests', label: t('x.inbox'), icon: <InboxRounded /> },
+        { to: '/owner/bookings', label: t('x.ownerBookings'), icon: <EventNoteRounded />, f: 'bookings' },
+        { to: '/owner/requests', label: t('x.inbox'), icon: <InboxRounded />, f: 'serviceRequests' },
         { to: '/owner/reviews', label: t('nav.ownerReviews'), icon: <ForumRounded /> },
-        { to: '/owner/subscription', label: t('x.plans'), icon: <WorkspacePremiumRounded /> },
-        { to: '/owner/promote', label: t('nav.promote'), icon: <CampaignRounded /> },
+        { to: '/owner/subscription', label: t('x.plans'), icon: <WorkspacePremiumRounded />, f: 'subscriptions' },
+        { to: '/owner/promote', label: t('nav.promote'), icon: <CampaignRounded />, f: 'promote' },
       ],
     },
   ];
+  const { on } = useFeatures();
+  const anyListing = on('realEstate') || on('cars') || on('jobs');
+  groups.forEach((g) => { g.items = g.items.filter((i) => !i.f || (i.to === '/account/listings' ? anyListing : on(i.f))); });
   if (isAdmin) {
     groups.push({
       title: t('nav.admin'),
@@ -100,6 +106,7 @@ export const DashboardLayout = () => {
         { to: '/admin/claims', label: t('nav.claims'), icon: <VerifiedUserRounded />, badge: p?.claims },
         { to: '/admin/ads', label: t('nav.ads'), icon: <ViewCarouselRounded />, badge: p?.ads },
         { to: '/admin/featured', label: t('nav.featuredMgmt'), icon: <BoltRounded />, badge: p?.featured },
+        { to: '/admin/features', label: t('x.features'), icon: <ToggleOnRounded /> },
         { to: '/admin/billing', label: t('x.billing'), icon: <PaymentsRounded /> },
         { to: '/admin/listings', label: t('x.listingsMod'), icon: <CampaignOutlined /> },
         { to: '/admin/requests', label: t('x.requestsAdmin'), icon: <HandymanRounded /> },

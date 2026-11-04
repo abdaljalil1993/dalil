@@ -1,3 +1,4 @@
+import { useFeatures } from '@/hooks/useFeatures';
 import { Alert, Box, Button, Card, Container, Grid, IconButton, InputAdornment, Link as MLink, MenuItem, Stack, Tab, Tabs, TextField, Typography } from '@mui/material';
 import PhoneIphoneRounded from '@mui/icons-material/PhoneIphoneRounded';
 import AlternateEmailRounded from '@mui/icons-material/AlternateEmailRounded';
@@ -73,20 +74,21 @@ export const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
   const m = useMutation({ mutationFn: authApi.login, onSuccess: (p) => { onAuthenticated(p); notify.success(t('auth.welcome', { name: p.user.firstName })); done(); }, onError: notify.error });
   const [mode, setMode] = useState<'email' | 'phone'>('email');
+  const { on } = useFeatures();
   const location = useLocation();
   return (
     <AuthShell title={t('auth.loginTitle')} subtitle={t('auth.loginSubtitle')}>
-      <Tabs value={mode} onChange={(_, v) => setMode(v)} variant="fullWidth" sx={{ mb: 2.5, bgcolor: 'action.hover', borderRadius: 3, minHeight: 44, '& .MuiTab-root': { minHeight: 44 }, '& .MuiTabs-indicator': { height: '100%', borderRadius: 3, zIndex: 0, opacity: 0.14 } }}>
+      {on('otpLogin') && <Tabs value={mode} onChange={(_, v) => setMode(v)} variant="fullWidth" sx={{ mb: 2.5, bgcolor: 'action.hover', borderRadius: 3, minHeight: 44, '& .MuiTab-root': { minHeight: 44 }, '& .MuiTabs-indicator': { height: '100%', borderRadius: 3, zIndex: 0, opacity: 0.14 } }}>
         <Tab value="email" icon={<AlternateEmailRounded fontSize="small" />} iconPosition="start" label={t('x.emailLogin')} sx={{ zIndex: 1 }} />
         <Tab value="phone" icon={<PhoneIphoneRounded fontSize="small" />} iconPosition="start" label={t('x.phoneLogin')} sx={{ zIndex: 1 }} />
-      </Tabs>
+      </Tabs>}
       {mode === 'phone' ? <PhoneLogin /> : (
       <Stack component="form" spacing={2} onSubmit={handleSubmit((v) => m.mutate(v))}>
         <TextField fullWidth label={t('common.email')} type="email" autoComplete="email" {...register('email')} error={!!errors.email} helperText={errors.email?.message} />
         <PasswordField label={t('auth.password')} reg={register('password')} error={!!errors.password} helperText={errors.password?.message} />
         <MLink component={Link} to="/forgot-password" variant="body2" sx={{ alignSelf: 'flex-end' }}>{t('auth.forgot')}</MLink>
         <Button type="submit" variant="contained" size="large" disabled={m.isPending}>{t('auth.loginNow')}</Button>
-        <Typography variant="body2" align="center">{t('auth.noAccount')} <MLink component={Link} to="/register" state={location.state} fontWeight={700}>{t('auth.registerNow')}</MLink></Typography>
+        {on('register') && <Typography variant="body2" align="center">{t('auth.noAccount')} <MLink component={Link} to="/register" state={location.state} fontWeight={700}>{t('auth.registerNow')}</MLink></Typography>}
       </Stack>
       )}
     </AuthShell>
