@@ -50,5 +50,18 @@
   "homeOffers": "عروض",
   "homeOnDuty": "صيدليات مناوبة",
   "homeQuickServices": "خدمات سريعة",
-  "homeLoadFailed": "تعذّر تحميل الرئيسية"
+  "homeLoadFailed": "تعذّر تحميل الرئيسية",
+
+  "categories": "التصنيفات",
+  "noCategoriesFound": "لا توجد تصنيفات",
+  "noBusinessesFound": "لا توجد أنشطة تجارية",
+  "retry": "إعادة المحاولة",
+  "all": "الكل",
+  "openNow": "مفتوح الآن",
+  "results": "نتيجة",
+  "recommended": "مقترح",
+  "highestRated": "الأعلى تقييماً",
+  "newest": "الأحدث",
+  "name": "الاسم",
+  "sortBy": "ترتيب حسب"
 }

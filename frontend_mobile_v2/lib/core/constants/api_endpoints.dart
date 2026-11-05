@@ -1,142 +1,254 @@
-/// All API paths, relative to the base URL (`--dart-define=API_URL`).
-/// Source of truth: docs/API.md (v2.1 — 183 endpoints).
 class ApiEndpoints {
   ApiEndpoints._();
 
-  // ───────────────────────── auth ─────────────────────────
-  static const login = '/auth/login';
-  static const register = '/auth/register';
-  static const refresh = '/auth/refresh';
-  static const logout = '/auth/logout';
-  static const logoutAll = '/auth/logout-all';
-  static const changePassword = '/auth/change-password';
-  static const forgotPassword = '/auth/forgot-password';
-  static const resetPassword = '/auth/reset-password';
-  static const me = '/auth/me';
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Auth
+  // ═══════════════════════════════════════════════════════════════════════════
+  static const authRegister = '/auth/register';
+  static const authLogin = '/auth/login';
+  static const authRefresh = '/auth/refresh';
+  static const authLogout = '/auth/logout';
+  static const authLogoutAll = '/auth/logout-all';
+  static const authChangePassword = '/auth/change-password';
+  static const authForgotPassword = '/auth/forgot-password';
+  static const authResetPassword = '/auth/reset-password';
+  static const authMe = '/auth/me';
 
-  // OTP (v2.1)
-  static const otpRequest = '/auth/otp/request';
-  static const otpVerify = '/auth/otp/verify';
-  static const otpVerifyPhone = '/auth/otp/verify-phone';
+  // Shortcuts for data sources
+  static const login = authLogin;
+  static const register = authRegister;
+  static const refresh = authRefresh;
+  static const logout = authLogout;
+  static const logoutAll = authLogoutAll;
+  static const me = authMe;
+  static const forgotPassword = authForgotPassword;
+  static const resetPassword = authResetPassword;
 
-  // Devices / push (v2.1)
-  static const devices = '/devices';
-  static String deviceByToken(String token) => '/devices/$token';
+  // OTP
+  static const authOtpRequest = '/auth/otp/request';
+  static const authOtpVerify = '/auth/otp/verify';
+  static const authOtpVerifyPhone = '/auth/otp/verify-phone';
+  
+  static const otpRequest = authOtpRequest;
+  static const otpVerify = authOtpVerify;
+  static const otpVerifyPhone = authOtpVerifyPhone;
 
-  // ───────────────────────── users ─────────────────────────
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Users
+  // ═══════════════════════════════════════════════════════════════════════════
   static const usersMe = '/users/me';
   static const usersMeAvatar = '/users/me/avatar';
+  static const users = '/users';
+  static String userById(String id) => '/users/$id';
+  static String userStatus(String id) => '/users/$id/status';
+  static String userRole(String id) => '/users/$id/role';
 
-  // ───────────────────────── catalog ─────────────────────────
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Home
+  // ═══════════════════════════════════════════════════════════════════════════
   static const home = '/home';
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Categories
+  // ═══════════════════════════════════════════════════════════════════════════
   static const categories = '/categories';
   static String categoryBySlug(String slug) => '/categories/$slug';
+  static String categoryById(String id) => '/categories/$id';
+  static const categoriesSub = '/categories/sub';
+  static String categorySubById(String id) => '/categories/sub/$id';
+  static String categoryImage(String id) => '/categories/$id/image';
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Cities
+  // ═══════════════════════════════════════════════════════════════════════════
   static const cities = '/cities';
   static String cityById(String id) => '/cities/$id';
 
-  /// Feature switches (v2.1) — called on launch and on city change.
-  static const features = '/features';
-
-  // ───────────────────────── businesses ─────────────────────────
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Businesses
+  // ═══════════════════════════════════════════════════════════════════════════
   static const businesses = '/businesses';
   static const businessesSearch = '/businesses/search';
   static const businessesSuggest = '/businesses/suggest';
   static const businessesMy = '/businesses/my';
+  static const businessesAdminAll = '/businesses/admin/all';
   static String businessBySlug(String slug) => '/businesses/$slug';
+  static String businessManage(String id) => '/businesses/manage/$id';
   static String businessById(String id) => '/businesses/$id';
   static String businessRelated(String slug) => '/businesses/$slug/related';
-  static String businessManage(String id) => '/businesses/manage/$id';
   static String businessTrack(String id) => '/businesses/$id/track';
-  static String businessStats(String id) => '/businesses/$id/stats';
-  static String businessHours(String id) => '/businesses/$id/hours';
+  static String businessStatus(String id) => '/businesses/$id/status';
+  static String businessFlags(String id) => '/businesses/$id/flags';
   static String businessImages(String id) => '/businesses/$id/images';
-  static String businessImage(String id, String imageId) => '/businesses/$id/images/$imageId';
+  static String businessImageDelete(String id, String imageId) =>
+      '/businesses/$id/images/$imageId';
   static String businessImagePrimary(String id, String imageId) =>
       '/businesses/$id/images/$imageId/primary';
   static String businessCover(String id) => '/businesses/$id/cover';
   static String businessLogo(String id) => '/businesses/$id/logo';
-  static String businessClaim(String id) => '/businesses/$id/claim';
-  static String businessReports(String id) => '/businesses/$id/reports';
-  static String businessReviews(String id) => '/businesses/$id/reviews';
-  static String businessOffers(String id) => '/businesses/$id/offers';
-  static String businessItems(String id) => '/businesses/$id/items';
-  static String businessItem(String id, String itemId) => '/businesses/$id/items/$itemId';
-  static String businessDuties(String id) => '/businesses/$id/duties';
-  static String businessBookingSettings(String id) => '/businesses/$id/booking-settings';
-  static String businessAvailability(String id) => '/businesses/$id/availability';
-  static String businessAppointments(String id) => '/businesses/$id/appointments';
-  static String businessEntitlements(String id) => '/businesses/$id/entitlements';
+  static String businessHours(String id) => '/businesses/$id/hours';
+  static String businessStats(String id) => '/businesses/$id/stats';
 
-  // ───────────────────────── reviews ─────────────────────────
+  // Business Items (Menu)
+  static String businessItems(String id) => '/businesses/$id/items';
+  static String businessItemById(String id, String itemId) =>
+      '/businesses/$id/items/$itemId';
+
+  // Business Offers
+  static String businessOffers(String id) => '/businesses/$id/offers';
+  static String businessOfferById(String id, String offerId) =>
+      '/businesses/$id/offers/$offerId';
+
+  // Booking Settings
+  static String businessBookingSettings(String id) =>
+      '/businesses/$id/booking-settings';
+  static String businessAvailability(String id) =>
+      '/businesses/$id/availability';
+  static String businessAppointments(String id) =>
+      '/businesses/$id/appointments';
+
+  // Duties (Pharmacies)
+  static String businessDuties(String id) => '/businesses/$id/duties';
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Reviews
+  // ═══════════════════════════════════════════════════════════════════════════
+  static String businessReviews(String businessId) =>
+      '/businesses/$businessId/reviews';
   static const reviewsMy = '/reviews/my';
   static const reviewsOwner = '/reviews/owner';
+  static const reviewsAdminAll = '/reviews/admin/all';
   static String reviewById(String id) => '/reviews/$id';
   static String reviewReply(String id) => '/reviews/$id/reply';
   static String reviewLike(String id) => '/reviews/$id/like';
+  static String reviewVisibility(String id) => '/reviews/$id/visibility';
 
-  // ───────────────────────── favorites / notifications ─────────────────────────
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Reports & Claims
+  // ═══════════════════════════════════════════════════════════════════════════
+  static String businessReports(String businessId) =>
+      '/businesses/$businessId/reports';
+  static String businessClaim(String businessId) =>
+      '/businesses/$businessId/claim';
+  static const reports = '/reports';
+  static String reportStatus(String id) => '/reports/$id/status';
+  static const claimsMy = '/claims/my';
+  static const claims = '/claims';
+  static String claimById(String id) => '/claims/$id';
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Favorites
+  // ═══════════════════════════════════════════════════════════════════════════
   static const favorites = '/favorites';
   static String favoriteToggle(String businessId) => '/favorites/$businessId';
-  static String favoriteCheck(String businessId) => '/favorites/$businessId/check';
+  static String favoriteCheck(String businessId) =>
+      '/favorites/$businessId/check';
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Notifications
+  // ═══════════════════════════════════════════════════════════════════════════
   static const notifications = '/notifications';
   static const notificationsUnreadCount = '/notifications/unread-count';
   static const notificationsReadAll = '/notifications/read-all';
   static String notificationRead(String id) => '/notifications/$id/read';
   static String notificationById(String id) => '/notifications/$id';
 
-  // ───────────────────────── promotions ─────────────────────────
-  static const adsActive = '/advertisements/active';
-  static String adClick(int id) => '/advertisements/$id/click';
-  static String adImpression(int id) => '/advertisements/$id/impression';
-  static const adsMy = '/advertisements/my';
-  static const adsRequest = '/advertisements/request';
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Devices (FCM)
+  // ═══════════════════════════════════════════════════════════════════════════
+  static const devices = '/devices';
+  static String deviceByToken(String token) => '/devices/$token';
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Advertisements
+  // ═══════════════════════════════════════════════════════════════════════════
+  static const advertisementsActive = '/advertisements/active';
+  static String advertisementClick(String id) => '/advertisements/$id/click';
+  static String advertisementImpression(String id) =>
+      '/advertisements/$id/impression';
+  static const advertisementsMy = '/advertisements/my';
+  static const advertisementsRequest = '/advertisements/request';
+  static const advertisements = '/advertisements';
+  static String advertisementById(String id) => '/advertisements/$id';
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Featured
+  // ═══════════════════════════════════════════════════════════════════════════
   static const featuredActive = '/featured/active';
   static const featuredMy = '/featured/my';
   static const featuredRequest = '/featured/request';
+  static const featured = '/featured';
+  static String featuredById(String id) => '/featured/$id';
 
-  // ───────────────────────── v2.1 services ─────────────────────────
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Offers
+  // ═══════════════════════════════════════════════════════════════════════════
   static const offers = '/offers';
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Pharmacies
+  // ═══════════════════════════════════════════════════════════════════════════
   static const pharmaciesOnDuty = '/pharmacies/on-duty';
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Emergency
+  // ═══════════════════════════════════════════════════════════════════════════
   static const emergency = '/emergency';
 
-  // Listings (real estate / cars / jobs)
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Listings (Real Estate, Cars, Jobs)
+  // ═══════════════════════════════════════════════════════════════════════════
   static const listingsFields = '/listings/fields';
   static const listings = '/listings';
   static const listingsMy = '/listings/my';
-  static const listingsApplicationsMy = '/listings/applications/my';
   static String listingBySlug(String slug) => '/listings/$slug';
   static String listingById(String id) => '/listings/$id';
   static String listingImages(String id) => '/listings/$id/images';
-  static String listingImage(String id, int index) => '/listings/$id/images/$index';
   static String listingStatus(String id) => '/listings/$id/status';
   static String listingApply(String id) => '/listings/$id/apply';
   static String listingApplications(String id) => '/listings/$id/applications';
-  static String applicationStatus(String id) => '/listings/applications/$id';
+  static const listingsApplicationsMy = '/listings/applications/my';
 
-  // Service requests & quotes
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Service Requests
+  // ═══════════════════════════════════════════════════════════════════════════
   static const serviceRequests = '/service-requests';
   static const serviceRequestsMy = '/service-requests/my';
   static const serviceRequestsInbox = '/service-requests/inbox';
   static String serviceRequestById(String id) => '/service-requests/$id';
-  static String serviceRequestStatus(String id) => '/service-requests/$id/status';
-  static String serviceRequestQuotes(String id) => '/service-requests/$id/quotes';
-  static String quoteById(String id) => '/service-requests/quotes/$id';
+  static String serviceRequestStatus(String id) =>
+      '/service-requests/$id/status';
+  static String serviceRequestQuotes(String id) =>
+      '/service-requests/$id/quotes';
+  static String serviceRequestQuoteById(String id, String quoteId) =>
+      '/service-requests/quotes/$quoteId';
 
-  // Appointments
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Appointments (Bookings)
+  // ═══════════════════════════════════════════════════════════════════════════
   static const appointmentsMy = '/appointments/my';
   static const appointmentsOwner = '/appointments/owner';
+  static String appointmentById(String id) => '/appointments/$id';
   static String appointmentStatus(String id) => '/appointments/$id/status';
 
-  // Billing (v2.1 — currently disabled server-side, flow must exist)
-  static const billingPublicSettings = '/billing/settings/public';
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Billing & Subscriptions
+  // ═══════════════════════════════════════════════════════════════════════════
+  static const billingSettingsPublic = '/billing/settings/public';
   static const billingPlans = '/billing/plans';
+  static String businessEntitlements(String id) =>
+      '/businesses/$id/entitlements';
+  static const billingSubscriptionsRequest = '/billing/subscriptions/request';
   static const billingSubscriptionsMy = '/billing/subscriptions/my';
-  static const billingSubscriptionRequest = '/billing/subscriptions/request';
 
-  // ───────────────────────── contact ─────────────────────────
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Feature Switches
+  // ═══════════════════════════════════════════════════════════════════════════
+  static const features = '/features';
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Contact
+  // ═══════════════════════════════════════════════════════════════════════════
   static const contact = '/contact';
-
-  // ───────────────────────── meta ─────────────────────────
-  static const health = '/health';
-  static const docs = '/docs';
+  static String contactById(String id) => '/contact/$id';
 }

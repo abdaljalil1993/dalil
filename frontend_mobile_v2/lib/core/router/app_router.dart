@@ -6,7 +6,9 @@ import '../../features/auth/presentation/pages/forgot_password_screen.dart';
 import '../../features/auth/presentation/pages/login_screen.dart';
 import '../../features/auth/presentation/pages/otp_login_screen.dart';
 import '../../features/auth/presentation/pages/register_screen.dart';
-import '../../features/home/presentation/home_placeholder.dart';
+import '../../features/catalog/presentation/pages/categories_screen.dart';
+import '../../features/catalog/presentation/pages/category_details_screen.dart';
+import '../../features/home/presentation/pages/home_screen.dart';
 import '../../features/services/providers/features_providers.dart';
 import '../../features/splash/presentation/splash_screen.dart';
 import '../di/providers.dart';
@@ -67,7 +69,23 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.home,
-        builder: (context, state) => const HomePlaceholder(),
+        builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.categories,
+        builder: (context, state) => const CategoriesScreen(),
+      ),
+      GoRoute(
+        path: '/categories/:slug',
+        builder: (context, state) {
+          final slug = state.pathParameters['slug']!;
+          return CategoryDetailsScreen(slug: slug);
+        },
+      ),
+      // Deep link for categories (e.g. /c/restaurants)
+      GoRoute(
+        path: '/c/:slug',
+        redirect: (context, state) => '/categories/${state.pathParameters['slug']}',
       ),
     ],
     redirect: (context, state) {

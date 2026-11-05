@@ -9,10 +9,11 @@ class FeaturesRepository {
 
   final ApiClient _api;
 
-  Future<Result<FeatureSwitches>> get({int? cityId}) async {
+  Future<Result<FeatureSwitches>> get({String? cityId}) async {
+    final cityIdInt = cityId != null ? int.tryParse(cityId) : null;
     final res = await _api.get<Map<String, dynamic>>(
       ApiEndpoints.features,
-      query: {if (cityId != null) 'cityId': cityId},
+      query: {if (cityIdInt != null) 'cityId': cityIdInt},
     );
     return res.map(FeatureSwitches.fromApi);
   }

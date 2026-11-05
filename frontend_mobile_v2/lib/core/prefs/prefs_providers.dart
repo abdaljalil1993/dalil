@@ -3,56 +3,55 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../di/providers.dart';
 
-/// Locale (ar/en) — persisted, and pushed to the API as `Accept-Language`.
-class LocaleNotifier extends Notifier<Locale> {
-  @override
-  Locale build() => Locale(ref.read(localStorageProvider).locale);
+/// Current app locale (ar or en).
+final localeProvider = StateNotifierProvider<LocaleNotifier, Locale>((ref) {
+  final storage = ref.watch(localStorageProvider);
+  final initial = storage.locale ?? const Locale('ar');
+  return LocaleNotifier(storage, initial);
+});
 
-  bool get isArabic => state.languageCode == 'ar';
+class LocaleNotifier extends StateNotifier<Locale> {
+  final dynamic _storage;
 
-  Future<void> set(String code) async {
-    state = Locale(code);
-    await ref.read(localStorageProvider).setLocale(code);
-    // Keep the `Accept-Language` header in sync without rebuilding Dio.
-    ref.read(dioClientProvider).language.setLocale(code);
+  LocaleNotifier(this._storage, Locale initial) : super(initial);
+
+  Future<void> setLocale(Locale locale) async {
+    state = locale;
+    await _storage.saveLocale(locale);
   }
 }
 
-/// Theme mode: system / light / dark.
-class ThemeModeNotifier extends Notifier<ThemeMode> {
-  @override
-  ThemeMode build() => switch (ref.read(localStorageProvider).themeMode) {
-        'light' => ThemeMode.light,
-        'dark' => ThemeMode.dark,
-        _ => ThemeMode.system,
-      };
+/// Current theme mode.
+final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
+  final storage = ref.watch(localStorageProvider);
+  final initial = storage.themeMode ?? ThemeMode.system;
+  return ThemeModeNotifier(storage, initial);
+});
 
-  Future<void> set(ThemeMode mode) async {
+class ThemeModeNotifier extends StateNotifier<ThemeMode> {
+  final dynamic _storage;
+
+  ThemeModeNotifier(this._storage, ThemeMode initial) : super(initial);
+
+  Future<void> setThemeMode(ThemeMode mode) async {
     state = mode;
-    await ref.read(localStorageProvider).setThemeMode(mode.name);
+    await _storage.saveThemeMode(mode);
   }
 }
 
-/// The city picked at onboarding (or later). `null` = all cities.
-class SelectedCityNotifier extends Notifier<int?> {
-  @override
-  int? build() => ref.read(localStorageProvider).cityId;
+/// Default city ID for home feed and search.
+final defaultCityIdProvider = StateNotifierProvider<DefaultCityNotifier, String?>((ref) {
+  final storage = ref.watch(localStorageProvider);
+  return DefaultCityNotifier(storage, storage.defaultCityId);
+});
 
-  String? get name => ref.read(localStorageProvider).cityName;
+class DefaultCityNotifier extends StateNotifier<String?> {
+  final dynamic _storage;
 
-  Future<void> set({required int? id, String? name}) async {
-    state = id;
-    await ref.read(localStorageProvider).setCity(id: id, name: name);
-    // `featuresProvider` watches this provider → it refetches by itself,
-    // because feature switches are per-governorate.
+  DefaultCityNotifier(this._storage, String? initial) : super(initial);
+
+  Future<void> setCity(String? cityId) async {
+    state = cityId;
+    await _storage.saveDefaultCityId(cityId);
   }
 }
-
-final localeProvider =
-    NotifierProvider<LocaleNotifier, Locale>(LocaleNotifier.new);
-
-final themeModeProvider =
-    NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
-
-final selectedCityProvider =
-    NotifierProvider<SelectedCityNotifier, int?>(SelectedCityNotifier.new);

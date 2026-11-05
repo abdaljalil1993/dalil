@@ -15,12 +15,13 @@ final featuresRepositoryProvider = Provider<FeaturesRepository>(
 );
 
 final featuresProvider = FutureProvider<FeatureSwitches>((ref) async {
-  final cityId = ref.watch(selectedCityProvider);
+  final cityId = ref.watch(defaultCityIdProvider);
   final repo = ref.watch(featuresRepositoryProvider);
   final storage = ref.watch(localStorageProvider);
 
   // 1) instant paint from cache (if it belongs to this city)
-  final cached = storage.featuresCache(cityId);
+  final cityIdInt = cityId != null ? int.tryParse(cityId) : null;
+  final cached = storage.featuresCache(cityIdInt);
   if (cached != null) {
     // 2) …but keep the cache fresh in the background.
     ref.invalidateSelf();
@@ -29,7 +30,7 @@ final featuresProvider = FutureProvider<FeatureSwitches>((ref) async {
 
   final result = await repo.get(cityId: cityId);
   final switches = result.dataOrNull ?? FeatureSwitches.allOn;
-  await storage.saveFeatures({'cityId': cityId, 'enabled': switches.enabled}, cityId);
+  await storage.saveFeatures({'cityId': cityId, 'enabled': switches.enabled}, cityIdInt);
   return switches;
 });
 

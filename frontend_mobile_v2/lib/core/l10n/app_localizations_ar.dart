@@ -155,4 +155,40 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get homeLoadFailed => 'تعذّر تحميل الرئيسية';
+
+  @override
+  String get categories => 'التصنيفات';
+
+  @override
+  String get noCategoriesFound => 'لا توجد تصنيفات';
+
+  @override
+  String get noBusinessesFound => 'لا توجد أنشطة تجارية';
+
+  @override
+  String get retry => 'إعادة المحاولة';
+
+  @override
+  String get all => 'الكل';
+
+  @override
+  String get openNow => 'مفتوح الآن';
+
+  @override
+  String get results => 'نتيجة';
+
+  @override
+  String get recommended => 'مقترح';
+
+  @override
+  String get highestRated => 'الأعلى تقييماً';
+
+  @override
+  String get newest => 'الأحدث';
+
+  @override
+  String get name => 'الاسم';
+
+  @override
+  String get sortBy => 'ترتيب حسب';
 }

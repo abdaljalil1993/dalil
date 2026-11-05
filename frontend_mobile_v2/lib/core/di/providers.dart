@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../network/api_client.dart';
@@ -22,15 +23,15 @@ final authSessionProvider = ChangeNotifierProvider<AuthSession>(
 
 // ───────────────────────── network ─────────────────────────
 /// Built lazily from the session + persisted locale (both available by then).
-final dioClientProvider = Provider<DioClient>((ref) {
+final dioProvider = Provider<Dio>((ref) {
   final session = ref.watch(authSessionProvider);
-  final locale = ref.read(localStorageProvider).locale;
-  return DioClient(session: session, locale: locale);
+  final locale = ref.watch(localStorageProvider).locale?.languageCode ?? 'ar';
+  return DioClient(session: session, locale: locale).dio;
 });
 
 /// Unwraps `{success,message,data,meta}` and returns `Result`/`Paged`.
 final apiClientProvider = Provider<ApiClient>(
-  (ref) => ApiClient(ref.watch(dioClientProvider).dio),
+  (ref) => ApiClient(ref.watch(dioProvider)),
 );
 
 final networkInfoProvider = Provider<NetworkInfo>((ref) => NetworkInfo());

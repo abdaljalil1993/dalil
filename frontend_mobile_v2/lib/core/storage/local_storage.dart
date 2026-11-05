@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Non-sensitive preferences: locale, theme, default city, cached feature
@@ -11,8 +12,7 @@ class LocalStorage {
 
   static const _kLocale = 'locale';
   static const _kThemeMode = 'themeMode';
-  static const _kCityId = 'cityId';
-  static const _kCityName = 'cityName';
+  static const _kDefaultCityId = 'defaultCityId';
   static const _kOnboardingDone = 'onboardingDone';
   static const _kFeatures = 'features.cache';
   static const _kFeaturesCity = 'features.cityId';
@@ -22,24 +22,46 @@ class LocalStorage {
   static Future<LocalStorage> load() async =>
       LocalStorage(await SharedPreferences.getInstance());
 
-  // locale: 'ar' | 'en'
-  String get locale => _prefs.getString(_kLocale) ?? 'ar';
-  Future<void> setLocale(String v) => _prefs.setString(_kLocale, v);
+  // ── Locale ──
+  Locale? get locale {
+    final code = _prefs.getString(_kLocale);
+    return code != null ? Locale(code) : null;
+  }
 
-  // theme: 'system' | 'light' | 'dark'
-  String get themeMode => _prefs.getString(_kThemeMode) ?? 'system';
-  Future<void> setThemeMode(String v) => _prefs.setString(_kThemeMode, v);
+  Future<void> saveLocale(Locale locale) =>
+      _prefs.setString(_kLocale, locale.languageCode);
 
-  int? get cityId => _prefs.getInt(_kCityId);
-  String? get cityName => _prefs.getString(_kCityName);
-  Future<void> setCity({required int? id, String? name}) async {
-    if (id == null) {
-      await _prefs.remove(_kCityId);
-      await _prefs.remove(_kCityName);
-      return;
+  // ── Theme Mode ──
+  ThemeMode? get themeMode {
+    final mode = _prefs.getString(_kThemeMode);
+    switch (mode) {
+      case 'light':
+        return ThemeMode.light;
+      case 'dark':
+        return ThemeMode.dark;
+      default:
+        return ThemeMode.system;
     }
-    await _prefs.setInt(_kCityId, id);
-    if (name != null) await _prefs.setString(_kCityName, name);
+  }
+
+  Future<void> saveThemeMode(ThemeMode mode) {
+    final value = mode == ThemeMode.light
+        ? 'light'
+        : mode == ThemeMode.dark
+            ? 'dark'
+            : 'system';
+    return _prefs.setString(_kThemeMode, value);
+  }
+
+  // ── Default City ──
+  String? get defaultCityId => _prefs.getString(_kDefaultCityId);
+
+  Future<void> saveDefaultCityId(String? cityId) async {
+    if (cityId == null) {
+      await _prefs.remove(_kDefaultCityId);
+    } else {
+      await _prefs.setString(_kDefaultCityId, cityId);
+    }
   }
 
   bool get onboardingDone => _prefs.getBool(_kOnboardingDone) ?? false;

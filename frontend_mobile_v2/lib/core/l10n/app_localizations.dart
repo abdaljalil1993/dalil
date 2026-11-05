@@ -381,6 +381,78 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تعذّر تحميل الرئيسية'**
   String get homeLoadFailed;
+
+  /// No description provided for @categories.
+  ///
+  /// In ar, this message translates to:
+  /// **'التصنيفات'**
+  String get categories;
+
+  /// No description provided for @noCategoriesFound.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد تصنيفات'**
+  String get noCategoriesFound;
+
+  /// No description provided for @noBusinessesFound.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد أنشطة تجارية'**
+  String get noBusinessesFound;
+
+  /// No description provided for @retry.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة المحاولة'**
+  String get retry;
+
+  /// No description provided for @all.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكل'**
+  String get all;
+
+  /// No description provided for @openNow.
+  ///
+  /// In ar, this message translates to:
+  /// **'مفتوح الآن'**
+  String get openNow;
+
+  /// No description provided for @results.
+  ///
+  /// In ar, this message translates to:
+  /// **'نتيجة'**
+  String get results;
+
+  /// No description provided for @recommended.
+  ///
+  /// In ar, this message translates to:
+  /// **'مقترح'**
+  String get recommended;
+
+  /// No description provided for @highestRated.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأعلى تقييماً'**
+  String get highestRated;
+
+  /// No description provided for @newest.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأحدث'**
+  String get newest;
+
+  /// No description provided for @name.
+  ///
+  /// In ar, this message translates to:
+  /// **'الاسم'**
+  String get name;
+
+  /// No description provided for @sortBy.
+  ///
+  /// In ar, this message translates to:
+  /// **'ترتيب حسب'**
+  String get sortBy;
 }
 
 class _AppLocalizationsDelegate
