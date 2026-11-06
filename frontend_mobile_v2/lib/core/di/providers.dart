@@ -22,12 +22,16 @@ final authSessionProvider = ChangeNotifierProvider<AuthSession>(
 );
 
 // ───────────────────────── network ─────────────────────────
-/// Built lazily from the session + persisted locale (both available by then).
-final dioProvider = Provider<Dio>((ref) {
+/// The client owns the language interceptor — kept reachable so locale
+/// changes can push `Accept-Language` (rule #11).
+final dioClientProvider = Provider<DioClient>((ref) {
   final session = ref.watch(authSessionProvider);
   final locale = ref.watch(localStorageProvider).locale?.languageCode ?? 'ar';
-  return DioClient(session: session, locale: locale).dio;
+  return DioClient(session: session, locale: locale);
 });
+
+/// The raw Dio used by [ApiClient].
+final dioProvider = Provider<Dio>((ref) => ref.watch(dioClientProvider).dio);
 
 /// Unwraps `{success,message,data,meta}` and returns `Result`/`Paged`.
 final apiClientProvider = Provider<ApiClient>(

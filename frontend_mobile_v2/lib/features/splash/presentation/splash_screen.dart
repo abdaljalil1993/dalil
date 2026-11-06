@@ -1,30 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/di/providers.dart';
 import '../../../core/theme/app_theme.dart';
 
-/// Bootstrap screen: restores the session, then hands over to the router.
-class SplashScreen extends ConsumerStatefulWidget {
+/// Brand screen shown while the router redirects (the session is already
+/// bootstrapped in main() before the first frame).
+class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
-
-  @override
-  ConsumerState<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends ConsumerState<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    _bootstrap();
-  }
-
-  Future<void> _bootstrap() async {
-    final session = ref.read(authSessionProvider);
-    await session.bootstrap();
-    if (!mounted) return;
-    // The router redirect takes over from here.
-  }
 
   @override
   Widget build(BuildContext context) {

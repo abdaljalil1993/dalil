@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/pages/forgot_password_screen.dart';
+import '../../features/businesses/presentation/pages/business_details_screen.dart';
 import '../../features/auth/presentation/pages/login_screen.dart';
 import '../../features/auth/presentation/pages/otp_login_screen.dart';
 import '../../features/auth/presentation/pages/register_screen.dart';
@@ -39,14 +40,22 @@ class AppRoutes {
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final appRouterProvider = Provider<GoRouter>((ref) {
-  // Rebuild redirects when auth state changes (sign in / out).
-  final session = ref.watch(authSessionProvider);
+  // Read (never watch): recreating the router on auth changes would reset
+  // `initialLocation` and swallow cold-start deep links. `refreshListenable`
+  // re-runs redirects instead.
+  final session = ref.read(authSessionProvider);
 
   return GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: AppRoutes.splash,
+    refreshListenable: session,
     debugLogDiagnostics: false,
     routes: [
+      // Bare URL (no hash) → splash → home.
+      GoRoute(
+        path: '/',
+        redirect: (context, state) => AppRoutes.splash,
+      ),
       GoRoute(
         path: AppRoutes.splash,
         builder: (context, state) => const SplashScreen(),
@@ -87,6 +96,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/c/:slug',
         redirect: (context, state) => '/categories/${state.pathParameters['slug']}',
       ),
+      // Business details (deep links from ads: /b/:slug)
+      GoRoute(
+        path: '/businesses/:slug',
+        builder: (context, state) =>
+            BusinessDetailsScreen(slug: state.pathParameters['slug']!),
+      ),
+      GoRoute(
+        path: '/b/:slug',
+        redirect: (context, state) =>
+            '/businesses/${state.pathParameters['slug']}',
+      ),
     ],
     redirect: (context, state) {
       if (!session.bootstrapped) return null;
@@ -100,9 +120,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     },
   );
 });
-
-/// Notifies the router that auth state changed (sign in / out).
-final routerRefreshProvider = Provider<void>((ref) => ref.watch(authSessionProvider));
 
 /// Helper for widgets that need to know if a feature is visible.
 bool isFeatureOn(WidgetRef ref, String key) =>

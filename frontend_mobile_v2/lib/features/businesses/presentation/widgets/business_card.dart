@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/prefs/prefs_providers.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -22,14 +23,7 @@ class BusinessCard extends ConsumerWidget {
     final locale = ref.watch(localeProvider).languageCode;
 
     return GestureDetector(
-      onTap: onTap ??
-          () {
-            // TODO: Navigate to business details
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                  content: Text('النشاط: ${business.localizedName(locale)}')),
-            );
-          },
+      onTap: onTap ?? () => context.push('/businesses/${business.slug}'),
       child: Card(
         clipBehavior: Clip.antiAlias,
         child: Column(
