@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/widgets/section_header.dart';
 import '../../../services/providers/features_providers.dart';
 
 class QuickServices extends ConsumerWidget {
@@ -72,10 +73,7 @@ class QuickServices extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text('خدمات سريعة', style: theme.textTheme.titleMedium),
-        ),
+        const SectionHeader(title: 'خدمات سريعة'),
         const SizedBox(height: 12),
         SizedBox(
           height: 100,

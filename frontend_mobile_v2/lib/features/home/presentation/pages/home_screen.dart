@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/section_header.dart';
+import '../../../../core/widgets/skeletons.dart';
 import '../../../../core/widgets/status_views.dart';
 import '../../domain/entities/home_feed.dart';
 import '../../providers/home_providers.dart';
@@ -56,8 +58,11 @@ class HomeScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: homeFeedAsync.when(
-        data: (feed) => RefreshIndicator(
+      body: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          switchInCurve: Curves.easeOut,
+          child: homeFeedAsync.when(
+            data: (feed) => RefreshIndicator(
           onRefresh: () async => ref.invalidate(homeFeedProvider),
           child: ListView(
             padding: const EdgeInsets.only(bottom: 24),
@@ -88,18 +93,9 @@ class HomeScreen extends ConsumerWidget {
               // Categories
               if (feed.categories.isNotEmpty) ...[
                 const SizedBox(height: 24),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('التصنيفات', style: theme.textTheme.titleMedium),
-                      TextButton(
-                        onPressed: () => context.go(AppRoutes.categories),
-                        child: const Text('عرض الكل'),
-                      ),
-                    ],
-                  ),
+                SectionHeader(
+                  title: 'التصنيفات',
+                  onSeeAll: () => context.go(AppRoutes.categories),
                 ),
                 const SizedBox(height: 12),
                 CategoryGrid(categories: feed.categories),
@@ -149,12 +145,13 @@ class HomeScreen extends ConsumerWidget {
             ],
           ),
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const HomeSkeleton(),
         error: (error, stack) => ErrorView(
           // Failure carries the API's own message — show it clean.
           message: error is Failure ? error.message : 'حدث خطأ غير متوقع',
           onRetry: () => ref.invalidate(homeFeedProvider),
         ),
+          ),
       ),
     );
   }

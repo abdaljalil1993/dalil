@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/l10n/app_localizations.dart';
+import '../../../../core/widgets/skeletons.dart';
 import '../../providers/category_providers.dart';
 import '../../../businesses/providers/business_providers.dart';
 import '../../../businesses/presentation/widgets/business_card.dart';
@@ -278,7 +279,7 @@ class _CategoryDetailsScreenState extends ConsumerState<CategoryDetailsScreen> {
             ],
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const DetailsSkeleton(),
         error: (error, stack) => Scaffold(
           appBar: AppBar(),
           body: Center(

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/prefs/prefs_providers.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/utils/category_icons.dart';
 import '../../../catalog/domain/entities/category.dart';
 
 class CategoryGrid extends ConsumerWidget {
@@ -55,100 +56,64 @@ class _CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final categoryColor = _parseColor(category.color) ?? AppColors.primary;
+    final categoryColor = parseHexColor(category.color) ?? AppColors.primary;
 
-    return GestureDetector(
-      onTap: () {
-        context.push('/categories/${category.slug}');
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: categoryColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: categoryColor.withValues(alpha: 0.2),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => context.push('/categories/${category.slug}'),
+        child: Padding(
+          padding: const EdgeInsets.all(4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  // Tinted gradient tile derived from the category color.
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      categoryColor.withValues(alpha: 0.18),
+                      categoryColor.withValues(alpha: 0.07),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                    color: categoryColor.withValues(alpha: 0.3),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: categoryColor.withValues(alpha: 0.12),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: _buildIcon(categoryColor),
+                ),
               ),
-            ),
-            child: Center(
-              child: _buildIcon(categoryColor),
-            ),
+              const SizedBox(height: 8),
+              Text(
+                category.localizedName(locale),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+                maxLines: 2,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            category.localizedName(locale),
-            style: theme.textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-            maxLines: 2,
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildIcon(Color color) {
-    // Map icon name to IconData
-    final iconData = _getIconData(category.icon);
-    
-    return Icon(
-      iconData,
-      color: color,
-      size: 28,
-    );
-  }
-
-  IconData _getIconData(String? iconName) {
-    // Common mappings (extend as needed)
-    final iconMap = {
-      'medical_services': Icons.medical_services,
-      'restaurant': Icons.restaurant,
-      'hotel': Icons.hotel,
-      'gavel': Icons.gavel,
-      'build': Icons.build,
-      'local_shipping': Icons.local_shipping,
-      'cleaning_services': Icons.cleaning_services,
-      'celebration': Icons.celebration,
-      'shopping_cart': Icons.shopping_cart,
-      'fitness_center': Icons.fitness_center,
-      'school': Icons.school,
-      'car_repair': Icons.car_repair,
-      'home_repair_service': Icons.home_repair_service,
-      'local_laundry_service': Icons.local_laundry_service,
-      'spa': Icons.spa,
-      'pets': Icons.pets,
-      'storefront': Icons.storefront,
-    };
-
-    return iconMap[iconName] ?? Icons.category;
-  }
-
-  Color? _parseColor(String? colorString) {
-    if (colorString == null || colorString.isEmpty) return null;
-    
-    try {
-      // Remove # if present
-      final hex = colorString.replaceAll('#', '');
-      
-      // Handle 6-digit hex
-      if (hex.length == 6) {
-        return Color(int.parse('FF$hex', radix: 16));
-      }
-      
-      // Handle 8-digit hex (with alpha)
-      if (hex.length == 8) {
-        return Color(int.parse(hex, radix: 16));
-      }
-    } catch (e) {
-      // Return null if parsing fails
-    }
-    
-    return null;
-  }
+  Widget _buildIcon(Color color) =>
+      Icon(categoryIcon(category.icon), color: color, size: 28);
 }

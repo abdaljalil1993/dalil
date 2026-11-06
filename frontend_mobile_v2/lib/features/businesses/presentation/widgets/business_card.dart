@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/prefs/prefs_providers.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/utils/category_icons.dart';
 import '../../domain/entities/business.dart';
 
 class BusinessCard extends ConsumerWidget {
@@ -22,10 +23,10 @@ class BusinessCard extends ConsumerWidget {
     final theme = Theme.of(context);
     final locale = ref.watch(localeProvider).languageCode;
 
-    return GestureDetector(
-      onTap: onTap ?? () => context.push('/businesses/${business.slug}'),
-      child: Card(
-        clipBehavior: Clip.antiAlias,
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap ?? () => context.push('/businesses/${business.slug}'),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -210,7 +211,7 @@ class BusinessCard extends ConsumerWidget {
 
   Widget _buildFallbackCover() {
     // Use category color gradient as fallback
-    final categoryColor = _parseCategoryColor() ?? AppColors.primary;
+    final categoryColor = parseHexColor(business.category.color) ?? AppColors.primary;
     
     return Container(
       height: 120,
@@ -226,7 +227,7 @@ class BusinessCard extends ConsumerWidget {
       ),
       child: Center(
         child: Icon(
-          _getCategoryIcon(),
+          categoryIcon(business.category.icon),
           color: Colors.white.withValues(alpha: 0.6),
           size: 48,
         ),
@@ -234,46 +235,6 @@ class BusinessCard extends ConsumerWidget {
     );
   }
 
-  Color? _parseCategoryColor() {
-    final colorString = business.category.color;
-    if (colorString == null || colorString.isEmpty) return null;
-    
-    try {
-      final hex = colorString.replaceAll('#', '');
-      if (hex.length == 6) {
-        return Color(int.parse('FF$hex', radix: 16));
-      }
-    } catch (e) {
-      // ignore
-    }
-    
-    return null;
-  }
-
-  IconData _getCategoryIcon() {
-    final iconName = business.category.icon;
-    final iconMap = {
-      'medical_services': Icons.medical_services,
-      'restaurant': Icons.restaurant,
-      'hotel': Icons.hotel,
-      'gavel': Icons.gavel,
-      'build': Icons.build,
-      'local_shipping': Icons.local_shipping,
-      'cleaning_services': Icons.cleaning_services,
-      'celebration': Icons.celebration,
-      'shopping_cart': Icons.shopping_cart,
-      'fitness_center': Icons.fitness_center,
-      'school': Icons.school,
-      'car_repair': Icons.car_repair,
-      'home_repair_service': Icons.home_repair_service,
-      'local_laundry_service': Icons.local_laundry_service,
-      'spa': Icons.spa,
-      'pets': Icons.pets,
-      'storefront': Icons.storefront,
-    };
-
-    return iconMap[iconName] ?? Icons.store;
-  }
 
   Widget _buildOpenNowIndicator(bool isOpen, ThemeData theme) {
     return Container(

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/prefs/prefs_providers.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/skeletons.dart';
 import '../../domain/entities/business.dart';
 import '../../providers/business_providers.dart';
 
@@ -23,7 +24,7 @@ class BusinessDetailsScreen extends ConsumerWidget {
     return Scaffold(
       body: async.when(
         data: (business) => _Details(business: business, locale: locale),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const DetailsSkeleton(),
         error: (error, stack) => Scaffold(
           appBar: AppBar(),
           body: Center(
