@@ -26,33 +26,49 @@ class HomeFeedDto {
   });
 
   factory HomeFeedDto.fromJson(Map<String, dynamic> json) {
+    // Backend returns `ads: { slider: [...], banners: [...] }` (v2.1),
+    // older shape was a flat `adBanners` list — accept both.
+    final ads = json['ads'];
+    List<Map<String, dynamic>>? rawAds;
+    if (ads is Map<String, dynamic>) {
+      final slider = (ads['slider'] as List<dynamic>? ?? const [])
+          .whereType<Map<String, dynamic>>();
+      final banners = (ads['banners'] as List<dynamic>? ?? const [])
+          .whereType<Map<String, dynamic>>();
+      rawAds = [...slider, ...banners];
+    } else if (json['adBanners'] is List) {
+      rawAds = (json['adBanners'] as List)
+          .whereType<Map<String, dynamic>>()
+          .toList();
+    }
+
+    // Backend returns `onDutyPharmacies: <int>` (count) directly.
+    final onDutyRaw = json['onDutyPharmaciesCount'] ??
+        json['onDutyPharmacies'] ??
+        (json['onDutyPharmacies'] is List
+            ? (json['onDutyPharmacies'] as List).length
+            : null);
+
     return HomeFeedDto(
-      categories: (json['categories'] as List<dynamic>?)
-          ?.map((e) => CategoryDto.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      cities: (json['cities'] as List<dynamic>?)
-          ?.map((e) => CityDto.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      adBanners: (json['adBanners'] as List<dynamic>?)
-          ?.map((e) => AdBannerDto.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      featured: (json['featured'] as List<dynamic>?)
-          ?.map((e) => BusinessDto.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      topRated: (json['topRated'] as List<dynamic>?)
-          ?.map((e) => BusinessDto.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      newest: (json['newest'] as List<dynamic>?)
-          ?.map((e) => BusinessDto.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      offers: (json['offers'] as List<dynamic>?)
-          ?.map((e) => OfferDto.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      onDutyPharmaciesCount: json['onDutyPharmaciesCount'] as int?,
-      stats: json['stats'] != null
+      categories: _list(json['categories'], CategoryDto.fromJson),
+      cities: _list(json['cities'], CityDto.fromJson),
+      adBanners: rawAds?.map(AdBannerDto.fromJson).toList(),
+      featured: _list(json['featured'], BusinessDto.fromJson),
+      topRated: _list(json['topRated'], BusinessDto.fromJson),
+      newest: _list(json['newest'], BusinessDto.fromJson),
+      offers: _list(json['offers'], OfferDto.fromJson),
+      onDutyPharmaciesCount: (onDutyRaw as num?)?.toInt(),
+      stats: json['stats'] is Map<String, dynamic>
           ? HomeStatsDto.fromJson(json['stats'] as Map<String, dynamic>)
           : null,
     );
+  }
+
+  /// Tolerant list parser — a missing/null/mistyped key must never crash
+  /// the home screen (it would show the error view instead of content).
+  static List<T>? _list<T>(Object? raw, T Function(Map<String, dynamic>) from) {
+    if (raw is! List) return null;
+    return raw.whereType<Map<String, dynamic>>().map(from).toList();
   }
 }
 
@@ -73,8 +89,8 @@ class AdBannerDto {
 
   factory AdBannerDto.fromJson(Map<String, dynamic> json) {
     return AdBannerDto(
-      id: json['id'] as String?,
-      title: json['title'] as String?,
+      id: json['id']?.toString(),
+      title: json['title']?.toString(),
       imageUrl: json['imageUrl'] as String?,
       targetUrl: json['targetUrl'] as String?,
       placement: json['placement'] as String?,
@@ -103,13 +119,13 @@ class OfferDto {
 
   factory OfferDto.fromJson(Map<String, dynamic> json) {
     return OfferDto(
-      id: json['id'] as String?,
-      title: json['title'] as String?,
+      id: json['id']?.toString(),
+      title: json['title']?.toString(),
       description: json['description'] as String?,
       imageUrl: json['imageUrl'] as String?,
-      businessId: json['businessId'] as String?,
-      businessName: json['businessName'] as String?,
-      validUntil: json['validUntil'] as String?,
+      businessId: json['businessId']?.toString(),
+      businessName: json['businessName']?.toString(),
+      validUntil: json['validUntil']?.toString(),
     );
   }
 }
@@ -126,10 +142,12 @@ class HomeStatsDto {
   });
 
   factory HomeStatsDto.fromJson(Map<String, dynamic> json) {
+    // Backend (v2.1): { businesses, reviews, users, cities, categories }
+    int? field(String k) => (json[k] as num?)?.toInt();
     return HomeStatsDto(
-      businessCount: json['businessCount'] as int?,
-      reviewCount: json['reviewCount'] as int?,
-      cityCount: json['cityCount'] as int?,
+      businessCount: field('businessCount') ?? field('businesses'),
+      reviewCount: field('reviewCount') ?? field('reviews'),
+      cityCount: field('cityCount') ?? field('cities'),
     );
   }
 }

@@ -36,7 +36,7 @@ final businessesByCategoryProvider = FutureProvider.family<
 
   return result.when(
     success: (businesses) => businesses,
-    onFailure: (failure) => throw Exception(failure.message),
+    onFailure: (failure) => throw failure,
   );
 });
 
@@ -48,7 +48,7 @@ final businessDetailsProvider =
 
   return result.when(
     success: (business) => business,
-    onFailure: (failure) => throw Exception(failure.message),
+    onFailure: (failure) => throw failure,
   );
 });
 
@@ -77,7 +77,7 @@ final searchBusinessesProvider = FutureProvider.family<
 
   return result.when(
     success: (businesses) => businesses,
-    onFailure: (failure) => throw Exception(failure.message),
+    onFailure: (failure) => throw failure,
   );
 });
 
@@ -89,6 +89,6 @@ final featuredBusinessesProvider =
 
   return result.when(
     success: (businesses) => businesses,
-    onFailure: (failure) => throw Exception(failure.message),
+    onFailure: (failure) => throw failure,
   );
 });

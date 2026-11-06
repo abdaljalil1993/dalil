@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/error/failures.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../providers/category_providers.dart';
 import '../widgets/category_tile.dart';
@@ -69,7 +70,7 @@ class CategoriesScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                error.toString(),
+                error is Failure ? error.message : 'حدث خطأ غير متوقع',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),

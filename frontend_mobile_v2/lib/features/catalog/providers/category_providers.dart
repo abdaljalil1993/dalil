@@ -15,7 +15,7 @@ final categoriesProvider = FutureProvider<List<Category>>((ref) async {
   
   return result.when(
     success: (categories) => categories,
-    onFailure: (failure) => throw Exception(failure.message),
+    onFailure: (failure) => throw failure,
   );
 });
 
@@ -27,7 +27,7 @@ final categoryDetailsProvider =
   
   return result.when(
     success: (category) => category,
-    onFailure: (failure) => throw Exception(failure.message),
+    onFailure: (failure) => throw failure,
   );
 });
 

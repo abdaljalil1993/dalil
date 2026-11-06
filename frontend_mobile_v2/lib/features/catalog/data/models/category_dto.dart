@@ -25,7 +25,9 @@ class CategoryDto {
 
   factory CategoryDto.fromJson(Map<String, dynamic> json) {
     return CategoryDto(
-      id: json['id'] as String?,
+      // ids come as int from the API — normalize to String for the DTO;
+      // the mapper converts back via int.tryParse.
+      id: json['id']?.toString(),
       slug: json['slug'] as String?,
       name: json['name'] as String?,
       nameEn: json['nameEn'] as String?,
@@ -60,7 +62,7 @@ class SubCategoryDto {
 
   factory SubCategoryDto.fromJson(Map<String, dynamic> json) {
     return SubCategoryDto(
-      id: json['id'] as String?,
+      id: json['id']?.toString(),
       slug: json['slug'] as String?,
       name: json['name'] as String?,
       nameEn: json['nameEn'] as String?,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/error/failures.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/status_views.dart';
 import '../../domain/entities/home_feed.dart';
@@ -150,7 +151,8 @@ class HomeScreen extends ConsumerWidget {
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => ErrorView(
-          message: error.toString(),
+          // Failure carries the API's own message — show it clean.
+          message: error is Failure ? error.message : 'حدث خطأ غير متوقع',
           onRetry: () => ref.invalidate(homeFeedProvider),
         ),
       ),

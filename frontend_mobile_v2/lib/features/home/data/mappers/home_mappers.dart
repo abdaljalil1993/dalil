@@ -22,6 +22,8 @@ extension HomeFeedDtoMapper on HomeFeedDto {
 extension AdBannerDtoMapper on AdBannerDto {
   AdBanner toEntity() {
     return AdBanner(
+      // Backend ads may use int ids — the DTO reads them as String? via
+      // `toString()` fallback below when it couldn't cast.
       id: id ?? '',
       title: title ?? '',
       imageUrl: imageUrl,

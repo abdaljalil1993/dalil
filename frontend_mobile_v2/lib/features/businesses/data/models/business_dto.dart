@@ -66,7 +66,7 @@ class BusinessDto {
 
   factory BusinessDto.fromJson(Map<String, dynamic> json) {
     return BusinessDto(
-      id: json['id'] as String?,
+      id: json['id']?.toString(), // API sends int ids
       slug: json['slug'] as String?,
       name: json['name'] as String?,
       nameEn: json['nameEn'] as String?,

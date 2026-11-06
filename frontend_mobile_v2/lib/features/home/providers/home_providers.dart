@@ -38,6 +38,6 @@ final homeFeedProvider = FutureProvider.autoDispose<HomeFeed>((ref) async {
 
   return result.when(
     success: (feed) => feed,
-    onFailure: (failure) => throw Exception(failure.message),
+    onFailure: (failure) => throw failure,
   );
 });
