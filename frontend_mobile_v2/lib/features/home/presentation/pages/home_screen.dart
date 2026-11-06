@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/error/failures.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/status_views.dart';
 import '../../domain/entities/home_feed.dart';
@@ -93,9 +95,7 @@ class HomeScreen extends ConsumerWidget {
                     children: [
                       Text('التصنيفات', style: theme.textTheme.titleMedium),
                       TextButton(
-                        onPressed: () {
-                          // TODO: Navigate to categories
-                        },
+                        onPressed: () => context.go(AppRoutes.categories),
                         child: const Text('عرض الكل'),
                       ),
                     ],

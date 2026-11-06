@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/account/presentation/pages/account_screen.dart';
 import '../../features/auth/presentation/pages/forgot_password_screen.dart';
 import '../../features/businesses/presentation/pages/business_details_screen.dart';
 import '../../features/auth/presentation/pages/login_screen.dart';
@@ -10,9 +11,11 @@ import '../../features/auth/presentation/pages/register_screen.dart';
 import '../../features/catalog/presentation/pages/categories_screen.dart';
 import '../../features/catalog/presentation/pages/category_details_screen.dart';
 import '../../features/home/presentation/pages/home_screen.dart';
+import '../../features/search/presentation/pages/search_screen.dart';
 import '../../features/services/providers/features_providers.dart';
 import '../../features/splash/presentation/splash_screen.dart';
 import '../di/providers.dart';
+import '../widgets/app_shell.dart';
 
 /// Route table — kept flat and explicit so deep links (`/b/:slug`, `/c/:slug`)
 /// are trivial to verify.
@@ -76,29 +79,57 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.forgotPassword,
         builder: (context, state) => const ForgotPasswordScreen(),
       ),
-      GoRoute(
-        path: AppRoutes.home,
-        builder: (context, state) => const HomeScreen(),
+
+      // ── Main shell: 4 tabs with a bottom NavigationBar ──
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            AppShell(navigationShell: navigationShell),
+        branches: [
+          // 0 · الرئيسية
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: AppRoutes.home,
+              builder: (context, state) => const HomeScreen(),
+            ),
+          ]),
+          // 1 · التصنيفات (+ تفاصيلها ورابط العميق /c/:slug)
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: AppRoutes.categories,
+              builder: (context, state) => const CategoriesScreen(),
+            ),
+            GoRoute(
+              path: '/categories/:slug',
+              builder: (context, state) =>
+                  CategoryDetailsScreen(slug: state.pathParameters['slug']!),
+            ),
+            GoRoute(
+              path: '/c/:slug',
+              redirect: (context, state) =>
+                  '/categories/${state.pathParameters['slug']}',
+            ),
+          ]),
+          // 2 · بحث
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: AppRoutes.search,
+              builder: (context, state) => const SearchScreen(),
+            ),
+          ]),
+          // 3 · حسابي
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: AppRoutes.account,
+              builder: (context, state) => const AccountScreen(),
+            ),
+          ]),
+        ],
       ),
-      GoRoute(
-        path: AppRoutes.categories,
-        builder: (context, state) => const CategoriesScreen(),
-      ),
-      GoRoute(
-        path: '/categories/:slug',
-        builder: (context, state) {
-          final slug = state.pathParameters['slug']!;
-          return CategoryDetailsScreen(slug: slug);
-        },
-      ),
-      // Deep link for categories (e.g. /c/restaurants)
-      GoRoute(
-        path: '/c/:slug',
-        redirect: (context, state) => '/categories/${state.pathParameters['slug']}',
-      ),
-      // Business details (deep links from ads: /b/:slug)
+
+      // ── Full-screen pages (root navigator → cover the shell) ──
       GoRoute(
         path: '/businesses/:slug',
+        parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) =>
             BusinessDetailsScreen(slug: state.pathParameters['slug']!),
       ),
