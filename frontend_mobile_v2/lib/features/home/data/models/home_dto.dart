@@ -78,6 +78,7 @@ class AdBannerDto {
   final String? imageUrl;
   final String? targetUrl;
   final String? placement;
+  final String? businessId;
 
   AdBannerDto({
     this.id,
@@ -85,6 +86,7 @@ class AdBannerDto {
     this.imageUrl,
     this.targetUrl,
     this.placement,
+    this.businessId,
   });
 
   factory AdBannerDto.fromJson(Map<String, dynamic> json) {
@@ -94,6 +96,7 @@ class AdBannerDto {
       imageUrl: json['imageUrl'] as String?,
       targetUrl: json['targetUrl'] as String?,
       placement: json['placement'] as String?,
+      businessId: json['businessId']?.toString(),
     );
   }
 }

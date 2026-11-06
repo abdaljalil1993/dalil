@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/app_router.dart';
 import '../../../../core/widgets/section_header.dart';
 import '../../../services/providers/features_providers.dart';
 
@@ -28,9 +30,7 @@ class QuickServices extends ConsumerWidget {
           gradient: const LinearGradient(
             colors: [Color(0xFFFF6A3D), Color(0xFFFF8E53)],
           ),
-          onTap: () {
-            // TODO: Navigate to offers
-          },
+          onTap: () => context.push(AppRoutes.offers),
         ),
       if (features.pharmacies && pharmaciesCount > 0)
         _QuickService(
@@ -40,9 +40,7 @@ class QuickServices extends ConsumerWidget {
           gradient: const LinearGradient(
             colors: [Color(0xFF12B76A), Color(0xFF22C55E)],
           ),
-          onTap: () {
-            // TODO: Navigate to pharmacies
-          },
+          onTap: () => context.push(AppRoutes.pharmacies),
         ),
       if (features.emergency)
         _QuickService(
@@ -51,9 +49,7 @@ class QuickServices extends ConsumerWidget {
           gradient: const LinearGradient(
             colors: [Color(0xFFF04438), Color(0xFFEF4444)],
           ),
-          onTap: () {
-            // TODO: Navigate to emergency
-          },
+          onTap: () => context.push(AppRoutes.emergency),
         ),
       if (features.serviceRequests)
         _QuickService(

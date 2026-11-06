@@ -12,6 +12,9 @@ import '../../features/catalog/presentation/pages/categories_screen.dart';
 import '../../features/catalog/presentation/pages/category_details_screen.dart';
 import '../../features/home/presentation/pages/home_screen.dart';
 import '../../features/search/presentation/pages/search_screen.dart';
+import '../../features/services/presentation/pages/emergency_screen.dart';
+import '../../features/services/presentation/pages/offers_screen.dart';
+import '../../features/services/presentation/pages/pharmacies_screen.dart';
 import '../../features/services/providers/features_providers.dart';
 import '../../features/splash/presentation/splash_screen.dart';
 import '../di/providers.dart';
@@ -34,6 +37,11 @@ class AppRoutes {
   static const favorites = '/favorites';
   static const account = '/account';
   static const notifications = '/notifications';
+
+  // v2.1 quick services
+  static const offers = '/offers';
+  static const pharmacies = '/pharmacies';
+  static const emergency = '/emergency';
 
   /// Deep links opened from ads / shared links.
   static String business(String slug) => '/b/$slug';
@@ -85,11 +93,23 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state, navigationShell) =>
             AppShell(navigationShell: navigationShell),
         branches: [
-          // 0 · الرئيسية
+          // 0 · الرئيسية (+ شاشات الخدمات السريعة)
           StatefulShellBranch(routes: [
             GoRoute(
               path: AppRoutes.home,
               builder: (context, state) => const HomeScreen(),
+            ),
+            GoRoute(
+              path: AppRoutes.offers,
+              builder: (context, state) => const OffersScreen(),
+            ),
+            GoRoute(
+              path: AppRoutes.pharmacies,
+              builder: (context, state) => const PharmaciesScreen(),
+            ),
+            GoRoute(
+              path: AppRoutes.emergency,
+              builder: (context, state) => const EmergencyScreen(),
             ),
           ]),
           // 1 · التصنيفات (+ تفاصيلها ورابط العميق /c/:slug)

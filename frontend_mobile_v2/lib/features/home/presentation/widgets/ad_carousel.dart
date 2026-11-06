@@ -1,22 +1,57 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../../../core/theme/app_theme.dart';
 import '../../domain/entities/home_feed.dart';
+import '../../providers/ad_providers.dart';
 
-class AdCarousel extends StatefulWidget {
+class AdCarousel extends ConsumerStatefulWidget {
   final List<AdBanner> banners;
 
   const AdCarousel({super.key, required this.banners});
 
   @override
-  State<AdCarousel> createState() => _AdCarouselState();
+  ConsumerState<AdCarousel> createState() => _AdCarouselState();
 }
 
-class _AdCarouselState extends State<AdCarousel> {
+class _AdCarouselState extends ConsumerState<AdCarousel> {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Rule #3: the first visible banner counts as an impression.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ref.read(adTrackingProvider).impression(widget.banners[0]);
+    });
+  }
+
+  void _onPageChanged(int index, _) {
+    setState(() => _currentIndex = index);
+    // Rule #3: every banner that becomes visible counts once.
+    ref.read(adTrackingProvider).impression(widget.banners[index]);
+  }
+
+  Future<void> _onTap(AdBanner banner) async {
+    final tracking = ref.read(adTrackingProvider);
+    await tracking.click(banner); // analytics first
+    if (!mounted) return;
+    final handled = tracking.openInApp(
+      Uri.parse(banner.targetUrl ?? '/'),
+      banner,
+      (location) => context.go(location),
+    );
+    if (!handled) {
+      final target = banner.targetUrl;
+      if (target != null && target.startsWith('http')) {
+        await tracking.openExternal(target);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +63,10 @@ class _AdCarouselState extends State<AdCarousel> {
           itemCount: widget.banners.length,
           itemBuilder: (context, index, realIndex) {
             final banner = widget.banners[index];
-            return _AdBannerCard(banner: banner);
+            return _AdBannerCard(
+              banner: banner,
+              onTap: () => _onTap(banner),
+            );
           },
           options: CarouselOptions(
             height: 180,
@@ -36,9 +74,7 @@ class _AdCarouselState extends State<AdCarousel> {
             autoPlay: widget.banners.length > 1,
             autoPlayInterval: const Duration(seconds: 5),
             enlargeCenterPage: true,
-            onPageChanged: (index, reason) {
-              setState(() => _currentIndex = index);
-            },
+            onPageChanged: _onPageChanged,
           ),
         ),
         if (widget.banners.length > 1) ...[
@@ -61,20 +97,16 @@ class _AdCarouselState extends State<AdCarousel> {
 
 class _AdBannerCard extends StatelessWidget {
   final AdBanner banner;
+  final VoidCallback onTap;
 
-  const _AdBannerCard({required this.banner});
+  const _AdBannerCard({required this.banner, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return GestureDetector(
-      onTap: () {
-        // TODO: Track impression and handle click
-        if (banner.targetUrl != null) {
-          _handleAdClick(context, banner);
-        }
-      },
+      onTap: onTap,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
@@ -167,16 +199,6 @@ class _AdBannerCard extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  void _handleAdClick(BuildContext context, AdBanner banner) {
-    // TODO: Implement ad tracking and deep link handling
-    // POST /advertisements/{id}/click
-    // If targetUrl starts with /b/ or /c/ -> navigate in-app
-    // Otherwise -> url_launcher
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Ad clicked: ${banner.title}')),
     );
   }
 }

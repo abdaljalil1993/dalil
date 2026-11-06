@@ -34,12 +34,16 @@ class AdBanner {
   final String? targetUrl;
   final String placement;
 
+  /// When the ad promotes a business without an explicit `targetUrl`.
+  final String? businessId;
+
   AdBanner({
     required this.id,
     required this.title,
     this.imageUrl,
     this.targetUrl,
     required this.placement,
+    this.businessId,
   });
 }
 

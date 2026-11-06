@@ -29,6 +29,7 @@ extension AdBannerDtoMapper on AdBannerDto {
       imageUrl: imageUrl,
       targetUrl: targetUrl,
       placement: placement ?? '',
+      businessId: businessId,
     );
   }
 }

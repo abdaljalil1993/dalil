@@ -9,6 +9,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/skeletons.dart';
 import '../../domain/entities/business.dart';
 import '../../providers/business_providers.dart';
+import '../../providers/contact_actions_provider.dart';
 
 /// Full details for one business — `GET /businesses/{slug}`.
 class BusinessDetailsScreen extends ConsumerWidget {
@@ -278,59 +279,38 @@ class _Details extends ConsumerWidget {
 }
 
 /// Call / WhatsApp / directions / website actions.
-/// TODO(phase-d): POST /businesses/{id}/track {type} BEFORE each action.
-class _ActionRow extends StatelessWidget {
+/// Each one fires `POST /businesses/{id}/track` first (handoff rule #2),
+/// then opens the platform channel (rule #4).
+class _ActionRow extends ConsumerWidget {
   const _ActionRow({required this.business, required this.name});
 
   final Business business;
   final String name;
 
   @override
-  Widget build(BuildContext context) {
-    final actions = <(IconData, String, VoidCallback)>[
+  Widget build(BuildContext context, WidgetRef ref) {
+    final actions = ref.watch(contactActionsProvider);
+    final list = <(IconData, String, VoidCallback)>[
       if (business.phone != null && business.phone!.isNotEmpty)
-        (
-          Icons.call_outlined,
-          'اتصال',
-          () => ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('الاتصال: ${business.phone}')),
-          ),
-        ),
-      if (business.whatsapp != null && business.whatsapp!.isNotEmpty)
-        (
-          Icons.chat_outlined,
-          'واتساب',
-          () => ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('واتساب: ${business.whatsapp}')),
-          ),
-        ),
+        (Icons.call_outlined, 'اتصال', () => actions.call(business)),
+      if (business.whatsapp != null || business.phone != null)
+        (Icons.chat_outlined, 'واتساب', () => actions.whatsapp(business)),
       if (business.latitude != null && business.longitude != null)
-        (
-          Icons.directions_outlined,
-          'اتجاهات',
-          () => ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('فتح الخرائط — قريباً')),
-          ),
-        ),
+        (Icons.directions_outlined, 'اتجاهات', () => actions.directions(business)),
       if (business.website != null && business.website!.isNotEmpty)
-        (
-          Icons.language_outlined,
-          'الموقع',
-          () => ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(business.website!)),
-          ),
-        ),
+        (Icons.language_outlined, 'الموقع', () => actions.website(business)),
     ];
 
-    if (actions.isEmpty) return const SizedBox.shrink();
+    if (list.isEmpty) return const SizedBox.shrink();
 
     return Row(
       children: [
-        for (final (icon, label, onTap) in actions) ...[
+        for (final (i, action) in list.indexed) ...[
           Expanded(
-            child: _ActionButton(icon: icon, label: label, onTap: onTap),
+            child: _ActionButton(
+                icon: action.$1, label: action.$2, onTap: action.$3),
           ),
-          if (icon != actions.last.$1) const SizedBox(width: 10),
+          if (i != list.length - 1) const SizedBox(width: 10),
         ],
       ],
     );
