@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_theme.dart';
 
 class HeroSearchBar extends StatelessWidget {
@@ -9,14 +10,17 @@ class HeroSearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return GestureDetector(
+    return Pressable(
+      borderRadius: BorderRadius.circular(18),
       onTap: () {
         // TODO: Navigate to search screen
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('شاشة البحث قريباً...')),
         );
       },
-      child: Container(
+      // Decoration lives in Ink so the ripple lands on the gradient
+      // instead of behind it.
+      child: Ink(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(
           gradient: const LinearGradient(

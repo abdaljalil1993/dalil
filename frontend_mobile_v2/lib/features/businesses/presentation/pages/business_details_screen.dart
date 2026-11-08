@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/prefs/prefs_providers.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/scroll_reveal.dart';
 import '../../../../core/widgets/skeletons.dart';
 import '../../domain/entities/business.dart';
 import '../../providers/business_providers.dart';
@@ -96,147 +97,213 @@ class _Details extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Sections enter as a wave — the same ScrollReveal language
+                // as the home feed: name → rating → actions → address →
+                // description → amenities. Paint-only, layout unchanged.
                 // ── Name + badges ──
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(name, style: theme.textTheme.headlineSmall),
-                    ),
-                    const SizedBox(width: 12),
-                    if (business.isVerified)
-                      const _Badge(
-                        icon: Icons.verified_rounded,
-                        label: 'موثّق',
-                        color: AppColors.primary,
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    if (business.isOpenNow != null)
-                      _Badge(
-                        icon: business.isOpenNow!
-                            ? Icons.schedule_rounded
-                            : Icons.schedule_outlined,
-                        label: business.isOpenNow! ? 'مفتوح الآن' : 'مغلق',
-                        color: business.isOpenNow!
-                            ? AppColors.success
-                            : AppColors.lightTextSecondary,
-                      ),
-                    _Badge(
-                      icon: Icons.category_outlined,
-                      label: business.subCategory?.name ??
-                          business.category.name,
-                      color: AppColors.info,
-                    ),
-                    if (business.isFeatured)
-                      const _Badge(
-                        icon: Icons.workspace_premium_outlined,
-                        label: 'مميّز',
-                        color: AppColors.warning,
-                      ),
-                    if (business.priceLevel != null)
-                      _Badge(
-                        icon: Icons.payments_outlined,
-                        label: business.priceLevel!.symbol,
-                        color: AppColors.secondary,
-                      ),
-                  ],
-                ),
-
-                // ── Rating ──
-                if (business.reviewCount > 0) ...[
-                  const SizedBox(height: 16),
-                  Row(
+                ScrollReveal(
+                  index: 0,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.star_rounded,
-                          color: AppColors.warning, size: 22),
-                      const SizedBox(width: 6),
-                      Text(
-                        business.averageRating.toStringAsFixed(1),
-                        style: theme.textTheme.titleMedium,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(name,
+                                style: theme.textTheme.headlineSmall),
+                          ),
+                          const SizedBox(width: 12),
+                          if (business.isVerified)
+                            const _Badge(
+                              icon: Icons.verified_rounded,
+                              label: 'موثّق',
+                              color: AppColors.primary,
+                            ),
+                        ],
                       ),
-                      const SizedBox(width: 6),
-                      Text(
-                        '(${business.reviewCount} تقييم)',
-                        style: theme.textTheme.bodyMedium
-                            ?.copyWith(color: theme.hintColor),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          if (business.isOpenNow != null)
+                            _Badge(
+                              icon: business.isOpenNow!
+                                  ? Icons.schedule_rounded
+                                  : Icons.schedule_outlined,
+                              label: business.isOpenNow! ? 'مفتوح الآن' : 'مغلق',
+                              color: business.isOpenNow!
+                                  ? AppColors.success
+                                  : AppColors.lightTextSecondary,
+                            ),
+                          _Badge(
+                            icon: Icons.category_outlined,
+                            label: business.subCategory?.name ??
+                                business.category.name,
+                            color: AppColors.info,
+                          ),
+                          if (business.isFeatured)
+                            const _Badge(
+                              icon: Icons.workspace_premium_outlined,
+                              label: 'مميّز',
+                              color: AppColors.warning,
+                            ),
+                          if (business.priceLevel != null)
+                            _Badge(
+                              icon: Icons.payments_outlined,
+                              label: business.priceLevel!.symbol,
+                              color: AppColors.secondary,
+                            ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
 
-                const SizedBox(height: 20),
+                // ── Rating ──
+                if (business.reviewCount > 0)
+                  ScrollReveal(
+                    index: 1,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            const Icon(Icons.star_rounded,
+                                color: AppColors.warning, size: 22),
+                            const SizedBox(width: 6),
+                            Text(
+                              business.averageRating.toStringAsFixed(1),
+                              style: theme.textTheme.titleMedium,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              '(${business.reviewCount} تقييم)',
+                              style: theme.textTheme.bodyMedium
+                                  ?.copyWith(color: theme.hintColor),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
 
                 // ── Contact actions ──
-                _ActionRow(business: business, name: name),
+                ScrollReveal(
+                  index: 2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(height: 20),
+                      _ActionRow(business: business, name: name),
+                    ],
+                  ),
+                ),
 
                 // ── Address ──
                 if (business.address != null ||
                     business.district != null ||
-                    business.city.name.isNotEmpty) ...[
-                  const SizedBox(height: 24),
-                  _SectionTitle(title: 'العنوان', theme: theme),
-                  const SizedBox(height: 8),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Icon(Icons.location_on_outlined,
-                          size: 20, color: AppColors.primary),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          [
-                            business.address,
-                            business.district,
-                            business.city.name,
-                          ].where((e) => e != null && e.isNotEmpty).join('، '),
-                          style: theme.textTheme.bodyMedium,
+                    business.city.name.isNotEmpty)
+                  ScrollReveal(
+                    index: 3,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 24),
+                        _SectionTitle(title: 'العنوان', theme: theme),
+                        const SizedBox(height: 8),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(Icons.location_on_outlined,
+                                size: 20, color: AppColors.primary),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                [
+                                  business.address,
+                                  business.district,
+                                  business.city.name,
+                                ]
+                                    .where((e) => e != null && e.isNotEmpty)
+                                    .join('، '),
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ],
 
                 // ── Description ──
                 if (business.description != null &&
-                    business.description!.isNotEmpty) ...[
-                  const SizedBox(height: 24),
-                  _SectionTitle(title: 'نبذة', theme: theme),
-                  const SizedBox(height: 8),
-                  Text(business.description!,
-                      style: theme.textTheme.bodyMedium?.copyWith(height: 1.7)),
-                ],
+                    business.description!.isNotEmpty)
+                  ScrollReveal(
+                    index: 4,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 24),
+                        _SectionTitle(title: 'نبذة', theme: theme),
+                        const SizedBox(height: 8),
+                        Text(business.description!,
+                            style: theme.textTheme.bodyMedium
+                                ?.copyWith(height: 1.7)),
+                      ],
+                    ),
+                  ),
 
                 // ── Amenities ──
-                if (business.amenities.isNotEmpty) ...[
-                  const SizedBox(height: 24),
-                  _SectionTitle(title: 'المرافق', theme: theme),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      for (final a in business.amenities)
-                        Chip(
-                          label: Text(a),
-                          visualDensity: VisualDensity.compact,
+                if (business.amenities.isNotEmpty)
+                  ScrollReveal(
+                    index: 5,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 24),
+                        _SectionTitle(title: 'المرافق', theme: theme),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (final a in business.amenities)
+                              Chip(
+                                label: Text(a),
+                                visualDensity: VisualDensity.compact,
+                              ),
+                          ],
                         ),
-                    ],
+                      ],
+                    ),
                   ),
-                ],
 
-                const SizedBox(height: 32),
-                Center(
-                  child: Text(
-                    'بيانات الخرائط والأماكن © مساهمو OpenStreetMap',
-                    style: theme.textTheme.bodySmall
-                        ?.copyWith(color: theme.hintColor),
-                    textAlign: TextAlign.center,
+                // ── Attribution ──
+                ScrollReveal(
+                  index: 6,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(height: 32),
+                      Center(
+                        child: Text(
+                          'بيانات الخرائط والأماكن © مساهمو OpenStreetMap',
+                          style: theme.textTheme.bodySmall
+                              ?.copyWith(color: theme.hintColor),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

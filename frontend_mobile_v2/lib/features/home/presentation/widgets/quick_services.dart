@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/app_router.dart';
+import '../../../../core/theme/app_motion.dart';
 import '../../../../core/widgets/section_header.dart';
 import '../../../../core/widgets/scroll_reveal.dart';
 import '../../../services/providers/features_providers.dart';
@@ -121,9 +122,12 @@ class _QuickServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Pressable(
       onTap: service.onTap,
-      child: Container(
+      borderRadius: BorderRadius.circular(16),
+      // Background lives in Ink (not Container) so the ripple paints on top
+      // of the gradient instead of being hidden behind it.
+      child: Ink(
         width: 140,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(

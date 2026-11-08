@@ -18,6 +18,7 @@ import '../../features/services/presentation/pages/pharmacies_screen.dart';
 import '../../features/services/providers/features_providers.dart';
 import '../../features/splash/presentation/splash_screen.dart';
 import '../di/providers.dart';
+import 'app_transitions.dart';
 import '../widgets/app_shell.dart';
 
 /// Route table — kept flat and explicit so deep links (`/b/:slug`, `/c/:slug`)
@@ -73,19 +74,23 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.login,
-        builder: (context, state) => const LoginScreen(),
+        pageBuilder: (context, state) =>
+            AppPages.push(state, const LoginScreen()),
       ),
       GoRoute(
         path: AppRoutes.register,
-        builder: (context, state) => const RegisterScreen(),
+        pageBuilder: (context, state) =>
+            AppPages.push(state, const RegisterScreen()),
       ),
       GoRoute(
         path: AppRoutes.otpLogin,
-        builder: (context, state) => const OtpLoginScreen(),
+        pageBuilder: (context, state) =>
+            AppPages.push(state, const OtpLoginScreen()),
       ),
       GoRoute(
         path: AppRoutes.forgotPassword,
-        builder: (context, state) => const ForgotPasswordScreen(),
+        pageBuilder: (context, state) =>
+            AppPages.push(state, const ForgotPasswordScreen()),
       ),
 
       // ── Main shell: 4 tabs with a bottom NavigationBar ──
@@ -97,31 +102,37 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(routes: [
             GoRoute(
               path: AppRoutes.home,
-              builder: (context, state) => const HomeScreen(),
+              pageBuilder: (context, state) =>
+                  AppPages.tab(state, const HomeScreen()),
             ),
             GoRoute(
               path: AppRoutes.offers,
-              builder: (context, state) => const OffersScreen(),
+              pageBuilder: (context, state) =>
+                  AppPages.push(state, const OffersScreen()),
             ),
             GoRoute(
               path: AppRoutes.pharmacies,
-              builder: (context, state) => const PharmaciesScreen(),
+              pageBuilder: (context, state) =>
+                  AppPages.push(state, const PharmaciesScreen()),
             ),
             GoRoute(
               path: AppRoutes.emergency,
-              builder: (context, state) => const EmergencyScreen(),
+              pageBuilder: (context, state) =>
+                  AppPages.push(state, const EmergencyScreen()),
             ),
           ]),
           // 1 · التصنيفات (+ تفاصيلها ورابط العميق /c/:slug)
           StatefulShellBranch(routes: [
             GoRoute(
               path: AppRoutes.categories,
-              builder: (context, state) => const CategoriesScreen(),
+              pageBuilder: (context, state) =>
+                  AppPages.tab(state, const CategoriesScreen()),
             ),
             GoRoute(
               path: '/categories/:slug',
-              builder: (context, state) =>
-                  CategoryDetailsScreen(slug: state.pathParameters['slug']!),
+              pageBuilder: (context, state) => AppPages.push(
+                  state,
+                  CategoryDetailsScreen(slug: state.pathParameters['slug']!)),
             ),
             GoRoute(
               path: '/c/:slug',
@@ -133,14 +144,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(routes: [
             GoRoute(
               path: AppRoutes.search,
-              builder: (context, state) => const SearchScreen(),
+              pageBuilder: (context, state) =>
+                  AppPages.tab(state, const SearchScreen()),
             ),
           ]),
           // 3 · حسابي
           StatefulShellBranch(routes: [
             GoRoute(
               path: AppRoutes.account,
-              builder: (context, state) => const AccountScreen(),
+              pageBuilder: (context, state) =>
+                  AppPages.tab(state, const AccountScreen()),
             ),
           ]),
         ],
@@ -150,8 +163,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/businesses/:slug',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            BusinessDetailsScreen(slug: state.pathParameters['slug']!),
+        pageBuilder: (context, state) => AppPages.push(
+            state, BusinessDetailsScreen(slug: state.pathParameters['slug']!)),
       ),
       GoRoute(
         path: '/b/:slug',
