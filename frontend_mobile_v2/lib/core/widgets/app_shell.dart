@@ -13,8 +13,9 @@ class AppShell extends StatelessWidget {
 
   void _go(int index) => navigationShell.goBranch(
         index,
-        // First tap on the active tab scrolls to top (standard behavior).
-        initialLocation: index == navigationShell.currentIndex,
+        // Always the tab's root (user expectation): tapping التصنيفات must
+        // show the full list, never the last-opened details page.
+        initialLocation: true,
       );
 
   @override

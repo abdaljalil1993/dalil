@@ -27,7 +27,7 @@ class BusinessSection extends ConsumerWidget {
         SectionHeader(title: title, onSeeAll: onSeeAll),
         const SizedBox(height: 12),
         SizedBox(
-          height: 240,
+          height: 224,
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             scrollDirection: Axis.horizontal,

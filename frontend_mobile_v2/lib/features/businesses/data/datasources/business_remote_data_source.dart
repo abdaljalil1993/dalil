@@ -7,6 +7,15 @@ class BusinessRemoteDataSource {
 
   BusinessRemoteDataSource(this._api);
 
+  /// UI sort labels → API contract values (backend rejects unknown sorts
+  /// with 422). Single translation point for every call site.
+  static const _sortToApi = <String, String>{
+    'recommended': 'relevance',
+  };
+
+  static String? _apiSort(String? sort) =>
+      sort == null ? null : (_sortToApi[sort] ?? sort);
+
   Future<List<BusinessDto>> getBusinessesByCategory({
     required int categoryId,
     int? subCategoryId,
@@ -18,7 +27,7 @@ class BusinessRemoteDataSource {
       'categoryId': categoryId,
       if (subCategoryId != null) 'subCategoryId': subCategoryId,
       if (cityId != null) 'cityId': cityId,
-      if (sort != null) 'sort': sort,
+      if (_apiSort(sort) != null) 'sort': _apiSort(sort),
       if (openNow) 'openNow': 'true',
     };
 
@@ -32,7 +41,7 @@ class BusinessRemoteDataSource {
           .whereType<Map<String, dynamic>>()
           .map((json) => BusinessDto.fromJson(json))
           .toList(),
-      onFailure: (failure) => throw Exception(failure.message),
+      onFailure: (failure) => throw failure, // keep the typed Failure
     );
   }
 
@@ -43,7 +52,7 @@ class BusinessRemoteDataSource {
 
     return result.when(
       success: (data) => BusinessDto.fromJson(data),
-      onFailure: (failure) => throw Exception(failure.message),
+      onFailure: (failure) => throw failure, // keep the typed Failure
     );
   }
 
@@ -63,7 +72,7 @@ class BusinessRemoteDataSource {
       if (lat != null) 'lat': lat,
       if (lng != null) 'lng': lng,
       if (radius != null) 'radius': radius,
-      if (sort != null) 'sort': sort,
+      if (_apiSort(sort) != null) 'sort': _apiSort(sort),
     };
 
     final result = await _api.get<List<dynamic>>(
@@ -76,7 +85,7 @@ class BusinessRemoteDataSource {
           .whereType<Map<String, dynamic>>()
           .map((json) => BusinessDto.fromJson(json))
           .toList(),
-      onFailure: (failure) => throw Exception(failure.message),
+      onFailure: (failure) => throw failure, // keep the typed Failure
     );
   }
 
@@ -91,7 +100,7 @@ class BusinessRemoteDataSource {
           .whereType<Map<String, dynamic>>()
           .map((json) => BusinessDto.fromJson(json))
           .toList(),
-      onFailure: (failure) => throw Exception(failure.message),
+      onFailure: (failure) => throw failure, // keep the typed Failure
     );
   }
 }

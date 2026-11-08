@@ -27,6 +27,8 @@ class BusinessRepositoryImpl implements BusinessRepository {
         openNow: openNow,
       );
       return Success(dtos.map((dto) => dto.toEntity()).toList());
+    } on Failure catch (f) {
+      return FailureResult(f);
     } catch (e) {
       return FailureResult(Failure(message: e.toString()));
     }
@@ -37,6 +39,8 @@ class BusinessRepositoryImpl implements BusinessRepository {
     try {
       final dto = await _remoteDataSource.getBusinessBySlug(slug);
       return Success(dto.toEntity());
+    } on Failure catch (f) {
+      return FailureResult(f);
     } catch (e) {
       return FailureResult(Failure(message: e.toString()));
     }
@@ -63,6 +67,8 @@ class BusinessRepositoryImpl implements BusinessRepository {
         sort: sort,
       );
       return Success(dtos.map((dto) => dto.toEntity()).toList());
+    } on Failure catch (f) {
+      return FailureResult(f);
     } catch (e) {
       return FailureResult(Failure(message: e.toString()));
     }
@@ -73,6 +79,8 @@ class BusinessRepositoryImpl implements BusinessRepository {
     try {
       final dtos = await _remoteDataSource.getFeaturedBusinesses(cityId);
       return Success(dtos.map((dto) => dto.toEntity()).toList());
+    } on Failure catch (f) {
+      return FailureResult(f);
     } catch (e) {
       return FailureResult(Failure(message: e.toString()));
     }

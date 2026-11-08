@@ -138,6 +138,10 @@ class _CategoryDetailsScreenState extends ConsumerState<CategoryDetailsScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Row(
+                    // spaceBetween instead of Spacer(): a flex-less Row
+                    // sizes to content when constraints are odd — it can
+                    // never throw and blank the page.
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // Open Now Filter
                       FilterChip(
@@ -152,7 +156,9 @@ class _CategoryDetailsScreenState extends ConsumerState<CategoryDetailsScreen> {
                           Icons.access_time,
                           size: 18,
                           color: _openNow
-                              ? Theme.of(context).colorScheme.onSecondaryContainer
+                              ? Theme.of(context)
+                                  .colorScheme
+                                  .onSecondaryContainer
                               : null,
                         ),
                       ),
@@ -167,18 +173,23 @@ class _CategoryDetailsScreenState extends ConsumerState<CategoryDetailsScreen> {
                         label: Text(_getSortLabel(_sortBy, l10n)),
                       ),
 
-                      const Spacer(),
-
-                      // Results count
-                      businessesAsync.maybeWhen(
-                        data: (businesses) => Text(
-                          '${businesses.length} ${l10n.results}',
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.outline,
-                                  ),
+                      // Results count — Flexible so narrow windows clip
+                      // with an ellipsis instead of overflowing/crashing.
+                      const SizedBox(width: 12),
+                      Flexible(
+                        child: businessesAsync.maybeWhen(
+                          data: (businesses) => Text(
+                            '${businesses.length} ${l10n.results}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color:
+                                          Theme.of(context).colorScheme.outline,
+                                    ),
+                          ),
+                          orElse: () => const SizedBox.shrink(),
                         ),
-                        orElse: () => const SizedBox.shrink(),
                       ),
                     ],
                   ),
@@ -189,19 +200,25 @@ class _CategoryDetailsScreenState extends ConsumerState<CategoryDetailsScreen> {
               businessesAsync.when(
                 data: (businesses) {
                   if (businesses.isEmpty) {
+                    final filtersActive = _selectedSubCategoryId != null ||
+                        _openNow ||
+                        _sortBy != 'recommended';
                     return SliverFillRemaining(
                       child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              Icons.business_outlined,
+                              Icons.search_off_rounded,
                               size: 64,
                               color: Theme.of(context).colorScheme.outline,
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              l10n.noBusinessesFound,
+                              filtersActive
+                                  ? 'لا توجد نتائج مطابقة للفلاتر الحالية'
+                                  : l10n.noBusinessesFound,
+                              textAlign: TextAlign.center,
                               style: Theme.of(context)
                                   .textTheme
                                   .titleMedium
@@ -209,6 +226,19 @@ class _CategoryDetailsScreenState extends ConsumerState<CategoryDetailsScreen> {
                                     color: Theme.of(context).colorScheme.outline,
                                   ),
                             ),
+                            if (filtersActive) ...[
+                              const SizedBox(height: 16),
+                              FilledButton.tonalIcon(
+                                onPressed: () => setState(() {
+                                  _selectedSubCategoryId = null;
+                                  _openNow = false;
+                                  _sortBy = 'recommended';
+                                }),
+                                icon: const Icon(Icons.filter_alt_off_outlined,
+                                    size: 18),
+                                label: const Text('مسح الفلاتر'),
+                              ),
+                            ],
                           ],
                         ),
                       ),

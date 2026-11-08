@@ -94,11 +94,12 @@ class BusinessCard extends ConsumerWidget {
               ],
             ),
 
-            // Info
-            Expanded(
-              child: Padding(
+            // Info — no Expanded/Spacer: must survive unbounded-height
+            // parents (SliverList sizes children to content).
+            Padding(
                 padding: const EdgeInsets.all(12),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -133,7 +134,7 @@ class BusinessCard extends ConsumerWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     
-                    const Spacer(),
+                    const SizedBox(height: 12),
                     
                     // Rating & Location
                     Row(
@@ -156,7 +157,7 @@ class BusinessCard extends ConsumerWidget {
                           ),
                         ],
                         
-                        const Spacer(),
+                        const SizedBox(height: 12),
                         
                         // Open Now or City
                         if (business.isOpenNow != null)
@@ -184,7 +185,6 @@ class BusinessCard extends ConsumerWidget {
                   ],
                 ),
               ),
-            ),
           ],
         ),
       ),
