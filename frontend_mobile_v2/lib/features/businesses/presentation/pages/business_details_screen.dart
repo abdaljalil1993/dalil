@@ -79,31 +79,7 @@ class _Details extends ConsumerWidget {
             tooltip: 'رجوع',
           ),
           flexibleSpace: FlexibleSpaceBar(
-            background: Stack(
-              fit: StackFit.expand,
-              children: [
-                if (business.coverImage != null &&
-                    business.coverImage!.isNotEmpty)
-                  CachedNetworkImage(
-                    imageUrl: business.coverImage!,
-                    fit: BoxFit.cover,
-                    errorWidget: (_, __, ___) =>
-                        const _CoverFallback(gradient: AppColors.gradient),
-                  )
-                else
-                  const _CoverFallback(gradient: AppColors.gradient),
-                // legibility gradient over the image
-                const DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Colors.transparent, Color(0x66000000)],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            background: _ParallaxCover(imageUrl: business.coverImage),
           ),
           actions: [
             IconButton(
@@ -390,6 +366,63 @@ class _SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       Text(title, style: theme.textTheme.titleMedium);
+}
+
+/// Cover image with parallax depth for the details screen.
+///
+/// While the app bar collapses, `FlexibleSpaceBar` (CollapseMode.parallax)
+/// already slides its frame slower than the content. This adds the second
+/// half of the effect: a slow zoom anchored to the top edge, so the image
+/// reads as sitting *behind* the text scrolling over it. `scale >= 1`
+/// always, therefore no empty edge can ever appear at any collapse value.
+class _ParallaxCover extends StatelessWidget {
+  const _ParallaxCover({required this.imageUrl});
+
+  final String? imageUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    // 0.0 = fully expanded, 1.0 = collapsed to the toolbar. Read from the
+    // inherited settings (rebuilt every frame while collapsing).
+    final settings = context
+        .dependOnInheritedWidgetOfExactType<FlexibleSpaceBarSettings>();
+    final double t = settings == null || settings.maxExtent <= settings.minExtent
+        ? 0.0
+        : (1.0 -
+                (settings.currentExtent - settings.minExtent) /
+                    (settings.maxExtent - settings.minExtent))
+            .clamp(0.0, 1.0);
+
+    final Widget image = (imageUrl != null && imageUrl!.isNotEmpty)
+        ? CachedNetworkImage(
+            imageUrl: imageUrl!,
+            fit: BoxFit.cover,
+            errorWidget: (_, __, ___) =>
+                const _CoverFallback(gradient: AppColors.gradient),
+          )
+        : const _CoverFallback(gradient: AppColors.gradient);
+
+    return Transform.scale(
+      scale: 1.0 + 0.12 * t,
+      alignment: Alignment.topCenter,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          image,
+          // legibility gradient over the image
+          const DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.transparent, Color(0x66000000)],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _CoverFallback extends StatelessWidget {

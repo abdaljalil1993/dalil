@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/l10n/app_localizations.dart';
 import 'core/prefs/prefs_providers.dart';
 import 'core/router/app_router.dart';
+import 'core/theme/app_scroll_behavior.dart';
 import 'core/theme/app_theme.dart';
 
 class DalilakApp extends ConsumerWidget {
@@ -22,6 +23,9 @@ class DalilakApp extends ConsumerWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: themeMode,
+      // One feel for every scrollable (vertical + horizontal): springy
+      // edge, Material-3 stretch, mouse/trackpad drag on web.
+      scrollBehavior: const AppScrollBehavior(),
       locale: locale,
       supportedLocales: const [Locale('ar'), Locale('en')],
       localizationsDelegates: const [

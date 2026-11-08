@@ -6,6 +6,7 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/section_header.dart';
+import '../../../../core/widgets/scroll_reveal.dart';
 import '../../../../core/widgets/skeletons.dart';
 import '../../../../core/widgets/status_views.dart';
 import '../../domain/entities/home_feed.dart';
@@ -67,16 +68,24 @@ class HomeScreen extends ConsumerWidget {
           child: ListView(
             padding: const EdgeInsets.only(bottom: 24),
             children: [
+              // Sections enter as a wave: each block fades/slides in when
+              // it scrolls into view (staggered by `index`).
               // Hero Search Bar
-              const Padding(
-                padding: EdgeInsets.fromLTRB(20, 16, 20, 8),
-                child: HeroSearchBar(),
+              const ScrollReveal(
+                index: 0,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(20, 16, 20, 8),
+                  child: HeroSearchBar(),
+                ),
               ),
 
               // Ad Carousel (if any)
               if (feed.adBanners.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                AdCarousel(banners: feed.adBanners),
+                ScrollReveal(
+                  index: 1,
+                  child: AdCarousel(banners: feed.adBanners),
+                ),
               ],
 
               // Quick Services
@@ -84,63 +93,97 @@ class HomeScreen extends ConsumerWidget {
                   feed.onDutyPharmaciesCount != null ||
                   feed.onDutyPharmaciesCount! > 0) ...[
                 const SizedBox(height: 20),
-                QuickServices(
-                  offersCount: feed.offers?.length ?? 0,
-                  pharmaciesCount: feed.onDutyPharmaciesCount ?? 0,
+                ScrollReveal(
+                  index: 2,
+                  child: QuickServices(
+                    offersCount: feed.offers?.length ?? 0,
+                    pharmaciesCount: feed.onDutyPharmaciesCount ?? 0,
+                  ),
                 ),
               ],
 
               // Categories
-              if (feed.categories.isNotEmpty) ...[
-                const SizedBox(height: 24),
-                SectionHeader(
-                  title: 'التصنيفات',
-                  onSeeAll: () => context.go(AppRoutes.categories),
+              if (feed.categories.isNotEmpty)
+                ScrollReveal(
+                  index: 3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 24),
+                      SectionHeader(
+                        title: 'التصنيفات',
+                        onSeeAll: () => context.go(AppRoutes.categories),
+                      ),
+                      const SizedBox(height: 12),
+                      CategoryGrid(categories: feed.categories),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 12),
-                CategoryGrid(categories: feed.categories),
-              ],
 
               // Featured Businesses
-              if (feed.featured.isNotEmpty) ...[
-                const SizedBox(height: 24),
-                BusinessSection(
-                  title: '✨ مميّز',
-                  businesses: feed.featured,
-                  onSeeAll: () {
-                    // TODO: Navigate to featured
-                  },
+              if (feed.featured.isNotEmpty)
+                ScrollReveal(
+                  index: 4,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 24),
+                      BusinessSection(
+                        title: '✨ مميّز',
+                        businesses: feed.featured,
+                        onSeeAll: () {
+                          // TODO: Navigate to featured
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ],
 
               // Top Rated
-              if (feed.topRated.isNotEmpty) ...[
-                const SizedBox(height: 24),
-                BusinessSection(
-                  title: '⭐ الأعلى تقييماً',
-                  businesses: feed.topRated,
-                  onSeeAll: () {
-                    // TODO: Navigate to top rated
-                  },
+              if (feed.topRated.isNotEmpty)
+                ScrollReveal(
+                  index: 5,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 24),
+                      BusinessSection(
+                        title: '⭐ الأعلى تقييماً',
+                        businesses: feed.topRated,
+                        onSeeAll: () {
+                          // TODO: Navigate to top rated
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ],
 
               // Newest
-              if (feed.newest.isNotEmpty) ...[
-                const SizedBox(height: 24),
-                BusinessSection(
-                  title: '🆕 الأحدث',
-                  businesses: feed.newest,
-                  onSeeAll: () {
-                    // TODO: Navigate to newest
-                  },
+              if (feed.newest.isNotEmpty)
+                ScrollReveal(
+                  index: 6,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 24),
+                      BusinessSection(
+                        title: '🆕 الأحدث',
+                        businesses: feed.newest,
+                        onSeeAll: () {
+                          // TODO: Navigate to newest
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ],
 
               // Stats (optional)
               if (feed.stats != null) ...[
                 const SizedBox(height: 32),
-                _StatsCard(stats: feed.stats!),
+                ScrollReveal(
+                  index: 7,
+                  child: _StatsCard(stats: feed.stats!),
+                ),
               ],
             ],
           ),

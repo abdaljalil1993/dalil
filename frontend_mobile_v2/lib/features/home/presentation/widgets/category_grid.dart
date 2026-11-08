@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/prefs/prefs_providers.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/category_icons.dart';
+import '../../../../core/widgets/scroll_reveal.dart';
 import '../../../catalog/domain/entities/category.dart';
 
 class CategoryGrid extends ConsumerWidget {
@@ -33,10 +34,14 @@ class CategoryGrid extends ConsumerWidget {
       itemCount: displayCategories.length,
       itemBuilder: (context, index) {
         final category = displayCategories[index];
-        return _CategoryCard(
-          category: category,
-          locale: locale.languageCode,
-          theme: theme,
+        return ScrollReveal(
+          index: index,
+          slide: const Offset(0, 0.1),
+          child: _CategoryCard(
+            category: category,
+            locale: locale.languageCode,
+            theme: theme,
+          ),
         );
       },
     );
