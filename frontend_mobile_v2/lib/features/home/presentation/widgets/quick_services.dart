@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/widgets/section_header.dart';
-import '../../../../core/widgets/scroll_reveal.dart';
+import '../../../../core/widgets/reveal_list.dart';
 import '../../../services/providers/features_providers.dart';
 
 class QuickServices extends ConsumerWidget {
@@ -75,19 +75,13 @@ class QuickServices extends ConsumerWidget {
         const SizedBox(height: 12),
         SizedBox(
           height: 100,
-          child: ListView.separated(
+          child: RevealList(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             scrollDirection: Axis.horizontal,
             itemCount: services.length,
             separatorBuilder: (_, __) => const SizedBox(width: 12),
-            itemBuilder: (context, index) {
-              final service = services[index];
-              return ScrollReveal(
-                index: index,
-                slide: const Offset(0.07, 0), // horizontal entrance
-                child: _QuickServiceCard(service: service, theme: theme),
-              );
-            },
+            itemBuilder: (context, index) =>
+                _QuickServiceCard(service: services[index], theme: theme),
           ),
         ),
       ],

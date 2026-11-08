@@ -1,7 +1,36 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../theme/app_motion.dart';
+
+/// Route table entries that always carry one of this file's transitions.
+///
+/// Use this instead of a bare `GoRoute(builder: …)`: a route written that
+/// way silently falls back to the platform's default slide and breaks the
+/// app's motion language. See CONVENTIONS_AR.md §11.
+///
+/// ```dart
+/// goAppRoute(path: '/about', builder: (_, __) => const AboutScreen()),
+/// goAppRoute(path: '/home', tab: true, builder: (_, __) => const HomeScreen()),
+/// ```
+GoRoute goAppRoute({
+  required String path,
+  required Widget Function(BuildContext, GoRouterState) builder,
+  bool tab = false,
+  GlobalKey<NavigatorState>? parentNavigatorKey,
+  FutureOr<String?> Function(BuildContext, GoRouterState)? redirect,
+}) =>
+    GoRoute(
+      path: path,
+      parentNavigatorKey: parentNavigatorKey,
+      redirect: redirect,
+      pageBuilder: (context, state) {
+        final child = builder(context, state); // built lazily, per navigation
+        return tab ? AppPages.tab(state, child) : AppPages.push(state, child);
+      },
+    );
 
 /// Uniform page transitions for the whole route table.
 ///

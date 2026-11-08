@@ -241,6 +241,7 @@ AsyncNotifier / Notifier ← حالة الشاشة فقط: ينسّق UI ↔ Use
 - [ ] الـ DTOs موجودة في `data/` فقط
 - [ ] الميزة لا تستورد internals ميزة أخرى
 - [ ] الاختبارات تغطي الـ UseCases الحساسة
+- [ ] المسارات بـ`goAppRoute` · البطاقات بـ`AppCard` · القوائم بـ`RevealList` (§11)
 - [ ] `flutter analyze` + `flutter test` نظيفان
 
 ---
@@ -269,3 +270,54 @@ flutter test             # يجب أن تنجح
 > flutter run --dart-define=API_URL=http://10.0.2.2:5003/api/v1   # أندرويد محاكي
 > flutter run --dart-define=API_URL=http://localhost:5003/api/v1   # iOS محاكي / جهاز
 > ```
+
+---
+
+## 11) قواعد الحركة (لغة الحركة)
+
+الحركة **موحّدة على مستوى التطبيق**: ثلاثة أشياء تلقائية، والبقية تتطلب استخدام المكوّن الصحيح.
+
+### ما هو تلقائي (لا تفعل شيئاً)
+
+| الآلية | التأثير |
+|---|---|
+| `AppScrollBehavior` (موصول على `MaterialApp`) | ارتداد الحافة + امتداد Material-3 + سحب بالفأرة/اللمسة — **كل** `ListView/GridView/SingleChildScrollView` جديد يرثه |
+| `CachedNetworkImage` | تلاشٍ 500ms عند وصول الصورة (خاصية افتراضية — لا تُلغِها) |
+
+### ما يُكتب يدوياً (إلزامي)
+
+| الحالة | استخدم | ممنوع |
+|---|---|---|
+| **مسار جديد** | `goAppRoute(path:, builder:)` مع `tab: true` للتبويبات | `GoRoute(builder:)` → يسقط على انزلاق المنصة الافتراضي |
+| **بطاقة/عنصر قابل للضغط** | `AppCard` (سطح + موجة + تكبير 0.97) | `GestureDetector` + `Container` → بلا أي أثر |
+| **قائمة/شبكة جديدة** | `RevealList` / `RevealGrid` (دخول متدرّج لكل عنصر) | `ListView.builder` عادي → كل شيء يظهر دفعة واحدة |
+| **قائمة `children:` أو sliver** | لفّ كل قسم بـ`ScrollReveal(index:)` | — |
+| **أثر ضغط داخل مكوّن قائم** | `Pressable` | — |
+| **مدة/منحنى** | `AppMotion.fast/base/slow` + `easeOut` | `Duration(milliseconds: …)` يدوية |
+
+```dart
+// مسار
+goAppRoute(path: '/about', builder: (_, __) => const AboutScreen());
+goAppRoute(path: '/home', tab: true, builder: (_, __) => const HomeScreen());
+
+// بطاقة
+AppCard(onTap: () => context.push('/x'), child: const MyContent());
+
+// قائمة
+RevealList(
+  itemCount: items.length,
+  itemBuilder: (context, index) => MyRow(items[index]),
+);
+```
+
+**الملفات:** `core/theme/app_motion.dart` · `core/widgets/app_card.dart` · `core/widgets/scroll_reveal.dart` · `core/widgets/reveal_list.dart` · `core/router/app_transitions.dart`
+
+### لماذا في الاتفاقية؟
+
+الثلاثة التلقائية تنقذ نفسها؛ أما اليدوية فتتشتت مع نمو الفريق — مسار بلا `goAppRoute` أو بطاقة بـ`GestureDetector` تكسر الإحساس الموحّد. **بوابة المراجعة (§8) تتضمّن هذه القواعد.**
+
+### حدود معروفة
+
+- `ScrollReveal`/`RevealList` يبني الحركة على **أول بناء للعنصر**: ما هو خارج الـ`cacheExtent` يبدأ حركته قبل ظهوره — مقصود (لا حركة بعد الدخول).
+- حركات الظهور `paint-only`: لا تغيّر التخطيط إطلاقاً، لذا لا تتعارض مع إصلاحات التخطيط السابقة.
+- كل الحركات تحترم `MediaQuery.disableAnimations` (وضع تقليل الحركة).

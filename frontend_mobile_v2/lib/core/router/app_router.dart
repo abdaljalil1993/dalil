@@ -68,29 +68,25 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/',
         redirect: (context, state) => AppRoutes.splash,
       ),
-      GoRoute(
+      goAppRoute(
         path: AppRoutes.splash,
         builder: (context, state) => const SplashScreen(),
       ),
-      GoRoute(
+      goAppRoute(
         path: AppRoutes.login,
-        pageBuilder: (context, state) =>
-            AppPages.push(state, const LoginScreen()),
+        builder: (context, state) => const LoginScreen(),
       ),
-      GoRoute(
+      goAppRoute(
         path: AppRoutes.register,
-        pageBuilder: (context, state) =>
-            AppPages.push(state, const RegisterScreen()),
+        builder: (context, state) => const RegisterScreen(),
       ),
-      GoRoute(
+      goAppRoute(
         path: AppRoutes.otpLogin,
-        pageBuilder: (context, state) =>
-            AppPages.push(state, const OtpLoginScreen()),
+        builder: (context, state) => const OtpLoginScreen(),
       ),
-      GoRoute(
+      goAppRoute(
         path: AppRoutes.forgotPassword,
-        pageBuilder: (context, state) =>
-            AppPages.push(state, const ForgotPasswordScreen()),
+        builder: (context, state) => const ForgotPasswordScreen(),
       ),
 
       // ── Main shell: 4 tabs with a bottom NavigationBar ──
@@ -100,39 +96,33 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         branches: [
           // 0 · الرئيسية (+ شاشات الخدمات السريعة)
           StatefulShellBranch(routes: [
-            GoRoute(
+            goAppRoute(
               path: AppRoutes.home,
-              pageBuilder: (context, state) =>
-                  AppPages.tab(state, const HomeScreen()),
+              builder: (context, state) => const HomeScreen(),
             ),
-            GoRoute(
+            goAppRoute(
               path: AppRoutes.offers,
-              pageBuilder: (context, state) =>
-                  AppPages.push(state, const OffersScreen()),
+              builder: (context, state) => const OffersScreen(),
             ),
-            GoRoute(
+            goAppRoute(
               path: AppRoutes.pharmacies,
-              pageBuilder: (context, state) =>
-                  AppPages.push(state, const PharmaciesScreen()),
+              builder: (context, state) => const PharmaciesScreen(),
             ),
-            GoRoute(
+            goAppRoute(
               path: AppRoutes.emergency,
-              pageBuilder: (context, state) =>
-                  AppPages.push(state, const EmergencyScreen()),
+              builder: (context, state) => const EmergencyScreen(),
             ),
           ]),
           // 1 · التصنيفات (+ تفاصيلها ورابط العميق /c/:slug)
           StatefulShellBranch(routes: [
-            GoRoute(
+            goAppRoute(
               path: AppRoutes.categories,
-              pageBuilder: (context, state) =>
-                  AppPages.tab(state, const CategoriesScreen()),
+              builder: (context, state) => const CategoriesScreen(),
             ),
-            GoRoute(
+            goAppRoute(
               path: '/categories/:slug',
-              pageBuilder: (context, state) => AppPages.push(
-                  state,
-                  CategoryDetailsScreen(slug: state.pathParameters['slug']!)),
+              builder: (context, state) =>
+                  CategoryDetailsScreen(slug: state.pathParameters['slug']!),
             ),
             GoRoute(
               path: '/c/:slug',
@@ -142,29 +132,27 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ]),
           // 2 · بحث
           StatefulShellBranch(routes: [
-            GoRoute(
+            goAppRoute(
               path: AppRoutes.search,
-              pageBuilder: (context, state) =>
-                  AppPages.tab(state, const SearchScreen()),
+              builder: (context, state) => const SearchScreen(),
             ),
           ]),
           // 3 · حسابي
           StatefulShellBranch(routes: [
-            GoRoute(
+            goAppRoute(
               path: AppRoutes.account,
-              pageBuilder: (context, state) =>
-                  AppPages.tab(state, const AccountScreen()),
+              builder: (context, state) => const AccountScreen(),
             ),
           ]),
         ],
       ),
 
       // ── Full-screen pages (root navigator → cover the shell) ──
-      GoRoute(
+      goAppRoute(
         path: '/businesses/:slug',
         parentNavigatorKey: rootNavigatorKey,
-        pageBuilder: (context, state) => AppPages.push(
-            state, BusinessDetailsScreen(slug: state.pathParameters['slug']!)),
+        builder: (context, state) =>
+            BusinessDetailsScreen(slug: state.pathParameters['slug']!),
       ),
       GoRoute(
         path: '/b/:slug',

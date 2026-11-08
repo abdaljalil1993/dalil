@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/widgets/section_header.dart';
-import '../../../../core/widgets/scroll_reveal.dart';
+import '../../../../core/widgets/reveal_list.dart';
 import '../../../businesses/domain/entities/business.dart';
 import '../../../businesses/presentation/widgets/business_card.dart';
 
@@ -29,25 +29,16 @@ class BusinessSection extends ConsumerWidget {
         const SizedBox(height: 12),
         SizedBox(
           height: 224,
-          child: ListView.separated(
+          // RevealList owns the stagger + slide direction (CONVENTIONS §11).
+          child: RevealList(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             scrollDirection: Axis.horizontal,
             itemCount: businesses.take(10).length,
             separatorBuilder: (_, __) => const SizedBox(width: 12),
-            itemBuilder: (context, index) {
-              final business = businesses[index];
-              return ScrollReveal(
-                index: index,
-                // Horizontal list → the card slides in from the leading edge.
-                slide: const Offset(0.07, 0),
-                child: SizedBox(
-                  width: 280,
-                  child: BusinessCard(
-                    business: business,
-                  ),
-                ),
-              );
-            },
+            itemBuilder: (context, index) => SizedBox(
+              width: 280,
+              child: BusinessCard(business: businesses[index]),
+            ),
           ),
         ),
       ],

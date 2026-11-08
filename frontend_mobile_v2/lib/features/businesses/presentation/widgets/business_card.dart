@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/prefs/prefs_providers.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/app_card.dart';
 import '../../../../core/utils/category_icons.dart';
 import '../../domain/entities/business.dart';
 
@@ -23,170 +24,167 @@ class BusinessCard extends ConsumerWidget {
     final theme = Theme.of(context);
     final locale = ref.watch(localeProvider).languageCode;
 
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap ?? () => context.push('/businesses/${business.slug}'),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Cover Image
-            Stack(
-              children: [
-                _buildCover(),
-                
-                // Featured Badge
-                if (business.isFeatured)
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        gradient: AppColors.gradient,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.star, color: Colors.white, size: 14),
-                          const SizedBox(width: 4),
-                          Text(
-                            'مميّز',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
+    return AppCard(
+      onTap: onTap ?? () => context.push('/businesses/${business.slug}'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Cover Image
+          Stack(
+            children: [
+              _buildCover(),
+              
+              // Featured Badge
+              if (business.isFeatured)
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      gradient: AppColors.gradient,
+                      borderRadius: BorderRadius.circular(6),
                     ),
-                  ),
-
-                // Logo (if available)
-                if (business.logoImage != null)
-                  Positioned(
-                    bottom: 8,
-                    left: 8,
-                    child: Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: CachedNetworkImage(
-                          imageUrl: business.logoImage!,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-
-            // Info — no Expanded/Spacer: must survive unbounded-height
-            // parents (SliverList sizes children to content).
-            Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Expanded(
-                          child: Text(
-                            business.localizedName(locale),
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                        const Icon(Icons.star, color: Colors.white, size: 14),
+                        const SizedBox(width: 4),
+                        Text(
+                          'مميّز',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                        if (business.isVerified)
-                          const Icon(
-                            Icons.verified,
-                            color: AppColors.info,
-                            size: 16,
-                          ),
                       ],
                     ),
-                    const SizedBox(height: 4),
-                    
-                    // Category
-                    Text(
-                      business.category.localizedName(locale),
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.hintColor,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+
+              // Logo (if available)
+              if (business.logoImage != null)
+                Positioned(
+                  bottom: 8,
+                  left: 8,
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                    
-                    const SizedBox(height: 12),
-                    
-                    // Rating & Location
-                    Row(
-                      children: [
-                        // Rating
-                        if (business.reviewCount > 0) ...[
-                          const Icon(Icons.star, color: AppColors.warning, size: 16),
-                          const SizedBox(width: 4),
-                          Text(
-                            business.averageRating.toStringAsFixed(1),
-                            style: theme.textTheme.labelMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: CachedNetworkImage(
+                        imageUrl: business.logoImage!,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+
+          // Info — no Expanded/Spacer: must survive unbounded-height
+          // parents (SliverList sizes children to content).
+          Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          business.localizedName(locale),
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
                           ),
-                          Text(
-                            ' (${business.reviewCount})',
-                            style: theme.textTheme.labelSmall?.copyWith(
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (business.isVerified)
+                        const Icon(
+                          Icons.verified,
+                          color: AppColors.info,
+                          size: 16,
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  
+                  // Category
+                  Text(
+                    business.category.localizedName(locale),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.hintColor,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  
+                  const SizedBox(height: 12),
+                  
+                  // Rating & Location
+                  Row(
+                    children: [
+                      // Rating
+                      if (business.reviewCount > 0) ...[
+                        const Icon(Icons.star, color: AppColors.warning, size: 16),
+                        const SizedBox(width: 4),
+                        Text(
+                          business.averageRating.toStringAsFixed(1),
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          ' (${business.reviewCount})',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.hintColor,
+                          ),
+                        ),
+                      ],
+                      
+                      const SizedBox(height: 12),
+                      
+                      // Open Now or City
+                      if (business.isOpenNow != null)
+                        _buildOpenNowIndicator(business.isOpenNow!, theme)
+                      else
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.location_on_outlined,
+                              size: 14,
                               color: theme.hintColor,
                             ),
-                          ),
-                        ],
-                        
-                        const SizedBox(height: 12),
-                        
-                        // Open Now or City
-                        if (business.isOpenNow != null)
-                          _buildOpenNowIndicator(business.isOpenNow!, theme)
-                        else
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.location_on_outlined,
-                                size: 14,
+                            const SizedBox(width: 2),
+                            Text(
+                              business.city.localizedName(locale),
+                              style: theme.textTheme.labelSmall?.copyWith(
                                 color: theme.hintColor,
                               ),
-                              const SizedBox(width: 2),
-                              Text(
-                                business.city.localizedName(locale),
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: theme.hintColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
+                            ),
+                          ],
+                        ),
+                    ],
+                  ),
+                ],
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }

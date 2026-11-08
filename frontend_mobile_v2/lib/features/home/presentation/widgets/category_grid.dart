@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/prefs/prefs_providers.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/category_icons.dart';
-import '../../../../core/widgets/scroll_reveal.dart';
+import '../../../../core/widgets/reveal_list.dart';
 import '../../../catalog/domain/entities/category.dart';
 
 class CategoryGrid extends ConsumerWidget {
@@ -21,7 +21,7 @@ class CategoryGrid extends ConsumerWidget {
     // Show first 8 categories
     final displayCategories = categories.take(8).toList();
 
-    return GridView.builder(
+    return RevealGrid(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -32,18 +32,11 @@ class CategoryGrid extends ConsumerWidget {
         childAspectRatio: 0.85,
       ),
       itemCount: displayCategories.length,
-      itemBuilder: (context, index) {
-        final category = displayCategories[index];
-        return ScrollReveal(
-          index: index,
-          slide: const Offset(0, 0.1),
-          child: _CategoryCard(
-            category: category,
-            locale: locale.languageCode,
-            theme: theme,
-          ),
-        );
-      },
+      itemBuilder: (context, index) => _CategoryCard(
+        category: displayCategories[index],
+        locale: locale.languageCode,
+        theme: theme,
+      ),
     );
   }
 }
