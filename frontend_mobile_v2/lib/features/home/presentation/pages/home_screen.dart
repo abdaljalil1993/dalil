@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/dalilak_app_bar.dart';
 import '../../../../core/widgets/section_header.dart';
 import '../../../../core/widgets/scroll_reveal.dart';
 import '../../../../core/widgets/skeletons.dart';
@@ -23,25 +24,9 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final homeFeedAsync = ref.watch(homeFeedProvider);
-    final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                gradient: AppColors.gradient,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(Icons.location_city, color: Colors.white, size: 20),
-            ),
-            const SizedBox(width: 12),
-            Text('دليلك', style: theme.textTheme.titleLarge),
-          ],
-        ),
+      appBar: DalilakAppBar(
         actions: [
           IconButton(
             onPressed: () {

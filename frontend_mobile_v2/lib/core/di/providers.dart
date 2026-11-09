@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../network/api_client.dart';
@@ -19,6 +20,16 @@ final localStorageProvider = Provider<LocalStorage>(
 // ───────────────────────── session ─────────────────────────
 final authSessionProvider = ChangeNotifierProvider<AuthSession>(
   (ref) => AuthSession(ref.watch(tokenStorageProvider)),
+);
+
+// ───────────────────────── shell ─────────────────────────
+/// Key of the shell's [ScaffoldState] — the one that owns the drawer.
+///
+/// Tab screens are nested Scaffolds, so `Scaffold.of(context)` *inside* a
+/// screen finds that screen's own (drawer-less) Scaffold. They open the
+/// shell drawer through this key instead (see `DalilakAppBar`).
+final shellScaffoldKeyProvider = Provider<GlobalKey<ScaffoldState>>(
+  (ref) => GlobalKey<ScaffoldState>(),
 );
 
 // ───────────────────────── network ─────────────────────────

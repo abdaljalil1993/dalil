@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/access_guard.dart';
+import '../../../../core/widgets/dalilak_app_bar.dart';
 
 /// Tab 3: text search — members only (handoff rule #1).
 class SearchScreen extends ConsumerStatefulWidget {
@@ -30,7 +31,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final authed = AccessGuard.can(ref);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('بحث')),
+      appBar: const DalilakAppBar(title: Text('بحث')),
       body: !authed
           // Guests: search is a member-only action → sign-in gate.
           ? _LoginGate(theme: theme)

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/l10n/app_localizations.dart';
+import '../../../../core/widgets/dalilak_app_bar.dart';
 import '../../../../core/widgets/skeletons.dart';
 import '../../../../core/widgets/status_views.dart';
 import '../../providers/category_providers.dart';
@@ -17,10 +18,7 @@ class CategoriesScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.categories),
-        centerTitle: true,
-      ),
+      appBar: DalilakAppBar(title: Text(l10n.categories)),
       body: categoriesAsync.when(
         data: (categories) {
           if (categories.isEmpty) {

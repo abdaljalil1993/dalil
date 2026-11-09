@@ -6,6 +6,7 @@ import '../../../../core/di/providers.dart';
 import '../../../../core/prefs/prefs_providers.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/dalilak_app_bar.dart';
 import '../../../auth/auth.dart';
 
 /// Tab 4: account — guest prompt vs signed-in profile.
@@ -19,7 +20,7 @@ class AccountScreen extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('حسابي')),
+      appBar: const DalilakAppBar(title: Text('حسابي')),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
