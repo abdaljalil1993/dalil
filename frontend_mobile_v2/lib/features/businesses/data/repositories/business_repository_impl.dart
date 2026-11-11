@@ -55,6 +55,7 @@ class BusinessRepositoryImpl implements BusinessRepository {
     double? lng,
     int? radius,
     String? sort,
+    bool openNow = false,
   }) async {
     try {
       final dtos = await _remoteDataSource.searchBusinesses(
@@ -65,6 +66,7 @@ class BusinessRepositoryImpl implements BusinessRepository {
         lng: lng,
         radius: radius,
         sort: sort,
+        openNow: openNow,
       );
       return Success(dtos.map((dto) => dto.toEntity()).toList());
     } on Failure catch (f) {

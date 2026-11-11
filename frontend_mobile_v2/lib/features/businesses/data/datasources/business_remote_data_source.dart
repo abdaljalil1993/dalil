@@ -64,9 +64,11 @@ class BusinessRemoteDataSource {
     double? lng,
     int? radius,
     String? sort,
+    bool openNow = false,
   }) async {
     final queryParams = <String, dynamic>{
       'q': query,
+      if (openNow) 'openNow': 'true',
       if (categoryId != null) 'categoryId': categoryId,
       if (cityId != null) 'cityId': cityId,
       if (lat != null) 'lat': lat,

@@ -52,8 +52,9 @@ final businessDetailsProvider =
   );
 });
 
-// Search businesses provider
-final searchBusinessesProvider = FutureProvider.family<
+// Search businesses provider. autoDispose: a query is only alive while
+// the search screen is showing it — keystrokes don't pile up in memory.
+final searchBusinessesProvider = FutureProvider.autoDispose.family<
     List<Business>,
     ({
       String query,
@@ -63,6 +64,7 @@ final searchBusinessesProvider = FutureProvider.family<
       double? lng,
       int? radius,
       String? sort,
+      bool openNow,
     })>((ref, params) async {
   final repo = ref.watch(businessRepositoryProvider);
   final result = await repo.searchBusinesses(
@@ -73,6 +75,7 @@ final searchBusinessesProvider = FutureProvider.family<
     lng: params.lng,
     radius: params.radius,
     sort: params.sort,
+    openNow: params.openNow,
   );
 
   return result.when(

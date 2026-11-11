@@ -20,6 +20,7 @@ abstract class BusinessRepository {
     double? lng,
     int? radius,
     String? sort,
+    bool openNow = false,
   });
 
   Future<Result<List<Business>>> getFeaturedBusinesses(int cityId);

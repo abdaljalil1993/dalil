@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_theme.dart';
 
@@ -12,12 +14,8 @@ class HeroSearchBar extends StatelessWidget {
 
     return Pressable(
       borderRadius: BorderRadius.circular(18),
-      onTap: () {
-        // TODO: Navigate to search screen
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('شاشة البحث قريباً...')),
-        );
-      },
+      // Opens the search tab (its branch root — same rule as the drawer).
+      onTap: () => context.go(AppRoutes.search),
       // Decoration lives in Ink so the ripple lands on the gradient
       // instead of behind it.
       child: Ink(
