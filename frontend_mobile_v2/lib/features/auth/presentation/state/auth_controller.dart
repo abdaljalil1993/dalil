@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/di/providers.dart';
@@ -42,9 +43,11 @@ class AuthController extends Notifier<AuthState> {
 
   Future<void> login({required String email, required String password}) async {
     state = const AuthLoading();
+    debugPrint('[AUTH-DIAG] login() entered → calling usecase');
     final result = await ref
         .read(loginUseCaseProvider)
         .call(LoginParams(email: email, password: password));
+    debugPrint('[AUTH-DIAG] usecase returned -> ${result.runtimeType}');
     result.when(
       success: _onSignedIn,
       onFailure: (f) => state = AuthError(f.message, fieldErrors: f.fieldErrors),
@@ -118,6 +121,7 @@ class AuthController extends Notifier<AuthState> {
 
   /// Persist tokens + user in the session — the router reacts by itself.
   Future<void> _onSignedIn(AuthResult auth) async {
+    debugPrint('[AUTH-DIAG] _onSignedIn entry → setAuth');
     await ref.read(authSessionProvider).setAuth(
           accessToken: auth.accessToken,
           refreshToken: auth.refreshToken,
@@ -132,6 +136,7 @@ class AuthController extends Notifier<AuthState> {
             'avatarUrl': auth.user.avatarUrl,
           },
         );
+    debugPrint('[AUTH-DIAG] setAuth done → AuthSuccess');
     state = AuthSuccess(auth);
   }
 

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../constants/api_endpoints.dart';
 import '../../session/auth_session.dart';
@@ -26,6 +27,7 @@ class AuthInterceptor extends QueuedInterceptor {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    debugPrint('[AUTH-DIAG] HTTP ${options.method} ${options.path}');
     final token = _session.accessToken;
     if (token != null && token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';
